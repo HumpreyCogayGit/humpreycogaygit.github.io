@@ -43,10 +43,10 @@ function startIntro() {
   introStarted = true;
   startup.classList.add("is-running");
   startup.querySelector(".startup-sequence").setAttribute("aria-hidden", "false");
-  const statusSteps = reducedMotion ? [] : [[350, "Mapping data pipelines"], [1250, "Loading intelligence models"], [2350, "Securing system perimeter"], [3450, "Connecting creative tools"], [4250, "Technology stack ready"]];
+  const statusSteps = reducedMotion ? [] : [[350, "Mapping data pipelines"], [1250, "Loading intelligence models"], [2850, "Securing system perimeter"], [4150, "Connecting creative tools"], [4950, "Technology stack ready"]];
   statusSteps.forEach(([delay, text]) => statusTimers.push(setTimeout(() => { introStatus.textContent = text; }, delay)));
   introStatus.textContent = reducedMotion ? "System ready" : "Initializing technology stack";
-  introTimer = setTimeout(finishIntro, reducedMotion ? 800 : 5400);
+  introTimer = setTimeout(finishIntro, reducedMotion ? 800 : 6100);
 }
 
 function hideStartup() {
