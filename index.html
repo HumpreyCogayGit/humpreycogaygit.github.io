@@ -7,57 +7,34 @@
     <meta name="description" content="MangHumps — Humprey Cogay's interactive desktop portfolio.">
     <title>MangHumps — Portfolio Archive</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%23f1f5f9'/%3E%3Cpath d='M17 17v30m0-15h21m0-15v30' fill='none' stroke='%23087f6a' stroke-width='7'/%3E%3C/svg%3E">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css?v=4">
   </head>
   <body class="intro-active">
     <noscript>This portfolio needs JavaScript to open projects and desktop apps.</noscript>
 
-    <section class="startup" id="startup" role="dialog" aria-modal="true" aria-label="Portfolio loading sequence">
-      <div class="startup-noise" aria-hidden="true"></div>
-      <div class="startup-scan" aria-hidden="true"></div>
-      <div class="startup-sequence" aria-hidden="true">
-        <div class="startup-data-stream startup-data-stream-one">01101001&nbsp; API&nbsp; 10110100&nbsp; MODEL&nbsp; 00110111&nbsp; DATA&nbsp; 11001010&nbsp; CLOUD&nbsp; 01010101</div>
-        <div class="startup-data-stream startup-data-stream-two">ENCRYPT&nbsp; 84.12&nbsp; PIPELINE&nbsp; 21MS&nbsp; AUTOMATE&nbsp; NODE_07&nbsp; SECURE&nbsp; 99.9%</div>
-        <div class="startup-line-field"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-        <svg class="startup-traces" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M-40 145 H170 L220 195 H430 L490 135 H760 L815 190 H1040" />
-          <path d="M-40 430 H120 L190 360 H360 L415 415 H640 L710 345 H1040" />
-          <path d="M115 -30 V95 L175 155 V285 L125 335 V630" />
-          <path d="M875 -30 V120 L820 175 V310 L890 380 V630" />
-        </svg>
-        <div class="startup-rails"><i></i><i></i><i></i><i></i><i></i></div>
-        <div class="startup-core">
-          <div class="startup-core-frame"><i></i><i></i><i></i><i></i></div>
-          <svg class="startup-core-network" viewBox="0 0 400 260" preserveAspectRatio="none" aria-hidden="true">
-            <path d="M0 32 H92 L135 82 H265 L308 32 H400" />
-            <path d="M0 228 H92 L135 178 H265 L308 228 H400" />
-            <path d="M32 0 V70 L105 130 L32 190 V260" />
-            <path d="M368 0 V70 L295 130 L368 190 V260" />
-          </svg>
-          <div class="startup-core-axis"><i></i><i></i></div>
-          <div class="startup-core-packets"><i></i><i></i><i></i><i></i></div>
-          <div class="startup-core-readout"><span>DATA</span><span>MODEL</span><span>DEPLOY</span></div>
-        </div>
-        <div class="startup-line-nodes"><i></i><i></i><i></i><i></i></div>
-        <div class="startup-coordinate startup-coordinate-one">14° 35′ N<br>121° 00′ E</div>
-        <div class="startup-coordinate startup-coordinate-two">SYSTEM // ONLINE<br>LATENCY // 21MS</div>
-        <p class="startup-sequence-label">SYNCHRONIZING TECHNOLOGY STACK</p>
-        <div class="startup-wordmark" aria-label="Loading the bananas, peeling the apples"><span>Loading the bananas</span><strong>Peeling the apples</strong></div>
-        <div class="startup-terms">
-          <span>DATA ENGINEERING</span><span>CYBER SECURITY</span><span>MACHINE LEARNING</span>
-          <span>CLOUD SYSTEMS</span><span>API DESIGN</span><span>AUTOMATION</span>
-        </div>
-        <div class="startup-records">
-          <span><b>01</b> NEURAL NETWORK</span><span><b>02</b> ETL PIPELINES</span>
-          <span><b>03</b> DEVELOPER TOOLS</span><span><b>04</b> INTERACTIVE EXPERIENCES</span>
-          <span><b>05</b> DATA ENGINEERING</span><span><b>06</b> ARTIFICIAL INTELLIGENCE</span>
-          <span><b>07</b> CYBER SECURITY</span><span><b>08</b> MACHINE LEARNING</span>
-        </div>
-        <div class="startup-transmission"><span>PROCESS</span><i></i><span>CONNECT</span><i></i><span>CREATE</span></div>
-        <div class="startup-loader"><span></span></div>
-        <p class="startup-status" aria-live="polite">Awaiting entry</p>
+    <section class="startup" id="startup" role="dialog" aria-modal="true" aria-label="Portfolio loading">
+      <div class="startup-backdrop" aria-hidden="true">
+        <i class="startup-orb startup-orb-one"></i><i class="startup-orb startup-orb-two"></i><i class="startup-orb startup-orb-three"></i>
+        <div class="startup-grid"></div>
       </div>
-      <button class="startup-skip" id="startup-skip" type="button">Skip intro <span aria-hidden="true">↗</span></button>
+      <canvas class="startup-lines" id="startup-lines" aria-hidden="true"></canvas>
+      <header class="startup-bar">
+        <div class="startup-brand" aria-hidden="true">
+          <svg viewBox="0 0 64 64"><rect x=".5" y=".5" width="63" height="63" rx="15" /><path pathLength="30" d="M21 17v30" /><path pathLength="30" d="M21 32h22" /><path pathLength="30" d="M43 17v30" /></svg>
+          <span>MangHumps</span>
+        </div>
+        <button class="startup-skip" id="startup-skip" type="button">Skip intro <span aria-hidden="true">↗</span></button>
+      </header>
+      <div class="startup-stage">
+        <p class="startup-eyebrow" aria-hidden="true">PORTFOLIO / 2026</p>
+        <p class="startup-name" id="startup-name"><span class="startup-name-line"><span>Humprey</span></span><span class="startup-name-line"><span>Cogay<b>.</b></span></span></p>
+        <div class="startup-roles" aria-hidden="true"><span>AI engineering</span><span>Useful tools</span><span>Thoughtful information</span><span>Playful Designs</span></div>
+      </div>
+      <footer class="startup-footer">
+        <p class="startup-status" aria-live="polite">Starting up</p>
+        <p class="startup-count" aria-hidden="true"><span id="startup-count">0</span><small>%</small></p>
+        <div class="startup-progress" id="startup-progress" role="progressbar" aria-label="Loading portfolio" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
+      </footer>
     </section>
 
     <main class="desktop" id="desktop" aria-label="Portfolio desktop" inert>
@@ -195,6 +172,6 @@
       </section>
     </template>
 
-    <script type="module" src="js/app.js"></script>
+    <script type="module" src="js/app.js?v=4"></script>
   </body>
 </html>
