@@ -10,6 +10,7 @@ A dependency-free desktop-style portfolio built with semantic HTML, CSS, and van
 - Working keyboard-enabled calculator (without `eval`)
 - Navigable monthly calendar
 - Live Open-Meteo weather with city search, geolocation, and unit switching
+- Dedicated gallery for interactive HTML, CSS, and JavaScript animation studies
 - Responsive mobile layout, keyboard focus styles, and reduced-motion support
 
 The introduction starts automatically, uses only local HTML and CSS animation, and can be dismissed with **Skip intro** or Escape. No audio or third-party assets are loaded.

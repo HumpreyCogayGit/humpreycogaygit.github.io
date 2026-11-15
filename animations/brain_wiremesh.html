@@ -1,0 +1,1778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Wiremesh Neural Brain Sculpture</title>
+  <style>
+    /* ==========================================================================
+       CSS VARIABLES & THEME TOKENS
+       Supports seamless switching between Obsidian Dark Studio & Gallery Light
+       ========================================================================== */
+    :root {
+      --bg-inner: #0f1524;
+      --bg-outer: #06080f;
+      --panel-bg: rgba(16, 22, 36, 0.72);
+      --panel-border: rgba(255, 255, 255, 0.12);
+      --panel-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --btn-bg: rgba(255, 255, 255, 0.08);
+      --btn-hover: rgba(255, 255, 255, 0.15);
+      --btn-active: rgba(0, 200, 224, 0.25);
+      --accent-cyan: #00c8e0;
+      --accent-amber: #ff8524;
+      --accent-violet: #8c4bff;
+      --slider-track: rgba(255, 255, 255, 0.16);
+      --badge-bg: rgba(0, 200, 224, 0.12);
+    }
+
+    body.light-theme {
+      --bg-inner: #ffffff;
+      --bg-outer: #eef1f6;
+      --panel-bg: rgba(255, 255, 255, 0.82);
+      --panel-border: rgba(15, 23, 42, 0.1);
+      --panel-shadow: 0 14px 36px rgba(15, 23, 42, 0.12);
+      --text-primary: #0f172a;
+      --text-secondary: #64748b;
+      --btn-bg: rgba(15, 23, 42, 0.05);
+      --btn-hover: rgba(15, 23, 42, 0.1);
+      --btn-active: rgba(0, 168, 196, 0.18);
+      --slider-track: rgba(15, 23, 42, 0.14);
+      --badge-bg: rgba(0, 168, 196, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(circle at 50% 45%, var(--bg-inner) 0%, var(--bg-outer) 100%);
+      color: var(--text-primary);
+      transition: background 0.55s ease, color 0.35s ease;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* Fullscreen Interactive Canvas */
+    #brainCanvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    #brainCanvas:active {
+      cursor: grabbing;
+    }
+
+    /* Subtle Top Hint Pill */
+    .top-hint {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: var(--text-secondary);
+      pointer-events: none;
+      opacity: 0.9;
+      transition: all 0.4s ease;
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      box-shadow: 0 0 8px var(--accent-cyan);
+      animation: pulseBeacon 2.2s infinite ease-in-out;
+    }
+
+    @keyframes pulseBeacon {
+      0%, 100% { transform: scale(0.85); opacity: 0.65; }
+      50% { transform: scale(1.25); opacity: 1; }
+    }
+
+    /* Floating Minimalist Control Dock */
+    .control-dock {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: var(--panel-shadow);
+      z-index: 20;
+      transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+      max-width: calc(100vw - 24px);
+    }
+
+    .ctrl-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 9px 15px;
+      border-radius: 999px;
+      border: 1px solid var(--panel-border);
+      background: var(--btn-bg);
+      color: var(--text-primary);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      transition: transform 0.16s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .ctrl-btn:hover {
+      background: var(--btn-hover);
+      transform: translateY(-1px);
+    }
+
+    .ctrl-btn:active {
+      transform: scale(0.96);
+    }
+
+    .ctrl-btn.primary {
+      background: linear-gradient(135deg, rgba(0, 200, 224, 0.24), rgba(140, 75, 255, 0.24));
+      border-color: rgba(0, 200, 224, 0.42);
+    }
+
+    .ctrl-btn.primary:hover {
+      background: linear-gradient(135deg, rgba(0, 200, 224, 0.36), rgba(140, 75, 255, 0.36));
+      box-shadow: 0 0 18px rgba(0, 200, 224, 0.28);
+    }
+
+    .ctrl-btn svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+    }
+
+    .divider {
+      width: 1px;
+      height: 22px;
+      background: var(--panel-border);
+      flex-shrink: 0;
+    }
+
+    /* Activity Slider Group */
+    .slider-group {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 0 4px;
+    }
+
+    .slider-label {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 96px;
+      height: 5px;
+      border-radius: 999px;
+      background: var(--slider-track);
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00c8e0, #8c4bff);
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 200, 224, 0.5);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.18);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00c8e0, #8c4bff);
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 200, 224, 0.5);
+      cursor: pointer;
+    }
+
+    /* Responsive Adjustments for Mobile Screens */
+    @media (max-width: 640px) {
+      .top-hint {
+        top: 12px;
+        font-size: 11px;
+        padding: 6px 12px;
+      }
+      .control-dock {
+        bottom: 14px;
+        padding: 8px 12px;
+        gap: 8px;
+        border-radius: 24px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .ctrl-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+      .divider {
+        display: none;
+      }
+      input[type="range"] {
+        width: 82px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Subtle Interactive Guidance Pill -->
+  <div class="top-hint">
+    <span class="pulse-dot"></span>
+    <span>Click any region to spark neural dialogue • Drag to rotate</span>
+  </div>
+
+  <!-- Main 2.5D/3D Wiremesh Brain Canvas -->
+  <canvas id="brainCanvas"></canvas>
+
+  <!-- Floating Minimalist Control Bar -->
+  <div class="control-dock" role="toolbar" aria-label="Neural Sculpture Controls">
+    <button id="stimulateBtn" class="ctrl-btn primary" type="button" title="Trigger a multi-lobe neural cascade">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+      </svg>
+      <span>Stimulate</span>
+    </button>
+
+    <div class="divider"></div>
+
+    <button id="themeBtn" class="ctrl-btn" type="button" title="Switch between Dark Studio and Gallery White">
+      <svg id="themeIconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      </svg>
+      <svg id="themeIconMoon" style="display:none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+      <span id="themeLabel">Studio Light</span>
+    </button>
+
+    <div class="divider"></div>
+
+    <div class="slider-group">
+      <span class="slider-label">Calm</span>
+      <input id="activitySlider" type="range" min="10" max="100" value="58" aria-label="Neural Activity Frequency" />
+      <span class="slider-label">Hyper</span>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * ============================================================================
+     * WIREMESH NEURAL BRAIN SCULPTURE ENGINE (PURE VANILLA JS + HTML5 CANVAS)
+     * ============================================================================
+     * Architecture:
+     * 1. Anatomical 3D Brain Graph:
+     *    - Left-facing side profile with Frontal, Parietal, Occipital, Temporal lobes,
+     *      tucked striated Cerebellum, and tapered Brain Stem.
+     *    - Outer triangulated geodesic wire cage (straight metallic struts).
+     *    - Inner sweeping white-matter & corpus callosum bundles (3D cubic Bezier curves).
+     *    - Faceted multi-polyhedral crystal vertices & luminous spherical nodes.
+     * 2. Synaptic Communication Engine:
+     *    - Neurons fire spontaneously, on sensory ascent, or via user click/tap.
+     *    - Plasma data packets with fading curved comet trails travel along both
+     *      straight cortical edges and internal curved Bezier pathways.
+     *    - Multi-hop cascade relays + back-and-forth conversational acknowledgments.
+     * 3. 2.5D/3D Projection & Interaction:
+     *    - Perspective projection, Z-depth sorting, ambient breathing, mouse tilt,
+     *      and smooth drag-to-rotate.
+     */
+    (function () {
+      'use strict';
+
+      // --------------------------------------------------------------------------
+      // 1. CANVAS & STATE SETUP
+      // --------------------------------------------------------------------------
+      const canvas = document.getElementById('brainCanvas');
+      const ctx = canvas.getContext('2d');
+
+      const stimulateBtn = document.getElementById('stimulateBtn');
+      const themeBtn = document.getElementById('themeBtn');
+      const themeLabel = document.getElementById('themeLabel');
+      const themeIconSun = document.getElementById('themeIconSun');
+      const themeIconMoon = document.getElementById('themeIconMoon');
+      const activitySlider = document.getElementById('activitySlider');
+
+      let width = window.innerWidth;
+      let height = window.innerHeight;
+      let dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+
+      // Sculpture Color Palette (matching metallic wire & faceted gemstone tones)
+      const PALETTES = {
+        cyan: {
+          darkWire: '#00c8e0',
+          lightWire: '#009eb3',
+          glow: '#2ee5d5',
+          core: '#c8fbff',
+          crystalLight: '#6ff7eb',
+          crystalMid: '#00bcd4',
+          crystalDark: '#007c91'
+        },
+        amber: {
+          darkWire: '#ff8524',
+          lightWire: '#e06508',
+          glow: '#ffaa44',
+          core: '#fff1d6',
+          crystalLight: '#ffc978',
+          crystalMid: '#ff8524',
+          crystalDark: '#b84b00'
+        },
+        violet: {
+          darkWire: '#9b5cff',
+          lightWire: '#7c3aed',
+          glow: '#c084fc',
+          core: '#f3e8ff',
+          crystalLight: '#d8b4fe',
+          crystalMid: '#8c4bff',
+          crystalDark: '#581c87'
+        },
+        cobalt: {
+          darkWire: '#2b7fff',
+          lightWire: '#1d5fd6',
+          glow: '#38bdf8',
+          core: '#e0f2fe',
+          crystalLight: '#7dd3fc',
+          crystalMid: '#2563eb',
+          crystalDark: '#1e3a8a'
+        }
+      };
+
+      const PALETTE_KEYS = ['cyan', 'amber', 'violet', 'cobalt'];
+
+      // App Runtime State
+      const state = {
+        isLightTheme: false,
+        activityLevel: 0.58, // 0.10 to 1.00
+        rotY: 0.06,          // Base slight 3/4 angle so both hemispheres & depth show
+        rotX: 0.03,
+        targetRotY: 0.06,
+        targetRotX: 0.03,
+        mouseX: 0,
+        mouseY: 0,
+        isDragging: false,
+        dragStartX: 0,
+        dragStartY: 0,
+        dragBaseRotY: 0,
+        dragBaseRotX: 0,
+        dragDistance: 0,
+        hoveredNodeIndex: -1,
+        time: 0,
+        spawnTimer: 0,
+        sensoryTimer: 0
+      };
+
+      // --------------------------------------------------------------------------
+      // 2. ANATOMICAL 3D BRAIN TOPOLOGY BUILDER
+      // --------------------------------------------------------------------------
+      const nodes = [];
+      const edges = [];
+      const adjacency = []; // adjacency[nodeIdx] = Array of { edgeIndex, neighbor }
+
+      /**
+       * Helper to register a 3D node in anatomical brain space
+       * x: -1.0 (Frontal Left) -> +1.0 (Occipital Right)
+       * y: -0.8 (Parietal Top)  -> +0.85 (Brain Stem Bottom)
+       * z: -0.65 (Far Side)     -> +0.65 (Near Side)
+       */
+      function addNode(x, y, z, options = {}) {
+        const idx = nodes.length;
+        const paletteKey = options.palette || chooseAnatomicalPalette(x, y, z);
+        nodes.push({
+          id: idx,
+          baseX: x,
+          baseY: y,
+          baseZ: z,
+          x,
+          y,
+          z,
+          px: 0,
+          py: 0,
+          scale: 1,
+          depth: 0,
+          region: options.region || 'cortex', // 'cortex' | 'hub' | 'cerebellum' | 'stem'
+          isCrystal: Boolean(options.isCrystal),
+          size: options.size || (options.isCrystal ? 7.2 : 3.4),
+          palette: paletteKey,
+          facetPhase: (idx * 1.37) % (Math.PI * 2),
+          breathPhase: (idx * 0.73) % (Math.PI * 2),
+          activation: 0,
+          refractory: 0,
+          pulseRings: []
+        });
+        adjacency.push([]);
+        return idx;
+      }
+
+      /**
+       * Assigns harmonious wire & crystal colors by anatomical neighborhood
+       * echoing the sculptural distribution of cyan, amber, violet, and cobalt.
+       */
+      function chooseAnatomicalPalette(x, y, z) {
+        if (y > 0.48) return (x + z) > 0.1 ? 'cyan' : 'amber'; // Brain stem struts
+        if (x > 0.25 && y > 0.2) return z >= 0 ? 'violet' : 'cyan'; // Cerebellum
+        if (x < -0.35 && y < 0.08) return z >= 0 ? 'cyan' : 'cobalt'; // Frontal
+        if (x >= -0.35 && x <= 0.35 && y < -0.25) return (idxHash(x, y) > 0.45) ? 'amber' : 'cyan'; // Parietal dome
+        if (x > 0.35 && y <= 0.2) return z >= 0 ? 'amber' : 'violet'; // Occipital
+        return z >= 0 ? 'violet' : 'cobalt'; // Temporal & deep tracts
+      }
+
+      function idxHash(a, b) {
+        const s = Math.sin(a * 12.9898 + b * 78.233) * 43758.5453;
+        return s - Math.floor(s);
+      }
+
+      /**
+       * Registers a wire edge (either straight cortical strut or curved Bezier tract)
+       */
+      function addEdge(a, b, options = {}) {
+        if (a === b) return -1;
+        // Avoid duplicate straight wires
+        if (!options.curved) {
+          for (let i = 0; i < edges.length; i++) {
+            const e = edges[i];
+            if (!e.curved && ((e.a === a && e.b === b) || (e.a === b && e.b === a))) {
+              return i;
+            }
+          }
+        }
+
+        const edgeIdx = edges.length;
+        const nA = nodes[a];
+        const nB = nodes[b];
+        const palette = options.palette || nA.palette;
+
+        edges.push({
+          id: edgeIdx,
+          a,
+          b,
+          curved: Boolean(options.curved),
+          cp1: options.cp1 || null, // 3D Cubic Bezier control point 1
+          cp2: options.cp2 || null, // 3D Cubic Bezier control point 2
+          palette,
+          thickness: options.thickness || (options.curved ? 1.35 : 1.55),
+          baseAlpha: options.baseAlpha || (options.curved ? 0.56 : 0.68),
+          energy: 0 // Lights up briefly as data packets traverse it
+        });
+
+        adjacency[a].push({ edgeIndex: edgeIdx, neighbor: b });
+        adjacency[b].push({ edgeIndex: edgeIdx, neighbor: a });
+        return edgeIdx;
+      }
+
+      /**
+       * Builds the complete multi-layered 3D brain wiremesh sculpture
+       */
+      function buildBrainArchitecture() {
+        nodes.length = 0;
+        edges.length = 0;
+        adjacency.length = 0;
+
+        // ----------------------------------------------------------------------
+        // A. OUTER CORTICAL SHELL NODES (Left-facing side profile + 3D depth)
+        // ----------------------------------------------------------------------
+        // 1. Midline / Crest Profile Loop (z near 0, defining crisp silhouette)
+        const crestCoords = [
+          // Frontal pole & prefrontal arc (left)
+          [-0.96,  0.02,  0.02, true,  'cyan'],
+          [-0.91, -0.17,  0.04, false, 'cyan'],
+          [-0.80, -0.35,  0.03, true,  'cyan'],
+          [-0.64, -0.51,  0.02, false, 'cobalt'],
+          [-0.45, -0.63,  0.03, true,  'cyan'],
+          // Parietal upper dome (top)
+          [-0.22, -0.71,  0.02, false, 'amber'],
+          [ 0.02, -0.74,  0.03, true,  'amber'],
+          [ 0.26, -0.70,  0.02, false, 'cyan'],
+          [ 0.49, -0.61,  0.03, true,  'violet'],
+          // Occipital rear lobe (right)
+          [ 0.70, -0.47,  0.02, false, 'amber'],
+          [ 0.86, -0.29,  0.03, true,  'amber'],
+          [ 0.95, -0.08,  0.02, false, 'violet'],
+          [ 0.91,  0.11,  0.03, true,  'cobalt'],
+          [ 0.74,  0.22,  0.02, false, 'violet'],
+          // Orbital frontal underside (lower left)
+          [-0.89,  0.16,  0.03, true,  'violet'],
+          [-0.72,  0.23,  0.02, false, 'amber'],
+          [-0.54,  0.19,  0.03, false, 'cyan']
+        ];
+
+        const crestIndices = crestCoords.map(([x, y, z, isCrystal, pal]) =>
+          addNode(x, y, z, { region: 'cortex', isCrystal, palette: pal, size: isCrystal ? 7.8 : 3.6 })
+        );
+
+        // 2. Near & Far Lateral Cortical Hemispheres (z = +0.34, +0.52 and -0.34, -0.52)
+        const lateralTemplates = [
+          // Superior & Mid Frontal
+          [-0.78, -0.14, 0.34, true,  'cyan'],
+          [-0.66, -0.34, 0.38, false, 'cobalt'],
+          [-0.46, -0.45, 0.44, true,  'cyan'],
+          [-0.64,  0.02, 0.40, false, 'amber'],
+          [-0.44, -0.18, 0.48, true,  'violet'],
+          // Parietal lateral dome
+          [-0.22, -0.52, 0.45, false, 'cyan'],
+          [ 0.02, -0.55, 0.47, true,  'amber'],
+          [ 0.25, -0.50, 0.44, false, 'cyan'],
+          [-0.16, -0.27, 0.54, true,  'cyan'],
+          [ 0.12, -0.28, 0.54, false, 'amber'],
+          [ 0.36, -0.30, 0.48, true,  'violet'],
+          // Occipital lateral
+          [ 0.58, -0.34, 0.38, false, 'amber'],
+          [ 0.76, -0.16, 0.34, true,  'amber'],
+          [ 0.62, -0.06, 0.46, false, 'cyan'],
+          [ 0.78,  0.06, 0.32, false, 'violet'],
+          [ 0.54,  0.14, 0.42, true,  'cyan'],
+          // Temporal Lobe (distinct forward-tucking lobe below Sylvian fissure)
+          [-0.48,  0.14, 0.38, true,  'violet'],
+          [-0.50,  0.29, 0.32, false, 'amber'],
+          [-0.32,  0.37, 0.36, true,  'cyan'],
+          [-0.28,  0.16, 0.48, false, 'cobalt'],
+          [-0.08,  0.38, 0.38, false, 'violet'],
+          [-0.04,  0.18, 0.50, true,  'amber'],
+          [ 0.16,  0.32, 0.38, true,  'cyan'],
+          [ 0.24,  0.14, 0.48, false, 'violet']
+        ];
+
+        const nearCortical = [];
+        const farCortical = [];
+
+        lateralTemplates.forEach(([x, y, z, isCrystal, pal]) => {
+          nearCortical.push(addNode(x, y, z, {
+            region: 'cortex',
+            isCrystal,
+            palette: pal,
+            size: isCrystal ? 7.6 : 3.5
+          }));
+
+          // Symmetric far hemisphere with slight organic variation
+          const farPal = pal === 'cyan' ? 'cobalt' : pal === 'amber' ? 'violet' : 'cyan';
+          farCortical.push(addNode(x * 0.99, y * 1.01, -z, {
+            region: 'cortex',
+            isCrystal: isCrystal && Math.abs(x) > 0.35,
+            palette: farPal,
+            size: isCrystal ? 6.6 : 3.1
+          }));
+        });
+
+        // ----------------------------------------------------------------------
+        // B. CEREBELLUM NODES (Tucked Lower-Right Rounded Striated Lobe)
+        // ----------------------------------------------------------------------
+        const cerebellumNodes = [];
+        const cbTemplate = [
+          [0.26, 0.28,  0.04, false, 'violet'],
+          [0.44, 0.26,  0.24, true,  'cyan'],
+          [0.64, 0.28,  0.18, false, 'violet'],
+          [0.77, 0.37,  0.04, true,  'amber'],
+          [0.72, 0.47,  0.22, false, 'violet'],
+          [0.54, 0.57,  0.26, true,  'cyan'],
+          [0.34, 0.56,  0.20, false, 'violet'],
+          [0.22, 0.44,  0.26, false, 'cobalt'],
+          [0.48, 0.41,  0.34, true,  'violet'],
+          // Far side of cerebellum
+          [0.44, 0.26, -0.24, false, 'cobalt'],
+          [0.64, 0.28, -0.18, true,  'violet'],
+          [0.72, 0.47, -0.22, false, 'cyan'],
+          [0.54, 0.57, -0.26, false, 'violet'],
+          [0.34, 0.56, -0.20, true,  'amber'],
+          [0.48, 0.41, -0.34, false, 'cyan']
+        ];
+
+        cbTemplate.forEach(([x, y, z, isCrystal, pal]) => {
+          cerebellumNodes.push(addNode(x, y, z, {
+            region: 'cerebellum',
+            isCrystal,
+            palette: pal,
+            size: isCrystal ? 6.5 : 3.0
+          }));
+        });
+
+        // ----------------------------------------------------------------------
+        // C. BRAIN STEM NODES (Tapered Angled Column Extending Downward)
+        // ----------------------------------------------------------------------
+        const stemNodes = [];
+        const stemRings = [
+          // Upper Pons junction
+          { y: 0.34, cx: 0.04, rx: 0.13, rz: 0.14, pal: 'cyan' },
+          // Mid Pons / Medulla
+          { y: 0.52, cx: 0.10, rx: 0.10, rz: 0.11, pal: 'violet' },
+          // Lower Medulla
+          { y: 0.69, cx: 0.16, rx: 0.075, rz: 0.08, pal: 'amber' },
+          // Sculptural Tapered Base Collar
+          { y: 0.84, cx: 0.21, rx: 0.055, rz: 0.055, pal: 'cyan' }
+        ];
+
+        const stemRingGroups = stemRings.map((ring, rIdx) => {
+          const group = [];
+          const count = 4;
+          for (let i = 0; i < count; i++) {
+            const ang = (i / count) * Math.PI * 2 + Math.PI * 0.25;
+            const nx = ring.cx + Math.cos(ang) * ring.rx;
+            const nz = Math.sin(ang) * ring.rz;
+            const idx = addNode(nx, ring.y, nz, {
+              region: 'stem',
+              isCrystal: rIdx === 0 && i === 0,
+              palette: i % 2 === 0 ? ring.pal : 'amber',
+              size: rIdx === 3 ? 2.6 : 3.2
+            });
+            group.push(idx);
+            stemNodes.push(idx);
+          }
+          return group;
+        });
+
+        // ----------------------------------------------------------------------
+        // D. INNER SUBCORTICAL & WHITE-MATTER HUB NODES
+        // ----------------------------------------------------------------------
+        const innerHubSpecs = [
+          [-0.56, -0.08,  0.08, 'cyan'],    // 0: Anterior Frontal Hub
+          [-0.36, -0.26,  0.14, 'amber'],   // 1: Premotor / Corpus Callosum Genu
+          [-0.04, -0.34,  0.12, 'cyan'],    // 2: Mid Corpus Callosum Body
+          [ 0.28, -0.26,  0.14, 'amber'],   // 3: Splenium / Parieto-Occipital Hub
+          [ 0.54, -0.10,  0.10, 'violet'],  // 4: Deep Occipital Relay
+          [ 0.02,  0.04,  0.08, 'amber'],   // 5: Thalamus / Central Relay Core
+          [-0.24,  0.16,  0.16, 'violet'],  // 6: Anterior Temporal / Insula Hub
+          [ 0.16,  0.16,  0.14, 'cyan'],    // 7: Posterior Temporal / Wernicke Hub
+          [ 0.44,  0.38,  0.06, 'violet'],  // 8: Deep Cerebellar Nucleus (Dentate)
+          [-0.36, -0.24, -0.14, 'cobalt'],  // 9: Far Genu Hub
+          [ 0.26, -0.24, -0.14, 'violet'],  // 10: Far Splenium Hub
+          [ 0.02,  0.04, -0.10, 'cyan']     // 11: Far Thalamus Hub
+        ];
+
+        const innerHubs = innerHubSpecs.map(([x, y, z, pal]) =>
+          addNode(x, y, z, {
+            region: 'hub',
+            isCrystal: false,
+            palette: pal,
+            size: 4.1
+          })
+        );
+
+        // ----------------------------------------------------------------------
+        // E. TRIANGULATED OUTER GEODESIC WIRES (Straight Metallic Struts)
+        // ----------------------------------------------------------------------
+        // 1. Connect Crest Silhouette Chain
+        for (let i = 0; i < crestIndices.length - 1; i++) {
+          // Do not bridge directly from occipital underside [13] to orbital frontal [14]
+          if (i === 13) continue;
+          addEdge(crestIndices[i], crestIndices[i + 1], { thickness: 1.75, baseAlpha: 0.78 });
+        }
+
+        // Helper to connect a regional group with clean geometric triangulation
+        function connectRegionMesh(indices, maxDist, maxNeighbors) {
+          for (let i = 0; i < indices.length; i++) {
+            const idxA = indices[i];
+            const nA = nodes[idxA];
+            const candidates = [];
+
+            for (let j = 0; j < indices.length; j++) {
+              if (i === j) continue;
+              const idxB = indices[j];
+              const nB = nodes[idxB];
+              const dx = nA.baseX - nB.baseX;
+              const dy = nA.baseY - nB.baseY;
+              const dz = nA.baseZ - nB.baseZ;
+              const dist = Math.hypot(dx, dy, dz);
+
+              // Prevent wires from jumping straight across the Sylvian fissure gap
+              const crossesSylvian =
+                (nA.baseX < -0.25 && nB.baseX < -0.25) &&
+                ((nA.baseY < -0.02 && nB.baseY > 0.22) || (nB.baseY < -0.02 && nA.baseY > 0.22));
+
+              if (dist <= maxDist && !crossesSylvian) {
+                candidates.push({ idxB, dist });
+              }
+            }
+
+            candidates.sort((u, v) => u.dist - v.dist);
+            const limit = Math.min(maxNeighbors, candidates.length);
+            for (let k = 0; k < limit; k++) {
+              addEdge(idxA, candidates[k].idxB, {
+                thickness: 1.5,
+                baseAlpha: 0.68
+              });
+            }
+          }
+        }
+
+        // Triangulate Near Hemisphere + Crest
+        connectRegionMesh([...crestIndices, ...nearCortical], 0.43, 5);
+        // Triangulate Far Hemisphere + Crest
+        connectRegionMesh([...crestIndices, ...farCortical], 0.43, 5);
+        // Triangulate Cerebellum Cage
+        connectRegionMesh(cerebellumNodes, 0.36, 5);
+
+        // Connect Cerebellum to Occipital & Upper Brain Stem
+        addEdge(cerebellumNodes[0], stemRingGroups[0][1], { thickness: 1.5 });
+        addEdge(cerebellumNodes[7], stemRingGroups[1][1], { thickness: 1.5 });
+        addEdge(cerebellumNodes[1], crestIndices[13], { thickness: 1.45 });
+        addEdge(cerebellumNodes[2], crestIndices[12], { thickness: 1.45 });
+
+        // Connect Brain Stem Struts (Vertical & Diagonal Cross-Bracing)
+        for (let r = 0; r < stemRingGroups.length; r++) {
+          const ring = stemRingGroups[r];
+          for (let i = 0; i < ring.length; i++) {
+            const nextInRing = ring[(i + 1) % ring.length];
+            addEdge(ring[i], nextInRing, { thickness: 1.4, baseAlpha: 0.75 });
+
+            if (r < stemRingGroups.length - 1) {
+              const nextRing = stemRingGroups[r + 1];
+              addEdge(ring[i], nextRing[i], { thickness: 1.65, baseAlpha: 0.82 });
+              addEdge(ring[i], nextRing[(i + 1) % nextRing.length], { thickness: 1.25, baseAlpha: 0.55 });
+            }
+          }
+        }
+
+        // Anchor Upper Brain Stem to Subcortical Thalamus & Temporal/Frontal Base
+        addEdge(stemRingGroups[0][0], innerHubs[5], { thickness: 1.6 });
+        addEdge(stemRingGroups[0][1], innerHubs[7], { thickness: 1.5 });
+        addEdge(stemRingGroups[0][2], innerHubs[11], { thickness: 1.4 });
+        addEdge(stemRingGroups[0][3], innerHubs[6], { thickness: 1.5 });
+        addEdge(stemRingGroups[0][3], crestIndices[16], { thickness: 1.4 });
+
+        // Connect Inner Hubs to Surrounding Cortical Nodes (Radial Spokes)
+        innerHubs.forEach((hubIdx) => {
+          const hub = nodes[hubIdx];
+          const nearBy = [];
+          for (let i = 0; i < nodes.length; i++) {
+            if (i === hubIdx || nodes[i].region === 'stem') continue;
+            const d = Math.hypot(
+              hub.baseX - nodes[i].baseX,
+              hub.baseY - nodes[i].baseY,
+              hub.baseZ - nodes[i].baseZ
+            );
+            if (d < 0.44) nearBy.push({ i, d });
+          }
+          nearBy.sort((a, b) => a.d - b.d);
+          for (let k = 0; k < Math.min(4, nearBy.length); k++) {
+            addEdge(hubIdx, nearBy[k].i, {
+              thickness: 1.25,
+              baseAlpha: 0.48
+            });
+          }
+        });
+
+        // ----------------------------------------------------------------------
+        // F. SWEEPING INTERNAL WHITE-MATTER & CORPUS CALLOSUM CURVED BUNDLES
+        // ----------------------------------------------------------------------
+        /**
+         * Helper to create a multi-strand fanning bundle of 3D cubic Bezier wires
+         * between two neural hubs, giving the sculpture its signature flowing curves.
+         */
+        function addSweepingBundle(nodeA, nodeB, apex1, apex2, strandCount, spread, palettes) {
+          const p0 = nodes[nodeA];
+          const p3 = nodes[nodeB];
+
+          for (let s = 0; s < strandCount; s++) {
+            const frac = strandCount === 1 ? 0 : (s / (strandCount - 1)) - 0.5;
+            const offset = frac * spread;
+            const zWave = Math.sin(frac * Math.PI) * 0.14;
+
+            const cp1 = {
+              x: apex1.x + offset * 0.45,
+              y: apex1.y + offset,
+              z: apex1.z + zWave
+            };
+            const cp2 = {
+              x: apex2.x - offset * 0.45,
+              y: apex2.y + offset,
+              z: apex2.z - zWave
+            };
+
+            addEdge(nodeA, nodeB, {
+              curved: true,
+              cp1,
+              cp2,
+              palette: palettes[s % palettes.length],
+              thickness: 1.32,
+              baseAlpha: 0.62
+            });
+          }
+        }
+
+        // 1. Great Corpus Callosum Arch (Frontal Genu -> Parietal Dome -> Splenium)
+        addSweepingBundle(
+          innerHubs[0],
+          innerHubs[4],
+          { x: -0.35, y: -0.62, z: 0.18 },
+          { x:  0.34, y: -0.60, z: 0.18 },
+          8,
+          0.26,
+          ['cyan', 'amber', 'violet', 'cobalt']
+        );
+
+        // 2. Deep Cingulate & Far-Hemisphere Callosal Loop
+        addSweepingBundle(
+          innerHubs[9],
+          innerHubs[10],
+          { x: -0.25, y: -0.56, z: -0.20 },
+          { x:  0.25, y: -0.54, z: -0.20 },
+          6,
+          0.22,
+          ['violet', 'cyan', 'amber']
+        );
+
+        // 3. Arcuate Fasciculus (Sweeping Frontal -> Over Sylvian Fissure -> Temporal)
+        addSweepingBundle(
+          innerHubs[0],
+          innerHubs[6],
+          { x: -0.18, y: -0.38, z: 0.28 },
+          { x:  0.22, y:  0.06, z: 0.28 },
+          7,
+          0.24,
+          ['amber', 'violet', 'cyan']
+        );
+
+        // 4. Thalamocortical Fan Radiations (Central Core -> Frontal & Parietal)
+        addSweepingBundle(
+          innerHubs[5],
+          innerHubs[1],
+          { x: -0.18, y: -0.04, z: 0.22 },
+          { x: -0.46, y: -0.18, z: 0.20 },
+          5,
+          0.18,
+          ['cyan', 'amber']
+        );
+
+        addSweepingBundle(
+          innerHubs[5],
+          innerHubs[3],
+          { x: 0.14, y: -0.06, z: 0.22 },
+          { x: 0.40, y: -0.16, z: 0.20 },
+          5,
+          0.18,
+          ['amber', 'violet', 'cyan']
+        );
+
+        // 5. Temporo-Occipital Inferior Longitudinal Loops
+        addSweepingBundle(
+          innerHubs[6],
+          innerHubs[4],
+          { x: -0.05, y: 0.34, z: 0.24 },
+          { x:  0.38, y: 0.22, z: 0.22 },
+          5,
+          0.16,
+          ['violet', 'cyan', 'amber']
+        );
+
+        // 6. Cerebellar Arbor Vitae Striated Loops (Pons/Stem -> Cerebellum)
+        addSweepingBundle(
+          stemRingGroups[0][0],
+          cerebellumNodes[3],
+          { x: 0.28, y: 0.18, z: 0.22 },
+          { x: 0.62, y: 0.22, z: 0.22 },
+          6,
+          0.22,
+          ['violet', 'cyan', 'amber']
+        );
+
+        addSweepingBundle(
+          stemRingGroups[1][1],
+          cerebellumNodes[5],
+          { x: 0.24, y: 0.56, z: 0.20 },
+          { x: 0.56, y: 0.62, z: 0.18 },
+          5,
+          0.16,
+          ['cyan', 'violet']
+        );
+      }
+
+      // --------------------------------------------------------------------------
+      // 3. SYNAPTIC PULSE & NEURAL DIALOGUE ENGINE
+      // --------------------------------------------------------------------------
+      const pulses = [];
+      const MAX_PULSES = 145;
+
+      /**
+       * Evaluates a 3D point along a straight or cubic Bezier wire at parameter t in [0, 1]
+       */
+      function getPointOnEdge3D(edge, t) {
+        const nA = nodes[edge.a];
+        const nB = nodes[edge.b];
+
+        if (!edge.curved) {
+          return {
+            x: nA.x + (nB.x - nA.x) * t,
+            y: nA.y + (nB.y - nA.y) * t,
+            z: nA.z + (nB.z - nA.z) * t
+          };
+        }
+
+        // Cubic Bezier evaluation using rotated control points
+        const u = 1 - t;
+        const tt = t * t;
+        const uu = u * u;
+        const uuu = uu * u;
+        const ttt = tt * t;
+
+        const c1 = edge.rcp1;
+        const c2 = edge.rcp2;
+
+        return {
+          x: uuu * nA.x + 3 * uu * t * c1.x + 3 * u * tt * c2.x + ttt * nB.x,
+          y: uuu * nA.y + 3 * uu * t * c1.y + 3 * u * tt * c2.y + ttt * nB.y,
+          z: uuu * nA.z + 3 * uu * t * c1.z + 3 * u * tt * c2.z + ttt * nB.z
+        };
+      }
+
+      /**
+       * Ignites a neuron and dispatches glowing information packets to neighbors
+       */
+      function fireNeuron(nodeIndex, options = {}) {
+        const node = nodes[nodeIndex];
+        if (!node) return;
+
+        const hop = options.hop || 0;
+        const maxHops = options.maxHops !== undefined ? options.maxHops : 5;
+        const excludeNode = options.fromNode !== undefined ? options.fromNode : -1;
+        const isAck = Boolean(options.isAck);
+
+        // Visual activation & expanding shockwave ring
+        node.activation = Math.min(1.0, node.activation + (isAck ? 0.65 : 0.95));
+        node.refractory = 0.24;
+
+        if (node.pulseRings.length < 3) {
+          node.pulseRings.push({
+            radius: node.size * 0.8,
+            maxRadius: (node.isCrystal ? 28 : 20) * (isAck ? 0.8 : 1.0),
+            alpha: isAck ? 0.65 : 0.9,
+            palette: options.palette || node.palette
+          });
+        }
+
+        if (hop >= maxHops || pulses.length >= MAX_PULSES) return;
+
+        const neighbors = adjacency[nodeIndex];
+        if (!neighbors || neighbors.length === 0) return;
+
+        // Filter out immediate sender unless no other choice
+        let candidates = neighbors.filter((item) => item.neighbor !== excludeNode);
+        if (candidates.length === 0) candidates = neighbors;
+
+        // Shuffle candidates randomly
+        const shuffled = candidates.slice().sort(() => Math.random() - 0.5);
+
+        // Determine how many outgoing info packets to dispatch (1 to 3 for lively branching)
+        let branchCount = 1;
+        if (hop === 0) {
+          branchCount = Math.min(shuffled.length, options.initialBranches || (Math.random() < 0.65 ? 3 : 2));
+        } else if (hop <= 2 && Math.random() < 0.42) {
+          branchCount = Math.min(shuffled.length, 2);
+        }
+
+        for (let i = 0; i < branchCount; i++) {
+          if (pulses.length >= MAX_PULSES) break;
+          const choice = shuffled[i];
+          const edge = edges[choice.edgeIndex];
+          const forward = edge.a === nodeIndex;
+
+          // Slightly prioritize curved internal tracts occasionally for dramatic visual flow
+          const speedBase = edge.curved ? 0.82 : 1.15;
+          const speed = (speedBase + Math.random() * 0.48) * (0.75 + state.activityLevel * 0.65);
+
+          pulses.push({
+            edgeIndex: choice.edgeIndex,
+            fromNode: nodeIndex,
+            toNode: choice.neighbor,
+            forward,
+            progress: 0,
+            speed,
+            hop: hop + 1,
+            maxHops,
+            isAck,
+            palette: isAck ? 'amber' : edge.palette,
+            size: isAck ? 2.5 : (hop === 0 ? 3.6 : 3.0)
+          });
+
+          edge.energy = Math.min(1.0, edge.energy + 0.55);
+        }
+      }
+
+      /**
+       * Triggers a multi-lobe neural conversation wave (used on Stimulate button & startup)
+       */
+      function triggerGlobalStimulus() {
+        const seedCount = 5;
+        for (let i = 0; i < seedCount; i++) {
+          const randomIdx = Math.floor(Math.random() * nodes.length);
+          setTimeout(() => {
+            fireNeuron(randomIdx, { hop: 0, maxHops: 6, initialBranches: 3 });
+          }, i * 75);
+        }
+      }
+
+      /**
+       * Stimulates neurons closest to a user click/tap in 2D screen coordinates
+       */
+      function stimulateAtScreenPoint(clientX, clientY) {
+        const rect = canvas.getBoundingClientRect();
+        const sx = clientX - rect.left;
+        const sy = clientY - rect.top;
+
+        // Sort nodes by 2D distance to click point
+        const ranked = nodes
+          .map((n, idx) => ({
+            idx,
+            dist: Math.hypot(n.px - sx, n.py - sy)
+          }))
+          .sort((a, b) => a.dist - b.dist);
+
+        // Only trigger if click is reasonably near the brain sculpture
+        if (ranked.length > 0 && ranked[0].dist < Math.min(width, height) * 0.35) {
+          const burstCount = Math.min(3, ranked.length);
+          for (let i = 0; i < burstCount; i++) {
+            if (ranked[i].dist < 110 || i === 0) {
+              fireNeuron(ranked[i].idx, {
+                hop: 0,
+                maxHops: 6,
+                initialBranches: 3
+              });
+            }
+          }
+        }
+      }
+
+      // --------------------------------------------------------------------------
+      // 4. 3D PROJECTION & ROTATION TRANSFORMS
+      // --------------------------------------------------------------------------
+      function rotate3D(x, y, z, cosY, sinY, cosX, sinX) {
+        // Rotate around Y axis
+        const x1 = x * cosY - z * sinY;
+        const z1 = z * cosY + x * sinY;
+        // Rotate around X axis
+        const y2 = y * cosX - z1 * sinX;
+        const z2 = z1 * cosX + y * sinX;
+        return { x: x1, y: y2, z: z2 };
+      }
+
+      function updateTransforms(dt) {
+        state.time += dt;
+
+        // Smooth interpolation for mouse parallax tilt + drag rotation
+        if (!state.isDragging) {
+          const ambientSwayY = Math.sin(state.time * 0.42) * 0.045;
+          const ambientSwayX = Math.cos(state.time * 0.31) * 0.025;
+          const desiredY = state.targetRotY + state.mouseX * 0.24 + ambientSwayY;
+          const desiredX = state.targetRotX + state.mouseY * 0.16 + ambientSwayX;
+
+          state.rotY += (desiredY - state.rotY) * Math.min(1, dt * 5.5);
+          state.rotX += (desiredX - state.rotX) * Math.min(1, dt * 5.5);
+        }
+
+        const cosY = Math.cos(state.rotY);
+        const sinY = Math.sin(state.rotY);
+        const cosX = Math.cos(state.rotX);
+        const sinX = Math.sin(state.rotX);
+
+        // Responsive framing scale so the sculpture fits beautifully on all screens
+        const minDim = Math.min(width, height);
+        const isMobile = width < 640;
+        const sculptureRadius = minDim * (isMobile ? 0.38 : 0.41);
+        const centerX = width * 0.5;
+        const centerY = height * (isMobile ? 0.46 : 0.47);
+        const fov = 3.2;
+
+        // Update all 3D nodes with subtle organic breathing & perspective projection
+        for (let i = 0; i < nodes.length; i++) {
+          const n = nodes[i];
+          const breath = 1 + Math.sin(state.time * 1.45 + n.breathPhase) * 0.011;
+
+          const r = rotate3D(
+            n.baseX * breath,
+            n.baseY * breath,
+            n.baseZ * breath,
+            cosY,
+            sinY,
+            cosX,
+            sinX
+          );
+
+          n.x = r.x;
+          n.y = r.y;
+          n.z = r.z;
+
+          const persp = fov / (fov - r.z);
+          n.scale = persp;
+          n.px = centerX + r.x * sculptureRadius * persp;
+          n.py = centerY + r.y * sculptureRadius * persp;
+          n.depth = r.z;
+
+          // Decay activation & refractory timers
+          if (n.activation > 0) {
+            n.activation = Math.max(0, n.activation - dt * 1.85);
+          }
+          if (n.refractory > 0) {
+            n.refractory = Math.max(0, n.refractory - dt);
+          }
+
+          // Update expanding pulse rings
+          for (let p = n.pulseRings.length - 1; p >= 0; p--) {
+            const ring = n.pulseRings[p];
+            ring.radius += dt * 36;
+            ring.alpha -= dt * 1.45;
+            if (ring.alpha <= 0 || ring.radius >= ring.maxRadius) {
+              n.pulseRings.splice(p, 1);
+            }
+          }
+        }
+
+        // Rotate Bezier control points for curved internal bundles
+        for (let i = 0; i < edges.length; i++) {
+          const e = edges[i];
+          if (e.energy > 0) {
+            e.energy = Math.max(0, e.energy - dt * 1.4);
+          }
+          if (e.curved) {
+            e.rcp1 = rotate3D(e.cp1.x, e.cp1.y, e.cp1.z, cosY, sinY, cosX, sinX);
+            e.rcp2 = rotate3D(e.cp2.x, e.cp2.y, e.cp2.z, cosY, sinY, cosX, sinX);
+          }
+        }
+
+        // Helper to project arbitrary 3D point to 2D canvas coords
+        updateTransforms.projectPoint = function (pt3) {
+          const persp = fov / (fov - pt3.z);
+          return {
+            x: centerX + pt3.x * sculptureRadius * persp,
+            y: centerY + pt3.y * sculptureRadius * persp,
+            scale: persp,
+            z: pt3.z
+          };
+        };
+      }
+
+      // --------------------------------------------------------------------------
+      // 5. SYNAPTIC SIMULATION UPDATE
+      // --------------------------------------------------------------------------
+      function updateSimulation(dt) {
+        // 1. Spontaneous cortical thoughts scaled by Activity Slider
+        const spawnInterval = 0.85 - state.activityLevel * 0.72; // 0.78s (Calm) -> 0.13s (Hyper)
+        state.spawnTimer += dt;
+        if (state.spawnTimer >= spawnInterval) {
+          state.spawnTimer = 0;
+          const idx = Math.floor(Math.random() * nodes.length);
+          if (nodes[idx].refractory <= 0) {
+            fireNeuron(idx, {
+              hop: 0,
+              maxHops: Math.round(3 + state.activityLevel * 3),
+              initialBranches: state.activityLevel > 0.65 ? 2 : 1
+            });
+          }
+        }
+
+        // 2. Periodic ascending sensory signal from Brain Stem into Cortex
+        state.sensoryTimer += dt;
+        if (state.sensoryTimer >= (2.6 - state.activityLevel * 1.4)) {
+          state.sensoryTimer = 0;
+          const stemNodes = nodes.filter((n) => n.region === 'stem');
+          if (stemNodes.length > 0) {
+            const baseStem = stemNodes[stemNodes.length - 1];
+            fireNeuron(baseStem.id, { hop: 0, maxHops: 6, initialBranches: 2 });
+          }
+        }
+
+        // 3. Advance traveling synaptic data packets
+        for (let i = pulses.length - 1; i >= 0; i--) {
+          const p = pulses[i];
+          p.progress += dt * p.speed;
+
+          if (p.progress >= 1.0) {
+            const destNode = nodes[p.toNode];
+            if (destNode) {
+              // Relay onward if destination neuron is ready
+              if (destNode.refractory <= 0 && p.hop < p.maxHops) {
+                fireNeuron(p.toNode, {
+                  hop: p.hop,
+                  maxHops: p.maxHops,
+                  fromNode: p.fromNode,
+                  isAck: p.isAck,
+                  palette: p.palette
+                });
+
+                // Occasional conversational back-and-forth acknowledgment ping
+                if (!p.isAck && p.hop <= 3 && Math.random() < 0.26) {
+                  const backEdge = edges[p.edgeIndex];
+                  const backForward = backEdge.a === p.toNode;
+                  pulses.push({
+                    edgeIndex: p.edgeIndex,
+                    fromNode: p.toNode,
+                    toNode: p.fromNode,
+                    forward: backForward,
+                    progress: 0,
+                    speed: p.speed * 1.15,
+                    hop: p.maxHops, // Terminal acknowledgment so it doesn't bounce infinitely
+                    maxHops: p.maxHops,
+                    isAck: true,
+                    palette: 'amber',
+                    size: 2.3
+                  });
+                }
+              } else {
+                // Absorb signal visually even if refractory
+                destNode.activation = Math.min(1.0, destNode.activation + 0.55);
+              }
+            }
+            pulses.splice(i, 1);
+          }
+        }
+      }
+
+      // --------------------------------------------------------------------------
+      // 6. RENDERING PIPELINE (WIRES, CRYSTALS, PLASMA COMETS, STUDIO SHADOW)
+      // --------------------------------------------------------------------------
+      function render() {
+        ctx.clearRect(0, 0, width, height);
+
+        const isLight = state.isLightTheme;
+
+        // Subtle Sculptural Ground Shadow beneath the Brain Stem
+        drawStudioShadow(isLight);
+
+        // Sort edges back-to-front by average Z depth for true 3D layering
+        const sortedEdges = edges
+          .map((e) => {
+            const zAvg = (nodes[e.a].z + nodes[e.b].z) * 0.5;
+            return { edge: e, z: zAvg };
+          })
+          .sort((u, v) => u.z - v.z);
+
+        // 1. Draw Wiremesh Network (Straight Cortical Cage + Sweeping Curved Bundles)
+        for (let i = 0; i < sortedEdges.length; i++) {
+          drawWireEdge(sortedEdges[i].edge, sortedEdges[i].z, isLight);
+        }
+
+        // 2. Draw Traveling Synaptic Data Packets & Fading Comet Trails
+        drawSynapticPulses(isLight);
+
+        // 3. Sort Nodes back-to-front by Z depth and render Spheres + Faceted Crystals
+        const sortedNodes = nodes.slice().sort((a, b) => a.z - b.z);
+        for (let i = 0; i < sortedNodes.length; i++) {
+          drawNeuronNode(sortedNodes[i], isLight);
+        }
+      }
+
+      function drawStudioShadow(isLight) {
+        const stemNodes = nodes.filter((n) => n.region === 'stem');
+        if (stemNodes.length === 0) return;
+
+        let sumX = 0;
+        let maxY = -Infinity;
+        for (let i = 0; i < stemNodes.length; i++) {
+          sumX += stemNodes[i].px;
+          if (stemNodes[i].py > maxY) maxY = stemNodes[i].py;
+        }
+        const cx = sumX / stemNodes.length;
+        const cy = maxY + 18;
+        const rx = Math.min(width, height) * 0.14;
+        const ry = rx * 0.18;
+
+        const grad = ctx.createRadialGradient(cx, cy, 2, cx, cy, rx);
+        if (isLight) {
+          grad.addColorStop(0, 'rgba(15, 23, 42, 0.14)');
+          grad.addColorStop(0.6, 'rgba(15, 23, 42, 0.05)');
+          grad.addColorStop(1, 'rgba(15, 23, 42, 0)');
+        } else {
+          grad.addColorStop(0, 'rgba(0, 200, 224, 0.14)');
+          grad.addColorStop(0.55, 'rgba(140, 75, 255, 0.05)');
+          grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        }
+
+        ctx.save();
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      function drawWireEdge(edge, zAvg, isLight) {
+        const nA = nodes[edge.a];
+        const nB = nodes[edge.b];
+        const pal = PALETTES[edge.palette] || PALETTES.cyan;
+
+        // Depth attenuation: back hemisphere wires fade subtly so front hemisphere pops
+        const depthNorm = Math.max(0, Math.min(1, (zAvg + 0.65) / 1.3));
+        const baseColor = isLight ? pal.lightWire : pal.darkWire;
+        const energyBoost = edge.energy * 0.35;
+        const alpha = Math.min(
+          0.95,
+          edge.baseAlpha * (0.34 + depthNorm * 0.72) + energyBoost
+        );
+
+        const perspScale = (nA.scale + nB.scale) * 0.5;
+        const lineWidth = edge.thickness * perspScale * (0.75 + depthNorm * 0.35) + edge.energy * 0.7;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(nA.px, nA.py);
+
+        if (!edge.curved) {
+          ctx.lineTo(nB.px, nB.py);
+        } else {
+          const p1 = updateTransforms.projectPoint(edge.rcp1);
+          const p2 = updateTransforms.projectPoint(edge.rcp2);
+          ctx.bezierCurveTo(p1.x, p1.y, p2.x, p2.y, nB.px, nB.py);
+        }
+
+        ctx.strokeStyle = baseColor;
+        ctx.globalAlpha = alpha;
+        ctx.lineWidth = lineWidth;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+
+        // Subtle metallic specular core highlight on foreground wires
+        if (depthNorm > 0.58 && !edge.curved) {
+          ctx.strokeStyle = isLight ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.22)';
+          ctx.lineWidth = lineWidth * 0.32;
+          ctx.stroke();
+        }
+
+        ctx.restore();
+      }
+
+      function drawSynapticPulses(isLight) {
+        if (pulses.length === 0) return;
+
+        ctx.save();
+        // Additive glow in Dark Studio; crisp high-contrast blending in Studio Light
+        ctx.globalCompositeOperation = isLight ? 'source-over' : 'lighter';
+
+        for (let i = 0; i < pulses.length; i++) {
+          const p = pulses[i];
+          const edge = edges[p.edgeIndex];
+          const pal = PALETTES[p.palette] || PALETTES.cyan;
+
+          const headT = p.forward ? p.progress : 1 - p.progress;
+          const tailSpan = 0.22;
+          const steps = 7;
+
+          // Draw smooth fading comet trail hugging the exact wire curve
+          for (let s = steps; s >= 1; s--) {
+            const frac = s / steps;
+            const offsetT = tailSpan * frac;
+            const sampleT = p.forward
+              ? Math.max(0, headT - offsetT)
+              : Math.min(1, headT + offsetT);
+
+            const pt3 = getPointOnEdge3D(edge, sampleT);
+            const proj = updateTransforms.projectPoint(pt3);
+            const trailAlpha = (1 - frac) * (isLight ? 0.65 : 0.55);
+            const trailRadius = p.size * proj.scale * (1 - frac * 0.65);
+
+            ctx.beginPath();
+            ctx.arc(proj.x, proj.y, Math.max(0.8, trailRadius), 0, Math.PI * 2);
+            ctx.fillStyle = isLight ? pal.lightWire : pal.glow;
+            ctx.globalAlpha = trailAlpha;
+            ctx.fill();
+          }
+
+          // Draw luminous plasma spark head
+          const head3D = getPointOnEdge3D(edge, headT);
+          const headProj = updateTransforms.projectPoint(head3D);
+          const headRadius = p.size * headProj.scale;
+
+          // Outer aura halo
+          const haloGrad = ctx.createRadialGradient(
+            headProj.x,
+            headProj.y,
+            0.2,
+            headProj.x,
+            headProj.y,
+            headRadius * 3.4
+          );
+          haloGrad.addColorStop(0, isLight ? pal.glow : pal.core);
+          haloGrad.addColorStop(0.45, isLight ? pal.lightWire : pal.glow);
+          haloGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+          ctx.globalAlpha = isLight ? 0.88 : 0.95;
+          ctx.fillStyle = haloGrad;
+          ctx.beginPath();
+          ctx.arc(headProj.x, headProj.y, headRadius * 3.4, 0, Math.PI * 2);
+          ctx.fill();
+
+          // White-hot core center
+          ctx.globalAlpha = 1;
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(headProj.x, headProj.y, headRadius * 0.72, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.restore();
+      }
+
+      function drawNeuronNode(node, isLight) {
+        const pal = PALETTES[node.palette] || PALETTES.cyan;
+        const depthNorm = Math.max(0, Math.min(1, (node.z + 0.65) / 1.3));
+        const baseAlpha = 0.42 + depthNorm * 0.58;
+        const radius = node.size * node.scale * (1 + node.activation * 0.38);
+        const isHovered = node.id === state.hoveredNodeIndex;
+
+        ctx.save();
+
+        // 1. Expanding Synaptic Shockwave Rings when neuron fires
+        for (let r = 0; r < node.pulseRings.length; r++) {
+          const ring = node.pulseRings[r];
+          const ringPal = PALETTES[ring.palette] || pal;
+          ctx.beginPath();
+          ctx.arc(node.px, node.py, ring.radius * node.scale, 0, Math.PI * 2);
+          ctx.strokeStyle = isLight ? ringPal.lightWire : ringPal.glow;
+          ctx.globalAlpha = ring.alpha * baseAlpha;
+          ctx.lineWidth = 1.6 * node.scale;
+          ctx.stroke();
+        }
+
+        // 2. Interactive Hover Target Ring
+        if (isHovered) {
+          ctx.beginPath();
+          ctx.arc(node.px, node.py, radius + 6, 0, Math.PI * 2);
+          ctx.strokeStyle = isLight ? pal.lightWire : pal.glow;
+          ctx.globalAlpha = 0.75;
+          ctx.lineWidth = 1.4;
+          ctx.stroke();
+        }
+
+        // 3. Firing Core Aura Glow
+        if (node.activation > 0.04) {
+          const glowRad = radius * (2.6 + node.activation * 1.8);
+          const grad = ctx.createRadialGradient(node.px, node.py, 0.5, node.px, node.py, glowRad);
+          grad.addColorStop(0, isLight ? pal.glow : '#ffffff');
+          grad.addColorStop(0.4, isLight ? pal.lightWire : pal.glow);
+          grad.addColorStop(1, 'rgba(0,0,0,0)');
+
+          ctx.globalAlpha = node.activation * (isLight ? 0.68 : 0.85);
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(node.px, node.py, glowRad, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.globalAlpha = baseAlpha;
+
+        // 4. Render either a Multi-Faceted Crystal Vertex OR a Metallic Spherical Junction
+        if (node.isCrystal) {
+          drawFacetedCrystal(node.px, node.py, radius, pal, node.facetPhase + state.rotY * 1.4, node.activation, isLight);
+        } else {
+          drawSphericalJunction(node.px, node.py, radius, pal, node.activation, isLight);
+        }
+
+        ctx.restore();
+      }
+
+      /**
+       * Renders a shaded multi-faceted polyhedral crystal vertex matching the physical sculpture
+       */
+      function drawFacetedCrystal(cx, cy, r, pal, angle, activation, isLight) {
+        const sides = 6;
+        const outerPts = [];
+        const innerPts = [];
+
+        for (let i = 0; i < sides; i++) {
+          const a = angle + (i / sides) * Math.PI * 2;
+          // Slight asymmetric gemstone proportion
+          const wobble = 1 + Math.sin(i * 2.1 + angle) * 0.14;
+          outerPts.push({
+            x: cx + Math.cos(a) * r * wobble,
+            y: cy + Math.sin(a) * r * wobble
+          });
+          innerPts.push({
+            x: cx + Math.cos(a + 0.25) * r * 0.44,
+            y: cy + Math.sin(a + 0.25) * r * 0.44
+          });
+        }
+
+        // Draw outer trapezoidal crystal facets with directional shading
+        for (let i = 0; i < sides; i++) {
+          const next = (i + 1) % sides;
+          ctx.beginPath();
+          ctx.moveTo(outerPts[i].x, outerPts[i].y);
+          ctx.lineTo(outerPts[next].x, outerPts[next].y);
+          ctx.lineTo(innerPts[next].x, innerPts[next].y);
+          ctx.lineTo(innerPts[i].x, innerPts[i].y);
+          ctx.closePath();
+
+          if (activation > 0.45) {
+            ctx.fillStyle = i % 2 === 0 ? pal.core : pal.crystalLight;
+          } else if (i === 0 || i === 5) {
+            ctx.fillStyle = pal.crystalLight;
+          } else if (i === 1 || i === 4) {
+            ctx.fillStyle = pal.crystalMid;
+          } else {
+            ctx.fillStyle = pal.crystalDark;
+          }
+
+          ctx.fill();
+          ctx.strokeStyle = isLight ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.28)';
+          ctx.lineWidth = 0.65;
+          ctx.stroke();
+        }
+
+        // Draw central table facet
+        ctx.beginPath();
+        for (let i = 0; i < sides; i++) {
+          if (i === 0) ctx.moveTo(innerPts[i].x, innerPts[i].y);
+          else ctx.lineTo(innerPts[i].x, innerPts[i].y);
+        }
+        ctx.closePath();
+        ctx.fillStyle = activation > 0.25 ? '#ffffff' : pal.crystalLight;
+        ctx.fill();
+      }
+
+      /**
+       * Renders a shaded metallic/luminous spherical junction bead
+       */
+      function drawSphericalJunction(cx, cy, r, pal, activation, isLight) {
+        const grad = ctx.createRadialGradient(
+          cx - r * 0.32,
+          cy - r * 0.32,
+          r * 0.1,
+          cx,
+          cy,
+          r
+        );
+
+        if (activation > 0.3) {
+          grad.addColorStop(0, '#ffffff');
+          grad.addColorStop(0.55, pal.glow);
+          grad.addColorStop(1, pal.crystalDark);
+        } else {
+          grad.addColorStop(0, isLight ? '#ffffff' : pal.core);
+          grad.addColorStop(0.45, isLight ? pal.lightWire : pal.darkWire);
+          grad.addColorStop(1, pal.crystalDark);
+        }
+
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+      }
+
+      // --------------------------------------------------------------------------
+      // 7. INPUT HANDLING & UI CONTROLS
+      // --------------------------------------------------------------------------
+      function handleResize() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+
+        canvas.width = Math.floor(width * dpr);
+        canvas.height = Math.floor(height * dpr);
+        canvas.style.width = width + 'px';
+        canvas.style.height = height + 'px';
+
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      function updateHoverNode(clientX, clientY) {
+        const rect = canvas.getBoundingClientRect();
+        const sx = clientX - rect.left;
+        const sy = clientY - rect.top;
+
+        let closestIdx = -1;
+        let minDist = 26;
+
+        for (let i = 0; i < nodes.length; i++) {
+          const d = Math.hypot(nodes[i].px - sx, nodes[i].py - sy);
+          if (d < minDist) {
+            minDist = d;
+            closestIdx = i;
+          }
+        }
+
+        state.hoveredNodeIndex = closestIdx;
+        canvas.style.cursor = state.isDragging
+          ? 'grabbing'
+          : closestIdx !== -1
+            ? 'pointer'
+            : 'grab';
+      }
+
+      // Mouse Events
+      canvas.addEventListener('mousemove', (e) => {
+        state.mouseX = (e.clientX / width) * 2 - 1;
+        state.mouseY = (e.clientY / height) * 2 - 1;
+
+        if (state.isDragging) {
+          const dx = e.clientX - state.dragStartX;
+          const dy = e.clientY - state.dragStartY;
+          state.dragDistance = Math.hypot(dx, dy);
+
+          state.rotY = state.dragBaseRotY + dx * 0.0065;
+          state.rotX = Math.max(-0.65, Math.min(0.65, state.dragBaseRotX + dy * 0.0055));
+          state.targetRotY = state.rotY;
+          state.targetRotX = state.rotX;
+        } else {
+          updateHoverNode(e.clientX, e.clientY);
+        }
+      });
+
+      canvas.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        state.isDragging = true;
+        state.dragStartX = e.clientX;
+        state.dragStartY = e.clientY;
+        state.dragBaseRotY = state.rotY;
+        state.dragBaseRotX = state.rotX;
+        state.dragDistance = 0;
+        canvas.style.cursor = 'grabbing';
+      });
+
+      window.addEventListener('mouseup', (e) => {
+        if (!state.isDragging) return;
+        state.isDragging = false;
+        canvas.style.cursor = state.hoveredNodeIndex !== -1 ? 'pointer' : 'grab';
+
+        // Treat short drag as a click to stimulate nearest neurons
+        if (state.dragDistance < 6) {
+          stimulateAtScreenPoint(e.clientX, e.clientY);
+        }
+      });
+
+      // Touch Events (Tap to stimulate + Single-finger drag to rotate)
+      canvas.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          const t = e.touches[0];
+          state.isDragging = true;
+          state.dragStartX = t.clientX;
+          state.dragStartY = t.clientY;
+          state.dragBaseRotY = state.rotY;
+          state.dragBaseRotX = state.rotX;
+          state.dragDistance = 0;
+        }
+      }, { passive: true });
+
+      canvas.addEventListener('touchmove', (e) => {
+        if (state.isDragging && e.touches.length === 1) {
+          const t = e.touches[0];
+          const dx = t.clientX - state.dragStartX;
+          const dy = t.clientY - state.dragStartY;
+          state.dragDistance = Math.hypot(dx, dy);
+
+          state.rotY = state.dragBaseRotY + dx * 0.0075;
+          state.rotX = Math.max(-0.65, Math.min(0.65, state.dragBaseRotX + dy * 0.0065));
+          state.targetRotY = state.rotY;
+          state.targetRotX = state.rotX;
+        }
+      }, { passive: true });
+
+      canvas.addEventListener('touchend', (e) => {
+        if (!state.isDragging) return;
+        state.isDragging = false;
+
+        if (state.dragDistance < 8 && e.changedTouches.length > 0) {
+          const t = e.changedTouches[0];
+          stimulateAtScreenPoint(t.clientX, t.clientY);
+        }
+      });
+
+      // Control Bar Buttons
+      stimulateBtn.addEventListener('click', () => {
+        triggerGlobalStimulus();
+      });
+
+      themeBtn.addEventListener('click', () => {
+        state.isLightTheme = !state.isLightTheme;
+        document.body.classList.toggle('light-theme', state.isLightTheme);
+
+        if (state.isLightTheme) {
+          themeLabel.textContent = 'Dark Studio';
+          themeIconSun.style.display = 'none';
+          themeIconMoon.style.display = 'block';
+        } else {
+          themeLabel.textContent = 'Studio Light';
+          themeIconSun.style.display = 'block';
+          themeIconMoon.style.display = 'none';
+        }
+      });
+
+      activitySlider.addEventListener('input', (e) => {
+        state.activityLevel = Number(e.target.value) / 100;
+      });
+
+      window.addEventListener('resize', handleResize);
+
+      // --------------------------------------------------------------------------
+      // 8. MAIN ANIMATION LOOP
+      // --------------------------------------------------------------------------
+      let lastTimestamp = 0;
+
+      function animate(timestamp) {
+        if (!lastTimestamp) lastTimestamp = timestamp;
+        const dt = Math.min(0.05, (timestamp - lastTimestamp) / 1000);
+        lastTimestamp = timestamp;
+
+        updateTransforms(dt);
+        updateSimulation(dt);
+        render();
+
+        requestAnimationFrame(animate);
+      }
+
+      // Initialize on load
+      window.addEventListener('load', () => {
+        handleResize();
+        buildBrainArchitecture();
+        updateTransforms(0.016);
+        triggerGlobalStimulus();
+        requestAnimationFrame(animate);
+      });
+    })();
+  </script>
+</body>
+</html>

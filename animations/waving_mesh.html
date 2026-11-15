@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Interactive 3D Waving Wiremesh Ribbon</title>
+  <style>
+    /* ==========================================================================
+       RESET & FULL-VIEWPORT OBSIDIAN CANVAS ATMOSPHERE
+       ========================================================================== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: radial-gradient(circle at 52% 48%, #1c1d22 0%, #161619 68%, #111114 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #f1f5f9;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    #waveCanvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    /* ==========================================================================
+       MINIMAL GLASSMORPHIC CONTROL BAR
+       ========================================================================== */
+    .control-dock {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%) translateY(0);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: rgba(20, 22, 28, 0.72);
+      border: 1px solid rgba(125, 211, 252, 0.16);
+      box-shadow:
+        0 18px 44px rgba(0, 0, 0, 0.62),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      z-index: 20;
+      transition:
+        opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 0.35s;
+      max-width: calc(100vw - 24px);
+    }
+
+    .control-dock.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateX(-50%) translateY(24px);
+    }
+
+    /* Buttons */
+    .glass-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 9px 15px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.06);
+      color: #e2e8f0;
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: 0.015em;
+      cursor: pointer;
+      white-space: nowrap;
+      transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.15s ease,
+        box-shadow 0.2s ease;
+    }
+
+    .glass-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(125, 211, 252, 0.32);
+      transform: translateY(-1px);
+    }
+
+    .glass-btn:active {
+      transform: scale(0.96);
+    }
+
+    .glass-btn.primary {
+      background: linear-gradient(135deg, rgba(41, 182, 246, 0.26), rgba(77, 208, 225, 0.18));
+      border-color: rgba(77, 208, 225, 0.45);
+      color: #ffffff;
+      box-shadow: 0 0 18px rgba(41, 182, 246, 0.18);
+    }
+
+    .glass-btn.primary:hover {
+      background: linear-gradient(135deg, rgba(41, 182, 246, 0.38), rgba(77, 208, 225, 0.28));
+      border-color: rgba(128, 222, 234, 0.72);
+      box-shadow: 0 0 24px rgba(41, 182, 246, 0.35);
+    }
+
+    .glass-btn svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    .divider {
+      width: 1px;
+      height: 22px;
+      background: rgba(255, 255, 255, 0.1);
+      flex-shrink: 0;
+    }
+
+    /* Slider Groups */
+    .sliders-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .slider-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .slider-control label {
+      font-size: 11.5px;
+      font-weight: 500;
+      color: #94a3b8;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 82px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.14);
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ffffff 0%, #4dd0e1 60%, #0288d1 100%);
+      border: 1.5px solid rgba(255, 255, 255, 0.85);
+      box-shadow: 0 0 10px rgba(41, 182, 246, 0.65);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ffffff 0%, #4dd0e1 60%, #0288d1 100%);
+      border: 1.5px solid rgba(255, 255, 255, 0.85);
+      box-shadow: 0 0 10px rgba(41, 182, 246, 0.65);
+      cursor: pointer;
+    }
+
+    /* Subtle Restore Button when UI is Hidden */
+    .restore-ui-btn {
+      position: fixed;
+      bottom: 18px;
+      right: 18px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 13px;
+      border-radius: 999px;
+      background: rgba(20, 22, 28, 0.65);
+      border: 1px solid rgba(125, 211, 252, 0.2);
+      color: #cbd5e1;
+      font-size: 12px;
+      font-weight: 600;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s, background 0.2s ease;
+      z-index: 25;
+    }
+
+    .restore-ui-btn.visible {
+      opacity: 0.78;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .restore-ui-btn:hover {
+      opacity: 1;
+      background: rgba(30, 35, 46, 0.85);
+      border-color: rgba(77, 208, 225, 0.45);
+    }
+
+    .restore-ui-btn svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    /* Responsive Mobile Layout */
+    @media (max-width: 820px) {
+      .control-dock {
+        bottom: 14px;
+        padding: 10px 14px;
+        border-radius: 22px;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+      }
+      .divider {
+        display: none;
+      }
+      .sliders-wrap {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px 14px;
+      }
+      input[type="range"] {
+        width: 74px;
+      }
+      .glass-btn {
+        padding: 8px 13px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Full-Viewport Interactive 3D Wiremesh Canvas -->
+  <canvas id="waveCanvas"></canvas>
+
+  <!-- Minimal Glassmorphic Control Dock -->
+  <div id="controlDock" class="control-dock" role="toolbar" aria-label="Wiremesh Wave Controls">
+    <button id="surgeBtn" class="glass-btn primary" type="button" title="Propagate a luminous cyan-white wave surge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 12c2.5-4.5 5-4.5 7.5 0s5 4.5 7.5 0 3.5-4.5 5 0"></path>
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" opacity="0.65"></polygon>
+      </svg>
+      <span>Send Wave Surge</span>
+    </button>
+
+    <div class="divider"></div>
+
+    <div class="sliders-wrap">
+      <div class="slider-control">
+        <label for="speedSlider">Wave Speed</label>
+        <input id="speedSlider" type="range" min="0" max="100" value="46" />
+      </div>
+
+      <div class="slider-control">
+        <label for="ampSlider">Amplitude</label>
+        <input id="ampSlider" type="range" min="15" max="100" value="56" />
+      </div>
+
+      <div class="slider-control">
+        <label for="twistSlider">Twist</label>
+        <input id="twistSlider" type="range" min="0" max="100" value="58" />
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <button id="hideUiBtn" class="glass-btn" type="button" title="Hide controls for pure fullscreen artwork">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path>
+        <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"></path>
+        <line x1="1" y1="1" x2="23" y2="23"></line>
+      </svg>
+      <span>Hide UI</span>
+    </button>
+  </div>
+
+  <!-- Unobtrusive Corner Button to Restore UI -->
+  <button id="showUiBtn" class="restore-ui-btn" type="button" title="Show controls">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+      <circle cx="12" cy="12" r="3"></circle>
+    </svg>
+    <span>Show UI</span>
+  </button>
+
+  <script>
+    /**
+     * ============================================================================
+     * 3D WAVING WIREMESH RIBBON ENGINE (PURE HTML5 2D CANVAS + VANILLA JS)
+     * ============================================================================
+     * Features:
+     * - Primary 3D parametric ribbon (42 strands × 190 stations) sweeping from
+     *   lower-left in a sculptural double-crest S-curve to upper-right.
+     * - Secondary ghostly background wiremesh wave layer arching behind the main
+     *   crest for multi-layered atmospheric depth.
+     * - Optical Caustic Twist Flares: computes local 3D surface normal orientation
+     *   and screen-space strand compression; where strands pinch or twist edge-on,
+     *   additive ('lighter') cyan and white light blooms glide along the folds.
+     * - Hybrid Lined & Dotted Mesh Texture: smooth cyan/slate filaments paired
+     *   with sharp white/ice-blue grid micro-dots visible even in dark shadow folds.
+     * - ~26 floating luminous bokeh orbs drifting in 3D space across and inside the
+     *   wave folds, pulsing softly when crests or energy surges pass nearby.
+     * - Interactive cursor/touch 3D camera tilt, localized magnetic strand ripple,
+     *   and propagating left-to-right cyan-white energy surges.
+     */
+    (function () {
+      'use strict';
+
+      // --------------------------------------------------------------------------
+      // 1. DOM & CANVAS SETUP
+      // --------------------------------------------------------------------------
+      const canvas = document.getElementById('waveCanvas');
+      const ctx = canvas.getContext('2d');
+
+      const controlDock = document.getElementById('controlDock');
+      const surgeBtn = document.getElementById('surgeBtn');
+      const hideUiBtn = document.getElementById('hideUiBtn');
+      const showUiBtn = document.getElementById('showUiBtn');
+      const speedSlider = document.getElementById('speedSlider');
+      const ampSlider = document.getElementById('ampSlider');
+      const twistSlider = document.getElementById('twistSlider');
+
+      let width = window.innerWidth;
+      let height = window.innerHeight;
+      let dpr = Math.min(window.devicePixelRatio || 1, 2.25);
+
+      // --------------------------------------------------------------------------
+      // 2. MESH CONFIGURATION & TYPED ARRAYS (ZERO-GC 60FPS RENDERING)
+      // --------------------------------------------------------------------------
+      const STRANDS = 42;       // v across ribbon width
+      const STATIONS = 190;     // u along wave trajectory
+      const TOTAL_VERTS = STRANDS * STATIONS;
+
+      // Primary ribbon projected buffers
+      const projX = new Float32Array(TOTAL_VERTS);
+      const projY = new Float32Array(TOTAL_VERTS);
+      const projZ = new Float32Array(TOTAL_VERTS);
+      const vertLit = new Float32Array(TOTAL_VERTS);     // Surface normal illumination [0..1]
+      const vertFlare = new Float32Array(TOTAL_VERTS);   // Optical twist compression flare [0..1]
+      const stationSurge = new Float32Array(STATIONS);   // Propagating surge energy at station u
+
+      // Secondary ghostly background wave layer (18 strands × 125 stations)
+      const GHOST_STRANDS = 18;
+      const GHOST_STATIONS = 125;
+      const GHOST_VERTS = GHOST_STRANDS * GHOST_STATIONS;
+      const ghostX = new Float32Array(GHOST_VERTS);
+      const ghostY = new Float32Array(GHOST_VERTS);
+      const ghostAlpha = new Float32Array(GHOST_VERTS);
+
+      // Interactive State & Controls
+      const state = {
+        time: 1.4, // Start at an iconic sculptural phase
+        speed: 0.46,
+        amplitude: 0.56,
+        twist: 0.58,
+        // Camera perspective tilt
+        targetTiltX: 0,
+        targetTiltY: 0,
+        tiltX: 0,
+        tiltY: 0,
+        // Pointer magnetic ripple
+        pointerActive: false,
+        pointerX: width * 0.5,
+        pointerY: height * 0.5,
+        smoothPointerX: width * 0.5,
+        smoothPointerY: height * 0.5,
+        pointerStrength: 0,
+        // Active traveling energy surges
+        surges: []
+      };
+
+      // --------------------------------------------------------------------------
+      // 3. LUMINOUS FLOATING BOKEH ORBS / NODES (~26 ORBS AT VARYING 3D DEPTHS)
+      // --------------------------------------------------------------------------
+      const ORB_COUNT = 26;
+      const orbs = [];
+
+      function initOrbs() {
+        orbs.length = 0;
+        // Curated + organic distribution framing the wave crests, troughs, and inner folds
+        const anchorCoords = [
+          [0.14, 0.41,  0.18, 1.15],
+          [0.24, 0.35, -0.22, 0.85],
+          [0.32, 0.38,  0.26, 1.30], // Bright crest node
+          [0.44, 0.43, -0.15, 0.90],
+          [0.52, 0.47,  0.22, 1.05],
+          [0.64, 0.58,  0.14, 0.95],
+          [0.72, 0.65,  0.28, 1.35], // Lower-right trough bright orb
+          [0.82, 0.25,  0.24, 1.25], // Upper-right ascending orb
+          [0.92, 0.44, -0.10, 1.00],
+          [0.18, 0.92,  0.12, 1.10],
+          [0.32, 0.68, -0.18, 0.88],
+          [0.12, 0.78,  0.24, 1.15],
+          [0.59, 0.63, -0.12, 0.92],
+          [0.88, 0.61,  0.18, 1.18]
+        ];
+
+        for (let i = 0; i < ORB_COUNT; i++) {
+          let nx, ny, nz, sizeMult;
+          if (i < anchorCoords.length) {
+            [nx, ny, nz, sizeMult] = anchorCoords[i];
+          } else {
+            // Distribute remaining orbs along the diagonal wave corridor
+            const t = (i - anchorCoords.length) / (ORB_COUNT - anchorCoords.length);
+            nx = 0.06 + t * 0.88 + (Math.sin(i * 7.3) * 0.06);
+            const spineNormY = 0.78 - t * 0.66 - Math.sin(t * Math.PI * 2.1) * 0.16;
+            ny = Math.max(0.08, Math.min(0.92, spineNormY + Math.cos(i * 4.7) * 0.17));
+            nz = Math.sin(i * 3.1) * 0.32;
+            sizeMult = 0.72 + ((i * 19) % 10) * 0.06;
+          }
+
+          orbs.push({
+            normX: nx,
+            normY: ny,
+            baseZ: nz,
+            radius: (6.5 + (i % 5) * 2.2) * sizeMult,
+            phase: i * 1.43,
+            driftSpeed: 0.45 + (i % 7) * 0.09,
+            driftAmpX: 10 + (i % 4) * 5,
+            driftAmpY: 12 + (i % 5) * 4,
+            pulse: 0
+          });
+        }
+      }
+
+      // --------------------------------------------------------------------------
+      // 4. WAVE SURGE & INTERACTION HELPERS
+      // --------------------------------------------------------------------------
+      function spawnWaveSurge(startU = -0.05, intensity = 1.0) {
+        if (state.surges.length > 8) {
+          state.surges.shift();
+        }
+        state.surges.push({
+          u: startU,
+          speed: 0.56 + state.speed * 0.42,
+          width: 0.14,
+          intensity
+        });
+      }
+
+      /**
+       * Evaluates the 3D spine point of the primary wave ribbon at normalized u in [0, 1]
+       */
+      function evalPrimarySpine(u, t, ampScale) {
+        // Diagonal sweep from lower-left (x = -0.08, y = 0.80) to upper-right (x = 1.08, y = 0.06)
+        const spanX = 1.16;
+        const baseX = (-0.08 + u * spanX - 0.5) * width;
+
+        // Graceful double-crest S-curve matching the reference silhouette:
+        // Rises sharply into left crest around u=0.26, dips into trough around u=0.64, sweeps up to top-right
+        const diagY = 0.80 - u * 0.72;
+        const sCurve = -Math.sin(u * Math.PI * 2.15 - 0.18) * (0.195 * ampScale);
+
+        // Traveling harmonic ripples that make the ribbon wave continuously
+        const wave1 = Math.sin(u * 7.2 - t * 2.15) * (0.036 * ampScale);
+        const wave2 = Math.cos(u * 11.5 - t * 1.45 + 0.8) * (0.014 * ampScale);
+        const envelope = Math.sin(Math.min(1, Math.max(0, u)) * Math.PI) * 0.65 + 0.35;
+
+        const normY = diagY + sCurve + (wave1 + wave2) * envelope;
+        const baseY = (normY - 0.5) * height;
+
+        // 3D depth undulation so the ribbon weaves toward and away from the viewer
+        const baseZ =
+          Math.sin(u * Math.PI * 2.4 - t * 1.35) * 145 * ampScale +
+          Math.cos(u * 5.2 - t * 0.9) * 55;
+
+        return { x: baseX, y: baseY, z: baseZ };
+      }
+
+      /**
+       * Projects a 3D world point (centered at screen origin) to 2D canvas coordinates
+       */
+      function projectPoint3D(x, y, z, cosY, sinY, cosX, sinX) {
+        // Camera Y rotation
+        const x1 = x * cosY - z * sinY;
+        const z1 = z * cosY + x * sinY;
+        // Camera X rotation
+        const y2 = y * cosX - z1 * sinX;
+        const z2 = z1 * cosX + y * sinX;
+
+        const fov = Math.max(width, height) * 1.25;
+        const persp = fov / (fov + z2 + 240);
+
+        return {
+          x: width * 0.5 + x1 * persp,
+          y: height * 0.5 + y2 * persp,
+          z: z2,
+          scale: persp
+        };
+      }
+
+      // --------------------------------------------------------------------------
+      // 5. SIMULATION & 3D WIREMESH GEOMETRY COMPUTATION
+      // --------------------------------------------------------------------------
+      function updateSimulation(dt) {
+        const speedFactor = 0.15 + state.speed * 1.85;
+        state.time += dt * speedFactor;
+
+        // Smooth camera tilt interpolation
+        state.tiltX += (state.targetTiltX - state.tiltX) * Math.min(1, dt * 5.0);
+        state.tiltY += (state.targetTiltY - state.tiltY) * Math.min(1, dt * 5.0);
+
+        // Smooth pointer magnetic ripple tracking
+        state.smoothPointerX += (state.pointerX - state.smoothPointerX) * Math.min(1, dt * 10.0);
+        state.smoothPointerY += (state.pointerY - state.smoothPointerY) * Math.min(1, dt * 10.0);
+        const targetStrength = state.pointerActive ? 1.0 : 0.0;
+        state.pointerStrength += (targetStrength - state.pointerStrength) * Math.min(1, dt * 4.5);
+
+        // Update traveling energy surges
+        for (let i = state.surges.length - 1; i >= 0; i--) {
+          const s = state.surges[i];
+          s.u += dt * s.speed;
+          if (s.u - s.width * 2 > 1.05) {
+            state.surges.splice(i, 1);
+          }
+        }
+
+        // Precompute surge intensity per station u
+        for (let i = 0; i < STATIONS; i++) {
+          const u = i / (STATIONS - 1);
+          let energy = 0;
+          for (let k = 0; k < state.surges.length; k++) {
+            const s = state.surges[k];
+            const dist = u - s.u;
+            // Asymmetric comet-like surge profile: sharp leading edge, smooth trailing tail
+            if (dist > -s.width * 2.4 && dist < s.width * 0.8) {
+              const norm = dist >= 0
+                ? 1 - dist / (s.width * 0.8)
+                : 1 + dist / (s.width * 2.4);
+              energy += Math.pow(Math.max(0, norm), 1.8) * s.intensity;
+            }
+          }
+          stationSurge[i] = Math.min(1.5, energy);
+        }
+
+        // Compute 3D mesh vertices for Primary Ribbon
+        computePrimaryRibbonMesh();
+
+        // Compute 3D mesh vertices for Secondary Ghostly Wave Layer
+        computeGhostWaveMesh();
+
+        // Update floating bokeh orbs
+        updateOrbs(dt);
+      }
+
+      function computePrimaryRibbonMesh() {
+        const t = state.time;
+        const ampScale = 0.55 + state.amplitude * 0.85;
+        const twistScale = state.twist * 1.45;
+        const minDim = Math.min(width, height);
+        const baseHalfWidth = minDim * (width < 640 ? 0.145 : 0.165) * (0.78 + state.amplitude * 0.35);
+
+        const cosY = Math.cos(state.tiltY);
+        const sinY = Math.sin(state.tiltY);
+        const cosX = Math.cos(state.tiltX);
+        const sinX = Math.sin(state.tiltX);
+
+        const eps = 0.004;
+        const rippleRadius = Math.max(130, minDim * 0.22);
+
+        for (let i = 0; i < STATIONS; i++) {
+          const u = i / (STATIONS - 1);
+
+          // Spine point and finite-difference tangent
+          const p = evalPrimarySpine(u, t, ampScale);
+          const pNext = evalPrimarySpine(Math.min(1, u + eps), t, ampScale);
+
+          let tx = pNext.x - p.x;
+          let ty = pNext.y - p.y;
+          let tz = pNext.z - p.z;
+          const tLen = Math.hypot(tx, ty, tz) || 1;
+          tx /= tLen;
+          ty /= tLen;
+          tz /= tLen;
+
+          // Construct orthonormal frame (N, B) around tangent T using reference Z-up vector
+          // Reference vector R = (0, 0, 1) -> N = normalize(R x T)
+          let nx = -ty;
+          let ny = tx;
+          let nz = 0;
+          const nLen = Math.hypot(nx, ny, nz) || 1;
+          nx /= nLen;
+          ny /= nLen;
+
+          // Binormal B = T x N
+          const bx = ty * nz - tz * ny;
+          const by = tz * nx - tx * nz;
+          const bz = tx * ny - ty * nx;
+
+          // 3D Ribbon Torsion (twist angle along u + traveling wave phase)
+          // Designed to produce the three signature twist pinches along the S-curve
+          const twistAngle =
+            -0.55 +
+            u * (3.65 * twistScale) +
+            Math.sin(u * 4.6 - t * 1.15) * (0.85 * twistScale) +
+            Math.cos(t * 0.65) * 0.22;
+
+          const cosTw = Math.cos(twistAngle);
+          const sinTw = Math.sin(twistAngle);
+
+          // Ribbon width modulation: fans out gracefully at crests, pinches subtly at twist inflection points
+          const widthMod =
+            0.78 +
+            0.34 * Math.sin(u * Math.PI * 2.2 + 0.5) +
+            0.14 * Math.cos(u * 6.0 - t * 1.5);
+          const halfW = baseHalfWidth * widthMod;
+
+          // Local ribbon cross-direction U_dir and surface normal S_norm
+          const ux = cosTw * nx + sinTw * bx;
+          const uy = cosTw * ny + sinTw * by;
+          const uz = cosTw * nz + sinTw * bz;
+
+          const snx = -sinTw * nx + cosTw * bx;
+          const sny = -sinTw * ny + cosTw * by;
+          const snz = -sinTw * nz + cosTw * bz;
+
+          // Illumination factor based on how much the ribbon face points toward viewer (-Z / +Y light)
+          const facing = Math.abs(snz * 0.85 - sny * 0.35);
+          const edgeOnFactor = Math.pow(1 - Math.min(1, Math.abs(snz)), 2.2);
+
+          // Sample outer edges in 2D to measure screen-space strand compression (pinch flare!)
+          const edgeA3 = { x: p.x - halfW * ux, y: p.y - halfW * uy, z: p.z - halfW * uz };
+          const edgeB3 = { x: p.x + halfW * ux, y: p.y + halfW * uy, z: p.z + halfW * uz };
+          const edgeA2 = projectPoint3D(edgeA3.x, edgeA3.y, edgeA3.z, cosY, sinY, cosX, sinX);
+          const edgeB2 = projectPoint3D(edgeB3.x, edgeB3.y, edgeB3.z, cosY, sinY, cosX, sinX);
+          const screenSpan = Math.hypot(edgeB2.x - edgeA2.x, edgeB2.y - edgeA2.y);
+
+          // When screenSpan gets narrow relative to halfW, strands visually overlap into a caustic flare
+          const compressionRatio = Math.max(0, 1 - screenSpan / (halfW * 1.42));
+          const stationCaustic = Math.min(1, Math.pow(compressionRatio, 1.55) * 1.15 + edgeOnFactor * 0.45);
+
+          for (let j = 0; j < STRANDS; j++) {
+            const v = (j / (STRANDS - 1)) * 2 - 1; // [-1, +1]
+            const idx = j * STATIONS + i;
+
+            // Subtle cross-ribbon harmonic ruffle so the sheet feels silky rather than rigid
+            const crossRipple = Math.sin(v * 3.2 + u * 8.0 - t * 2.4) * (6.5 * state.amplitude);
+
+            let wx = p.x + v * halfW * ux + crossRipple * snx;
+            let wy = p.y + v * halfW * uy + crossRipple * sny;
+            let wz = p.z + v * halfW * uz + crossRipple * snz;
+
+            const proj = projectPoint3D(wx, wy, wz, cosY, sinY, cosX, sinX);
+
+            // Interactive Pointer Magnetic Ripple in 2D/3D space
+            let rippleBoost = 0;
+            if (state.pointerStrength > 0.01) {
+              const dx = proj.x - state.smoothPointerX;
+              const dy = proj.y - state.smoothPointerY;
+              const dist = Math.hypot(dx, dy);
+              if (dist < rippleRadius) {
+                const falloff = Math.pow(1 - dist / rippleRadius, 2);
+                const wavePush = Math.sin(dist * 0.055 - t * 5.5) * 16 * falloff * state.pointerStrength;
+                const pushAngle = Math.atan2(dy, dx);
+                proj.x += Math.cos(pushAngle) * wavePush;
+                proj.y += Math.sin(pushAngle) * wavePush - 8 * falloff * state.pointerStrength;
+                rippleBoost = falloff * state.pointerStrength * 0.45;
+              }
+            }
+
+            projX[idx] = proj.x;
+            projY[idx] = proj.y;
+            projZ[idx] = proj.z;
+
+            // Edge strands catch slightly brighter rim light
+            const rimGlow = Math.pow(Math.abs(v), 2.4) * 0.25;
+            const surge = stationSurge[i];
+
+            vertLit[idx] = Math.min(1, 0.22 + facing * 0.68 + rimGlow + surge * 0.65 + rippleBoost);
+            // Caustic flare peaks near the center-spine of edge-on twists & during wave surges
+            const centerFocus = 1 - Math.abs(v) * 0.45;
+            vertFlare[idx] = Math.min(1.2, stationCaustic * centerFocus + surge * 0.85 + rippleBoost * 0.5);
+          }
+        }
+      }
+
+      /**
+       * Computes the subtle secondary ghostly wiremesh wave arching behind the main crest
+       */
+      function computeGhostWaveMesh() {
+        const t = state.time * 0.82;
+        const ampScale = 0.55 + state.amplitude * 0.75;
+        const minDim = Math.min(width, height);
+        const halfW = minDim * 0.11;
+
+        const cosY = Math.cos(state.tiltY * 0.65);
+        const sinY = Math.sin(state.tiltY * 0.65);
+        const cosX = Math.cos(state.tiltX * 0.65);
+        const sinX = Math.sin(state.tiltX * 0.65);
+
+        for (let i = 0; i < GHOST_STATIONS; i++) {
+          const u = i / (GHOST_STATIONS - 1);
+          // Spans across the upper-mid background from u_world = 0.16 to 0.82
+          const wxNorm = 0.14 + u * 0.72;
+          const wyNorm =
+            0.44 -
+            Math.sin(u * Math.PI * 1.45 - 0.15) * (0.21 * ampScale) +
+            Math.sin(u * 5.5 - t * 1.4) * 0.025;
+
+          const cx = (wxNorm - 0.5) * width;
+          const cy = (wyNorm - 0.5) * height;
+          const cz = 180 + Math.cos(u * Math.PI * 2 - t) * 50;
+
+          const twist = u * 2.4 + Math.sin(t * 0.8 + u * 3.0) * 0.4;
+          const fadeEnds = Math.sin(u * Math.PI);
+
+          for (let j = 0; j < GHOST_STRANDS; j++) {
+            const v = (j / (GHOST_STRANDS - 1)) * 2 - 1;
+            const idx = j * GHOST_STATIONS + i;
+
+            const ox = Math.sin(twist) * v * halfW * 0.35;
+            const oy = Math.cos(twist) * v * halfW;
+
+            const proj = projectPoint3D(cx + ox, cy + oy, cz, cosY, sinY, cosX, sinX);
+            ghostX[idx] = proj.x;
+            ghostY[idx] = proj.y;
+            ghostAlpha[idx] = fadeEnds * (0.14 + (1 - Math.abs(v)) * 0.12);
+          }
+        }
+      }
+
+      function updateOrbs(dt) {
+        for (let i = 0; i < orbs.length; i++) {
+          const orb = orbs[i];
+          const ox = orb.normX * width + Math.cos(state.time * orb.driftSpeed + orb.phase) * orb.driftAmpX;
+          const oy = orb.normY * height + Math.sin(state.time * orb.driftSpeed * 0.85 + orb.phase) * orb.driftAmpY;
+
+          // Check proximity to active wave surges so orbs pulse when energy sweeps past
+          let surgeProximity = 0;
+          for (let k = 0; k < state.surges.length; k++) {
+            const du = Math.abs(orb.normX - state.surges[k].u);
+            if (du < 0.14) {
+              surgeProximity = Math.max(surgeProximity, (1 - du / 0.14) * state.surges[k].intensity);
+            }
+          }
+
+          orb.screenX = ox + state.tiltY * -65 * (orb.baseZ + 0.4);
+          orb.screenY = oy + state.tiltX * -55 * (orb.baseZ + 0.4);
+          orb.pulse += (surgeProximity - orb.pulse) * Math.min(1, dt * 8.0);
+        }
+      }
+
+      // --------------------------------------------------------------------------
+      // 6. HIGH-PRECISION LAYERED RENDERING PIPELINE
+      // --------------------------------------------------------------------------
+      function render() {
+        ctx.clearRect(0, 0, width, height);
+
+        // Layer 1: Background Far Bokeh Orbs (behind wiremesh)
+        drawOrbsLayer(true);
+
+        // Layer 2: Secondary Ghostly Background Wave Layer
+        drawGhostWaveLayer();
+
+        // Layer 3: Primary Wiremesh Base Filaments (Slate-Blue Shadow -> Electric Cyan)
+        drawPrimaryFilaments();
+
+        // Layer 4: Additive Optical Caustic Twist Flares & Surge Glow
+        drawCausticFlares();
+
+        // Layer 5: Crisp White & Ice-Blue Grid Micro-Dots
+        drawGridMicroDots();
+
+        // Layer 6: Foreground Luminous Bokeh Orbs (nested inside & in front of folds)
+        drawOrbsLayer(false);
+      }
+
+      /**
+       * Renders the subtle background ghostly wiremesh wave behind the main crest
+       */
+      function drawGhostWaveLayer() {
+        ctx.save();
+        ctx.lineCap = 'round';
+
+        // Subtle dark slate filaments
+        for (let j = 0; j < GHOST_STRANDS; j++) {
+          const rowOffset = j * GHOST_STATIONS;
+          ctx.beginPath();
+          for (let i = 0; i < GHOST_STATIONS; i++) {
+            const idx = rowOffset + i;
+            if (i === 0) ctx.moveTo(ghostX[idx], ghostY[idx]);
+            else ctx.lineTo(ghostX[idx], ghostY[idx]);
+          }
+          ctx.strokeStyle = 'rgba(72, 108, 134, 0.22)';
+          ctx.lineWidth = 0.85;
+          ctx.stroke();
+        }
+
+        // Faint ghostly micro-dots at grid intervals
+        ctx.fillStyle = 'rgba(180, 215, 235, 0.24)';
+        for (let j = 0; j < GHOST_STRANDS; j += 2) {
+          const rowOffset = j * GHOST_STATIONS;
+          for (let i = 2; i < GHOST_STATIONS - 2; i += 2) {
+            const idx = rowOffset + i;
+            if (ghostAlpha[idx] > 0.08) {
+              ctx.fillRect(ghostX[idx] - 0.65, ghostY[idx] - 0.65, 1.3, 1.3);
+            }
+          }
+        }
+
+        ctx.restore();
+      }
+
+      /**
+       * Renders the 42 longitudinal filaments with smooth shading from dark slate-blue
+       * in shadow troughs to luminous electric-cyan (#29b6f6 / #4dd0e1) on crests.
+       */
+      function drawPrimaryFilaments() {
+        ctx.save();
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        const chunkSize = 6; // Group 6 stations per stroke for smooth color transition & 60fps speed
+
+        for (let j = 0; j < STRANDS; j++) {
+          const rowOffset = j * STATIONS;
+          // Edge strands slightly thicker for crisp sculptural silhouette
+          const edgeWeight = Math.abs((j / (STRANDS - 1)) * 2 - 1);
+          const baseWidth = 0.88 + Math.pow(edgeWeight, 3) * 0.55;
+
+          for (let i = 0; i < STATIONS - 1; i += chunkSize) {
+            const end = Math.min(STATIONS - 1, i + chunkSize);
+            const midIdx = rowOffset + ((i + end) >> 1);
+            const lit = vertLit[midIdx];
+
+            // Interpolate smoothly from deep shadow slate-blue (#1d2b3a) to electric cyan (#29b6f6 -> #67e8f9)
+            const r = Math.round(28 + lit * 34);
+            const g = Math.round(44 + lit * 168);
+            const b = Math.round(62 + lit * 188);
+            const alpha = 0.22 + lit * 0.72;
+
+            ctx.beginPath();
+            ctx.moveTo(projX[rowOffset + i], projY[rowOffset + i]);
+            for (let k = i + 1; k <= end; k++) {
+              ctx.lineTo(projX[rowOffset + k], projY[rowOffset + k]);
+            }
+
+            ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha.toFixed(3)})`;
+            ctx.lineWidth = baseWidth + lit * 0.45;
+            ctx.stroke();
+          }
+        }
+
+        ctx.restore();
+      }
+
+      /**
+       * Renders additive ('lighter') electric-cyan and white optical flares where
+       * the ribbon twists edge-on or strands compress closely together.
+       */
+      function drawCausticFlares() {
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.lineCap = 'round';
+
+        const chunkSize = 5;
+
+        // Pass 1: Electric-cyan volumetric glow along twisted pinch zones
+        for (let j = 0; j < STRANDS; j += 1) {
+          const rowOffset = j * STATIONS;
+          for (let i = 0; i < STATIONS - 1; i += chunkSize) {
+            const end = Math.min(STATIONS - 1, i + chunkSize);
+            const midIdx = rowOffset + ((i + end) >> 1);
+            const flare = vertFlare[midIdx];
+
+            if (flare <= 0.16) continue;
+
+            const intensity = Math.min(1, (flare - 0.16) / 0.84);
+            ctx.beginPath();
+            ctx.moveTo(projX[rowOffset + i], projY[rowOffset + i]);
+            for (let k = i + 1; k <= end; k++) {
+              ctx.lineTo(projX[rowOffset + k], projY[rowOffset + k]);
+            }
+
+            // Cyan optical glow
+            ctx.strokeStyle = `rgba(41, 182, 246, ${(intensity * 0.34).toFixed(3)})`;
+            ctx.lineWidth = 1.6 + intensity * 2.4;
+            ctx.stroke();
+
+            // Pure white-hot core where twist compression is highest
+            if (flare > 0.46) {
+              const hot = Math.min(1, (flare - 0.46) / 0.54);
+              ctx.strokeStyle = `rgba(235, 250, 255, ${(hot * 0.48).toFixed(3)})`;
+              ctx.lineWidth = 0.85 + hot * 1.25;
+              ctx.stroke();
+            }
+          }
+        }
+
+        // Pass 2: Soft atmospheric light bloom at peak caustic twist centers
+        const centerRow = (STRANDS >> 1) * STATIONS;
+        for (let i = 4; i < STATIONS - 4; i += 6) {
+          const idx = centerRow + i;
+          const flare = vertFlare[idx];
+          if (flare > 0.55) {
+            const strength = Math.min(1, (flare - 0.55) / 0.55);
+            const radius = 26 + strength * 44;
+            const grad = ctx.createRadialGradient(
+              projX[idx],
+              projY[idx],
+              1,
+              projX[idx],
+              projY[idx],
+              radius
+            );
+            grad.addColorStop(0, `rgba(255, 255, 255, ${(strength * 0.22).toFixed(3)})`);
+            grad.addColorStop(0.45, `rgba(77, 208, 225, ${(strength * 0.12).toFixed(3)})`);
+            grad.addColorStop(1, 'rgba(41, 182, 246, 0)');
+
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(projX[idx], projY[idx], radius, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        ctx.restore();
+      }
+
+      /**
+       * Renders crisp white & ice-blue micro-dots at grid intervals along every strand
+       * so the dotted wiremesh matrix remains razor-sharp even across dark shadow folds.
+       */
+      function drawGridMicroDots() {
+        ctx.save();
+
+        for (let j = 0; j < STRANDS; j++) {
+          const rowOffset = j * STATIONS;
+          for (let i = 0; i < STATIONS; i++) {
+            const idx = rowOffset + i;
+            const lit = vertLit[idx];
+            const flare = vertFlare[idx];
+            const x = projX[idx];
+            const y = projY[idx];
+
+            // Skip vertices outside viewport margin
+            if (x < -10 || x > width + 10 || y < -10 || y > height + 10) continue;
+
+            // Keep dots crisp and visible even in dark troughs (alpha >= 0.48)
+            const alpha = Math.min(1, 0.48 + lit * 0.44 + flare * 0.25);
+            const dotSize = 1.15 + lit * 0.65 + flare * 0.55;
+
+            if (flare > 0.48 || lit > 0.78) {
+              // Bright white-ice circular node dot on crests & twist flares
+              ctx.fillStyle = `rgba(245, 252, 255, ${alpha.toFixed(3)})`;
+              ctx.beginPath();
+              ctx.arc(x, y, dotSize * 0.62, 0, Math.PI * 2);
+              ctx.fill();
+            } else {
+              // Crisp micro-dot across shadow folds
+              ctx.fillStyle = `rgba(215, 238, 252, ${alpha.toFixed(3)})`;
+              const half = dotSize * 0.52;
+              ctx.fillRect(x - half, y - half, dotSize * 1.04, dotSize * 1.04);
+            }
+          }
+        }
+
+        ctx.restore();
+      }
+
+      /**
+       * Renders soft glowing white-blue spherical bokeh orbs with bright cores
+       */
+      function drawOrbsLayer(isBackgroundPass) {
+        ctx.save();
+
+        for (let i = 0; i < orbs.length; i++) {
+          const orb = orbs[i];
+          const isBack = orb.baseZ < 0;
+          if (isBack !== isBackgroundPass) continue;
+
+          const breath = 0.88 + Math.sin(state.time * 1.6 + orb.phase) * 0.12 + orb.pulse * 0.35;
+          const depthScale = isBack ? 0.78 : 1.05;
+          const r = orb.radius * depthScale * breath;
+          const x = orb.screenX;
+          const y = orb.screenY;
+          const alphaMult = (isBack ? 0.68 : 0.95) * Math.min(1.2, 0.85 + orb.pulse * 0.45);
+
+          // Outer atmospheric cyan-white halo
+          const outerR = r * 2.5;
+          const grad = ctx.createRadialGradient(x, y, r * 0.12, x, y, outerR);
+          grad.addColorStop(0, `rgba(255, 255, 255, ${Math.min(1, 0.96 * alphaMult).toFixed(3)})`);
+          grad.addColorStop(0.24, `rgba(215, 244, 255, ${(0.72 * alphaMult).toFixed(3)})`);
+          grad.addColorStop(0.52, `rgba(110, 205, 248, ${(0.24 * alphaMult).toFixed(3)})`);
+          grad.addColorStop(1, 'rgba(41, 182, 246, 0)');
+
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(x, y, outerR, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Crisp bright inner core
+          ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(1, 0.95 * alphaMult).toFixed(3)})`;
+          ctx.beginPath();
+          ctx.arc(x, y, r * 0.36, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.restore();
+      }
+
+      // --------------------------------------------------------------------------
+      // 7. RESIZE & INTERACTIVE EVENT HANDLERS
+      // --------------------------------------------------------------------------
+      function handleResize() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        dpr = Math.min(window.devicePixelRatio || 1, 2.25);
+
+        canvas.width = Math.floor(width * dpr);
+        canvas.height = Math.floor(height * dpr);
+        canvas.style.width = width + 'px';
+        canvas.style.height = height + 'px';
+
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      function updatePointerCoords(clientX, clientY) {
+        const rect = canvas.getBoundingClientRect();
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+
+        state.pointerActive = true;
+        state.pointerX = x;
+        state.pointerY = y;
+
+        // Subtle 3D camera perspective tilt based on normalized pointer position
+        const nx = (x / width) * 2 - 1;
+        const ny = (y / height) * 2 - 1;
+        state.targetTiltY = nx * 0.16;
+        state.targetTiltX = -ny * 0.14;
+      }
+
+      canvas.addEventListener('mousemove', (e) => {
+        updatePointerCoords(e.clientX, e.clientY);
+      });
+
+      canvas.addEventListener('mouseleave', () => {
+        state.pointerActive = false;
+        state.targetTiltX = 0;
+        state.targetTiltY = 0;
+      });
+
+      canvas.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        updatePointerCoords(e.clientX, e.clientY);
+        // Trigger a left-to-right cyan-white energy surge from the clicked wave region
+        const clickU = Math.max(-0.04, Math.min(0.85, (e.clientX / width) - 0.06));
+        spawnWaveSurge(clickU, 1.05);
+      });
+
+      canvas.addEventListener('touchstart', (e) => {
+        if (e.touches.length > 0) {
+          const t = e.touches[0];
+          updatePointerCoords(t.clientX, t.clientY);
+          const tapU = Math.max(-0.04, Math.min(0.85, (t.clientX / width) - 0.06));
+          spawnWaveSurge(tapU, 1.05);
+        }
+      }, { passive: true });
+
+      canvas.addEventListener('touchmove', (e) => {
+        if (e.touches.length > 0) {
+          const t = e.touches[0];
+          updatePointerCoords(t.clientX, t.clientY);
+        }
+      }, { passive: true });
+
+      canvas.addEventListener('touchend', () => {
+        state.pointerActive = false;
+        state.targetTiltX = 0;
+        state.targetTiltY = 0;
+      });
+
+      // Control Bar Listeners
+      surgeBtn.addEventListener('click', () => {
+        spawnWaveSurge(-0.05, 1.15);
+      });
+
+      speedSlider.addEventListener('input', (e) => {
+        state.speed = Number(e.target.value) / 100;
+      });
+
+      ampSlider.addEventListener('input', (e) => {
+        state.amplitude = Number(e.target.value) / 100;
+      });
+
+      twistSlider.addEventListener('input', (e) => {
+        state.twist = Number(e.target.value) / 100;
+      });
+
+      hideUiBtn.addEventListener('click', () => {
+        controlDock.classList.add('hidden');
+        showUiBtn.classList.add('visible');
+      });
+
+      showUiBtn.addEventListener('click', () => {
+        controlDock.classList.remove('hidden');
+        showUiBtn.classList.remove('visible');
+      });
+
+      window.addEventListener('resize', handleResize);
+
+      // --------------------------------------------------------------------------
+      // 8. MAIN ANIMATION LOOP
+      // --------------------------------------------------------------------------
+      let lastTimestamp = 0;
+
+      function animate(timestamp) {
+        if (!lastTimestamp) lastTimestamp = timestamp;
+        const dt = Math.min(0.05, (timestamp - lastTimestamp) / 1000);
+        lastTimestamp = timestamp;
+
+        updateSimulation(dt);
+        render();
+
+        requestAnimationFrame(animate);
+      }
+
+      window.addEventListener('load', () => {
+        handleResize();
+        initOrbs();
+        // Launch a gentle opening surge across the ribbon
+        spawnWaveSurge(-0.05, 0.95);
+        requestAnimationFrame(animate);
+      });
+    })();
+  </script>
+</body>
+</html>

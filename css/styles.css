@@ -241,6 +241,9 @@ body:not(.intro-active) .desktop { transform: scale(1); filter: none; }
 .icon-build-blog svg { width: 36px; height: 36px; fill: currentColor; }
 .icon-substack { color: #fff; background: #ff6719; }
 .icon-substack svg { width: 35px; height: 35px; fill: currentColor; }
+.icon-animations { color: #dffcff; background: radial-gradient(circle at 28% 25%, #5ee7f1, transparent 30%), linear-gradient(145deg, #172554, #0f766e); }
+.icon-animations svg { width: 35px; height: 35px; overflow: visible; fill: currentColor; }
+.icon-animations path { fill: none; stroke: currentColor; stroke-width: 2.3; stroke-linecap: round; }
 
 .window-layer { position: absolute; z-index: 10; inset: 0 0 var(--taskbar-height); pointer-events: none; }
 .app-window { position: absolute; display: flex; width: min(820px, calc(100vw - 40px)); height: min(610px, calc(100dvh - 104px)); min-width: 310px; min-height: 350px; flex-direction: column; overflow: hidden; border: 1px solid rgba(15,23,42,.14); border-radius: var(--radius); background: var(--panel); box-shadow: 0 30px 100px rgba(15,23,42,.2), inset 0 1px rgba(255,255,255,.85); backdrop-filter: blur(22px); pointer-events: auto; animation: window-in .2s ease-out both; }
@@ -396,7 +399,7 @@ body.desktop-ready .ambient { opacity: .55; transform: scale(1); }
   .desktop-icon { width: 100%; min-width: 0; min-height: clamp(50px, 9dvh, 64px); padding: 2px; gap: 2px; font-size: .55rem; line-height: 1.1; }
   .desktop-icon > span:last-child { display: -webkit-box; max-width: 100%; overflow: hidden; overflow-wrap: anywhere; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
   .icon-tile { width: clamp(32px, 6dvh, 40px); height: clamp(32px, 6dvh, 40px); border-radius: 10px; font-size: .95rem; box-shadow: 0 5px 13px rgba(15,23,42,.14); }
-  .icon-numero svg, .icon-linkedin svg, .icon-instagram svg, .icon-build-blog svg, .icon-substack svg { width: 23px; height: 23px; }
+  .icon-numero svg, .icon-linkedin svg, .icon-instagram svg, .icon-build-blog svg, .icon-substack svg, .icon-animations svg { width: 23px; height: 23px; }
   .icon-calendar { grid-template-rows: 13px 1fr; }
   .icon-calendar b { padding-top: 2px; font-size: .42rem; }
   .icon-calendar span { font-size: .95rem; }
@@ -438,7 +441,7 @@ body.desktop-ready .ambient { opacity: .55; transform: scale(1); }
   .shortcut-group-grid { gap: 1px; }
   .desktop-icon { min-height: 36px; padding: 1px; gap: 1px; font-size: .48rem; line-height: 1; }
   .icon-tile { width: 26px; height: 26px; border-radius: 7px; font-size: .75rem; }
-  .icon-numero svg, .icon-linkedin svg, .icon-instagram svg, .icon-build-blog svg, .icon-substack svg { width: 18px; height: 18px; }
+  .icon-numero svg, .icon-linkedin svg, .icon-instagram svg, .icon-build-blog svg, .icon-substack svg, .icon-animations svg { width: 18px; height: 18px; }
   .icon-calendar { grid-template-rows: 9px 1fr; }
   .icon-calendar b { padding-top: 1px; font-size: .32rem; }
   .icon-calendar span { font-size: .7rem; }
