@@ -37,8 +37,8 @@ const introName = document.querySelector("#startup-name");
 const introCount = document.querySelector("#startup-count");
 const introProgress = document.querySelector("#startup-progress");
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const INTRO_MIN = 4400; // long enough for the line prelude and name sequence to play once
-const INTRO_MAX = 6000; // never wait longer than this for assets
+const INTRO_MIN = 5450; // long enough for the dots, line prelude, and name sequence to play once
+const INTRO_MAX = 7000; // never wait longer than this for assets
 const statusSteps = [[0, "Starting up"], [.25, "Loading projects"], [.55, "Preparing workspace"], [.85, "Almost there"], [1, "Ready"]];
 let introTimer;
 let introFrame;

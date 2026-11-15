@@ -5,7 +5,7 @@ A dependency-free desktop-style portfolio built with semantic HTML, CSS, and van
 ## Features
 
 - Draggable, minimizable, maximizable application windows
-- Automatic, line-driven technology intro whose signal core, rails, and terminology transform into the desktop shortcuts, taskbar, and heading
+- Automatic intro whose scattered particles gather into a line mesh before transforming into the desktop heading
 - Project introductions for AI Engineering, Precis, Speculo, Scapesaur, and Numero
 - Working keyboard-enabled calculator (without `eval`)
 - Navigable monthly calendar

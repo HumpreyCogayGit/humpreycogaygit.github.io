@@ -1,13 +1,17 @@
-// Line prelude for the startup screen. Six strands are traced as Lissajous figures,
-// unfold into travelling waves that ring down like a damped spring, then settle into
-// the two rules the name rises from. Every strand is one polyline whose points are
-// blended between those three shapes by eased weights.
+// Startup prelude. Scattered dots gather into six Lissajous strands, which unfold
+// into travelling waves that ring down like a damped spring, then settle into the
+// two rules the name rises from. Every dot becomes a vertex in the line mesh.
 
-export const LINES_REVEAL_AT = 1700; // ms: when the rules are close enough for the name to rise
+export const LINES_REVEAL_AT = 3750; // ms: when the rules are close enough for the name to rise
 
 const TAU = Math.PI * 2;
 const POINTS = 150;
-const END_AT = 3.3; // seconds: every strand has retracted by now
+const DOT_STEP = 5;
+const DOTS_BEGIN_AT = .25;
+const DOTS_LOADED_AT = 1.15;
+const GATHER_AT = 1.5;
+const MESH_DELAY = 2;
+const END_AT = 5.35; // seconds: every strand has retracted by now
 
 const clamp01 = (value) => Math.min(Math.max(value, 0), 1);
 const lerp = (from, to, amount) => from + (to - from) * amount;
@@ -35,6 +39,12 @@ const strands = [
 export function playIntroLines(canvas, nameLines) {
   const context = canvas.getContext("2d");
   const pointer = { x: 0, y: 0, targetX: 0, targetY: 0, energy: 0, moved: false };
+  // Normalized origins keep the random field stable if the viewport changes mid-intro.
+  const origins = strands.map(() => Array.from({ length: POINTS + 1 }, () => ({
+    x: Math.random(), y: Math.random(), phase: Math.random() * TAU,
+    speed: .45 + Math.random() * .55, size: .8 + Math.random() * 1.4,
+    appearsAt: DOTS_BEGIN_AT + Math.random() * (DOTS_LOADED_AT - DOTS_BEGIN_AT - .2)
+  })));
   const startedAt = performance.now();
   let width = 0; let height = 0; let frame = 0;
 
@@ -67,34 +77,41 @@ export function playIntroLines(canvas, nameLines) {
     const radius = Math.min(width, height) * .24;
     const waveHeight = Math.min(height * .13, 96);
     const waveGap = Math.min(height * .035, 22);
+    const meshTime = Math.max(0, t - MESH_DELAY);
     // Damped spring: the waves overshoot through zero a few times as they flatten.
-    const sinceUnfold = Math.max(0, t - .7);
+    const sinceUnfold = Math.max(0, meshTime - .7);
     const ring = Math.exp(-3.2 * sinceUnfold) * Math.cos(9 * sinceUnfold);
     const rules = nameLines.map((line) => line.getBoundingClientRect());
 
     context.lineWidth = 1.5; context.lineCap = "round"; context.lineJoin = "round";
     strands.forEach((strand, i) => {
       const rule = rules[i % rules.length];
-      const toWave = ease.inOutCubic(span(t, .65 + i * .05, .7));
-      const toRule = ease.inOutQuint(span(t, 1.1 + i * .04, .6));
-      const traced = ease.outCubic(span(t, i * .06, .85));
-      const retracted = ease.inOutExpo(span(t, 2.35 + (i % rules.length) * .12, .7));
-      const phase = t * .9 + i * .5;
+      // The complete random field holds briefly before any particle starts gathering.
+      const gathered = ease.inOutExpo(span(t, GATHER_AT + i * .02, .75));
+      const dotsFaded = ease.inOutCubic(span(t, 2.15 + i * .015, .38));
+      const linesVisible = ease.inOutCubic(span(t, 2.12 + i * .02, .42));
+      const toWave = ease.inOutCubic(span(meshTime, .65 + i * .05, .7));
+      const toRule = ease.inOutQuint(span(meshTime, 1.1 + i * .04, .6));
+      const traced = ease.outCubic(span(t, 2.08 + i * .04, .48));
+      const retracted = ease.inOutExpo(span(meshTime, 2.35 + (i % rules.length) * .12, .7));
+      const phase = meshTime * .9 + i * .5;
       const push = 46 * pointer.energy * (1 - toRule);
 
-      context.beginPath();
-      const first = Math.ceil(retracted * POINTS); const last = Math.floor(traced * POINTS);
-      for (let j = first; j <= last; j++) {
+      const pointAt = (j) => {
         const u = j / POINTS;
         const theta = u * TAU;
         const figureX = centerX + radius * Math.sin(strand.a * theta + phase);
         const figureY = centerY + radius * Math.sin(strand.b * theta);
         // Two travelling harmonics, pinched to nothing at both screen edges.
-        const swell = Math.sin(TAU * (1.5 + i * .25) * u - t * 3 + i) + .45 * Math.sin(TAU * (3.5 + i * .4) * u + t * 4.4 + i * 1.7);
+        const swell = Math.sin(TAU * (1.5 + i * .25) * u - meshTime * 3 + i) + .45 * Math.sin(TAU * (3.5 + i * .4) * u + meshTime * 4.4 + i * 1.7);
         const waveX = u * width;
         const waveY = centerY + (i - (strands.length - 1) / 2) * waveGap + waveHeight * ring * Math.sin(Math.PI * u) ** 2 * swell;
-        let x = lerp(lerp(figureX, waveX, toWave), lerp(rule.left, rule.right, u), toRule);
-        let y = lerp(lerp(figureY, waveY, toWave), rule.bottom, toRule);
+        const origin = origins[i][j];
+        const drift = 7 * (1 - gathered);
+        const randomX = origin.x * width + Math.cos(origin.phase + t * origin.speed) * drift;
+        const randomY = origin.y * height + Math.sin(origin.phase * 1.7 + t * origin.speed * .8) * drift;
+        let x = lerp(randomX, lerp(lerp(figureX, waveX, toWave), lerp(rule.left, rule.right, u), toRule), gathered);
+        let y = lerp(randomY, lerp(lerp(figureY, waveY, toWave), rule.bottom, toRule), gathered);
         if (push > .01) {
           // Lines bow away from the cursor with a Gaussian falloff.
           const dx = x - pointer.x; const dy = y - pointer.y;
@@ -102,10 +119,34 @@ export function playIntroLines(canvas, nameLines) {
           const force = push * Math.exp(-(distance * distance) / (2 * 130 * 130));
           x += dx / distance * force; y += dy / distance * force;
         }
-        if (j === first) context.moveTo(x, y); else context.lineTo(x, y);
+        return { x, y };
+      };
+
+      // Each sampled particle has an independent arrival, leaving the opening frames empty.
+      if (t >= DOTS_BEGIN_AT && dotsFaded < 1) {
+        for (let j = 0; j <= POINTS; j += DOT_STEP) {
+          const dot = origins[i][j];
+          const appeared = ease.outCubic(span(t, dot.appearsAt, .2));
+          const opacity = appeared * (1 - dotsFaded);
+          if (opacity <= .001) continue;
+          const point = pointAt(j);
+          context.beginPath();
+          context.moveTo(point.x + dot.size, point.y);
+          context.arc(point.x, point.y, dot.size, 0, TAU);
+          context.fillStyle = strand.color;
+          context.globalAlpha = strand.alpha * opacity;
+          context.fill();
+        }
+      }
+
+      context.beginPath();
+      const first = Math.ceil(retracted * POINTS); const last = Math.floor(traced * POINTS);
+      for (let j = first; j <= last; j++) {
+        const point = pointAt(j);
+        if (j === first) context.moveTo(point.x, point.y); else context.lineTo(point.x, point.y);
       }
       context.strokeStyle = strand.color;
-      context.globalAlpha = strand.alpha;
+      context.globalAlpha = strand.alpha * linesVisible;
       context.stroke();
     });
     context.globalAlpha = 1;
