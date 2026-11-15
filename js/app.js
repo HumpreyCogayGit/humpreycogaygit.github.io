@@ -3,7 +3,6 @@ import { calculatorMarkup, initCalculator } from "./calculator.js";
 import { calendarMarkup, initCalendar } from "./calendar.js";
 import { weatherMarkup, initWeather } from "./weather.js";
 import { WindowManager } from "./window-manager.js";
-import { playIntroLines, LINES_REVEAL_AT } from "./intro-lines.js";
 
 const apps = Object.fromEntries(Object.entries(projects).map(([id, project]) => [id, { title: project.title, shortTitle: project.name, accent: project.accent, render: () => projectMarkup(project) }]));
 Object.assign(apps, {
@@ -37,8 +36,15 @@ const introName = document.querySelector("#startup-name");
 const introCount = document.querySelector("#startup-count");
 const introProgress = document.querySelector("#startup-progress");
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const INTRO_MIN = 5450; // long enough for the dots, line prelude, and name sequence to play once
-const INTRO_MAX = 7000; // never wait longer than this for assets
+const INTRO_MIN = 5450; // default: long enough for a line prelude and the name sequence to play once
+const INTRO_MAX = 7000; // never wait much longer than this for assets
+// Bump INTRO_VERSION whenever a prelude changes: the query string keeps browsers from pairing a
+// fresh module with a stale cached one. Loaded dynamically so a broken prelude can never block the desktop.
+const INTRO_VERSION = 11;
+const introModule = import(`./intros.js?v=${INTRO_VERSION}`).catch((error) => {
+  console.error("Intro prelude failed to load; continuing without it.", error);
+  return null;
+});
 const statusSteps = [[0, "Starting up"], [.25, "Loading projects"], [.55, "Preparing workspace"], [.85, "Almost there"], [1, "Ready"]];
 let introTimer;
 let introFrame;
@@ -75,15 +81,31 @@ function startIntro() {
     introTimer = setTimeout(finishIntro, 800);
     return;
   }
-  stopIntroLines = playIntroLines(document.querySelector("#startup-lines"), [...introName.querySelectorAll(".startup-name-line")]);
-  revealTimer = setTimeout(revealName, LINES_REVEAL_AT);
+  introModule.then((module) => runIntro(module?.pickIntro()));
+}
+
+function runIntro(intro) {
+  if (startup.classList.contains("is-leaving")) return; // skipped while the prelude was loading
+  try {
+    if (!intro) throw new Error("No intro prelude available");
+    startup.dataset.intro = intro.id;
+    stopIntroLines = intro.play(document.querySelector("#startup-lines"), [...introName.querySelectorAll(".startup-name-line")]);
+    revealTimer = setTimeout(revealName, intro.revealAt);
+  } catch (error) {
+    // Without a prelude the name still shows and the progress bar still completes.
+    if (intro) console.error(`Intro prelude "${intro.id}" failed; continuing without it.`, error);
+    stopIntroLines();
+    revealName();
+  }
+  const minDuration = intro?.duration ?? INTRO_MIN;
+  const maxWait = Math.max(INTRO_MAX, minDuration + 1500);
   const startedAt = performance.now();
   let shown = 0;
   const tick = (now) => {
     const elapsed = Math.max(0, now - startedAt); // the first frame's timestamp can predate startedAt
-    const paced = 1 - Math.pow(1 - Math.min(elapsed / INTRO_MIN, 1), 3);
+    const paced = 1 - Math.pow(1 - Math.min(elapsed / minDuration, 1), 3);
     // Hold just short of done until the page's assets have actually loaded.
-    const target = Math.min(paced, pageLoaded || elapsed > INTRO_MAX ? 1 : .92);
+    const target = Math.min(paced, pageLoaded || elapsed > maxWait ? 1 : .92);
     shown += (target - shown) * .14;
     if (target - shown < .002) shown = target;
     setIntroProgress(shown);

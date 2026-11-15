@@ -1,0 +1,833 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="An interactive guide to easing functions: live curves, sample animations, formulas, adjustable parameters, and the history behind each one.">
+    <title>Easing Guide — Animation Study</title>
+    <style>
+      /* Layout: header bar; family list on the left; the selected curve (graph, demos,
+         sliders, math, code) on the right; a racing overview of every curve below. */
+      :root {
+        --bg: #f5f7fa;
+        --panel: #ffffff;
+        --ink: #172033;
+        --muted: #64748b;
+        --line: rgba(15, 23, 42, .12);
+        --accent: #087f6a;
+        --accent-soft: rgba(8, 127, 106, .09);
+        --violet: #7456c9;
+        --blue: #167da3;
+        --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+        color-scheme: light;
+        font-family: "Manrope", system-ui, -apple-system, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      html { background: var(--bg); }
+      body { min-height: 100vh; margin: 0; color: var(--ink); background: linear-gradient(rgba(15,23,42,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,.035) 1px, transparent 1px), linear-gradient(135deg, #ffffff 0%, #f5f7fa 52%, #e9edf2 100%); background-size: 44px 44px, 44px 44px, auto; }
+      button { font: inherit; color: inherit; }
+      button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+      .wrap { width: min(1240px, calc(100% - 32px)); margin-inline: auto; }
+
+      /* Header */
+      .top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+      .top-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+      .pill { display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,.8); color: var(--ink); cursor: pointer; font: 600 .74rem var(--mono); letter-spacing: .06em; text-decoration: none; text-transform: uppercase; }
+      .pill:hover { border-color: rgba(8,127,106,.5); color: var(--accent); }
+      .pill.primary { border-color: var(--accent); color: #fff; background: var(--accent); }
+      .pill.primary:hover { color: #fff; background: #066b59; }
+      .pill svg { width: 14px; height: 14px; }
+      .hero { padding: 36px 0 26px; }
+      .eyebrow { margin: 0 0 12px; color: var(--accent); font: 600 .68rem var(--mono); letter-spacing: .18em; }
+      .hero h1 { margin: 0; font-size: clamp(2.4rem, 6vw, 4.4rem); line-height: .9; letter-spacing: -.06em; }
+      .hero h1 em { color: var(--accent); font-style: normal; }
+      .hero p { max-width: 720px; margin: 18px 0 0; color: var(--muted); line-height: 1.7; }
+      .prose code, .dialog-body code { padding: 1px 5px; border-radius: 5px; background: var(--accent-soft); color: #0f3d36; font: .85em var(--mono); }
+      .hero code { padding: 1px 6px; border-radius: 6px; background: var(--accent-soft); color: #0f3d36; font: .85em var(--mono); }
+
+      /* Main layout */
+      .layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 18px; align-items: start; }
+      .card { border: 1px solid var(--line); border-radius: 20px; background: var(--panel); box-shadow: 0 14px 36px rgba(15,23,42,.07); }
+      .families { position: sticky; top: 16px; display: grid; gap: 2px; padding: 10px; }
+      .families h2 { margin: 6px 8px 8px; color: var(--muted); font: 600 .62rem var(--mono); letter-spacing: .16em; text-transform: uppercase; }
+      .family-btn { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; padding: 9px 10px; border: 0; border-radius: 11px; background: transparent; cursor: pointer; font-size: .9rem; font-weight: 600; text-align: left; }
+      .family-btn svg { flex: none; width: 34px; height: 22px; }
+      .family-btn path { fill: none; stroke: #94a3b8; stroke-width: 2; }
+      .family-btn:hover { background: #f1f5f9; }
+      .family-btn[aria-pressed="true"] { color: var(--accent); background: var(--accent-soft); }
+      .family-btn[aria-pressed="true"] path { stroke: var(--accent); }
+
+      .detail { display: grid; gap: 18px; min-width: 0; }
+      .head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 20px; }
+      .head h2 { margin: 0; font-size: 1.7rem; letter-spacing: -.03em; }
+      .head p { margin: 4px 0 0; color: var(--muted); font-size: .9rem; }
+      .head-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+      .segmented { display: inline-flex; padding: 3px; border: 1px solid var(--line); border-radius: 999px; background: #f8fafc; }
+      .segmented button { padding: 6px 13px; border: 0; border-radius: 999px; background: transparent; cursor: pointer; font: 600 .72rem var(--mono); }
+      .segmented button[aria-pressed="true"] { color: #fff; background: var(--accent); }
+
+      .stage { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 18px; }
+      .graph { padding: 14px; }
+      .graph svg { display: block; width: 100%; height: auto; }
+      .grid-line { stroke: rgba(15,23,42,.08); }
+      .axis-line { stroke: rgba(15,23,42,.28); }
+      .ref-line { stroke: rgba(15,23,42,.22); stroke-dasharray: 4 5; }
+      .axis-label { fill: #94a3b8; font: 11px var(--mono); }
+      .curve-path { fill: none; stroke: var(--accent); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+      .playhead { stroke: var(--violet); stroke-width: 1.2; stroke-dasharray: 2 4; }
+      .play-dot { fill: var(--accent); stroke: #fff; stroke-width: 2.5; }
+      .value-ball { fill: var(--violet); }
+      .legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 6px 4px 0; color: var(--muted); font: .7rem var(--mono); }
+      .legend i { display: inline-block; width: 16px; height: 0; margin-right: 6px; vertical-align: middle; border-top: 3px solid var(--accent); }
+      .legend i.ref { border-top: 2px dashed rgba(15,23,42,.35); }
+      .legend i.ball { width: 9px; height: 9px; border: 0; border-radius: 50%; background: var(--violet); }
+
+      .demos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 14px; }
+      .demo { position: relative; display: grid; min-height: 118px; overflow: hidden; padding: 10px; border: 1px solid var(--line); border-radius: 14px; background: #f8fafc; }
+      .demo.wide { grid-column: 1 / -1; min-height: 88px; }
+      .demo-label { position: absolute; z-index: 1; top: 8px; left: 10px; color: var(--muted); font: 600 .6rem var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+      .track { position: relative; align-self: center; height: 30px; margin: 18px 12px 0; }
+      .track::before { position: absolute; top: 50%; right: 0; left: 0; height: 2px; background: rgba(15,23,42,.1); content: ""; }
+      .ball { position: absolute; top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: var(--accent); box-shadow: 0 4px 12px rgba(8,127,106,.35); }
+      .ball.ghost { width: 14px; height: 14px; margin: -7px 0 0 -7px; background: rgba(15,23,42,.25); box-shadow: none; }
+      .demo-center { display: grid; place-items: center; padding-top: 14px; }
+      .square { width: 46px; height: 46px; border-radius: 10px; background: linear-gradient(135deg, var(--blue), var(--accent)); }
+      .dial { position: relative; width: 70px; height: 70px; border: 2px solid rgba(15,23,42,.12); border-radius: 50%; }
+      .needle { position: absolute; bottom: 50%; left: calc(50% - 2px); width: 4px; height: 30px; border-radius: 4px; background: var(--violet); transform-origin: 50% 100%; }
+      .swatch { width: 70px; height: 46px; border-radius: 10px; }
+      .toast-area { position: relative; overflow: hidden; }
+      .toast { position: absolute; right: 12px; bottom: 10px; left: 12px; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: #fff; box-shadow: 0 8px 20px rgba(15,23,42,.12); font-size: .8rem; font-weight: 600; }
+      .toast b { display: grid; width: 22px; height: 22px; place-items: center; border-radius: 50%; color: #fff; background: var(--accent); font-size: .75rem; }
+      .toast span { color: var(--muted); font-weight: 500; }
+
+      .controls { display: grid; gap: 14px; padding: 16px 20px; }
+      .control-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+      .control-row .status { margin-left: auto; color: var(--muted); font: .72rem var(--mono); font-variant-numeric: tabular-nums; }
+      .sliders { display: grid; grid-template-columns: repeat(2, minmax(220px, 1fr)); gap: 8px 26px; }
+      .slider { display: grid; grid-template-columns: minmax(96px, auto) 1fr 7ch; align-items: center; gap: 10px; color: var(--muted); font: .7rem var(--mono); letter-spacing: .05em; text-transform: uppercase; }
+      .slider output { justify-self: end; color: var(--ink); font-variant-numeric: tabular-nums; text-transform: none; }
+      .presets { display: flex; flex-wrap: wrap; gap: 6px; }
+      .presets[hidden] { display: none; }
+      .chip { padding: 5px 10px; border: 1px solid var(--line); border-radius: 999px; background: #fff; cursor: pointer; font: .68rem var(--mono); }
+      .chip:hover { border-color: rgba(8,127,106,.5); color: var(--accent); }
+      input[type=range] { appearance: none; -webkit-appearance: none; width: 100%; height: 24px; margin: 0; background: transparent; cursor: pointer; }
+      input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 999px; background: rgba(15,23,42,.14); }
+      input[type=range]::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 16px; height: 16px; margin-top: -6px; border: 2px solid #fff; border-radius: 50%; background: var(--accent); box-shadow: 0 1px 5px rgba(8,127,106,.45); }
+      input[type=range]::-moz-range-track { height: 4px; border: 0; border-radius: 999px; background: rgba(15,23,42,.14); }
+      input[type=range]::-moz-range-progress { height: 4px; border-radius: 999px; background: rgba(8,127,106,.7); }
+      input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border: 2px solid #fff; border-radius: 50%; background: var(--accent); }
+
+      .explain { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; }
+      .explain section { padding: 18px 20px; }
+      .explain h3, .overview h3 { margin: 0 0 12px; color: var(--muted); font: 600 .64rem var(--mono); letter-spacing: .16em; text-transform: uppercase; }
+      .formula { margin: 0 0 12px; padding: 12px 14px; overflow-x: auto; border-left: 3px solid var(--accent); border-radius: 0 12px 12px 0; color: #0f3d36; background: var(--accent-soft); font: .86rem/1.7 var(--mono); white-space: pre-wrap; }
+      .prose { margin: 0 0 10px; color: var(--muted); font-size: .88rem; line-height: 1.7; }
+      .prose strong { color: var(--ink); }
+      .code-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 14px 0 6px; color: var(--muted); font: 600 .62rem var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+      .code-head:first-of-type { margin-top: 0; }
+      pre.code { margin: 0; padding: 12px 14px; overflow-x: auto; border-radius: 12px; color: #e2e8f0; background: #111827; font: .76rem/1.6 var(--mono); }
+      .copy { padding: 3px 10px; border: 1px solid var(--line); border-radius: 999px; background: #fff; cursor: pointer; font: .64rem var(--mono); text-transform: uppercase; }
+      .copy:hover { border-color: var(--accent); color: var(--accent); }
+      .note { margin: 8px 0 0; color: var(--muted); font-size: .76rem; line-height: 1.6; }
+
+      .overview { margin: 18px 0 40px; padding: 18px 20px; }
+      .overview-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; }
+      .overview-head p { margin: 0 0 12px; color: var(--muted); font-size: .82rem; }
+      .thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 10px; }
+      .thumb { display: grid; gap: 4px; padding: 8px; border: 1px solid var(--line); border-radius: 12px; background: #f8fafc; cursor: pointer; text-align: left; }
+      .thumb:hover { border-color: rgba(8,127,106,.5); }
+      .thumb[aria-current="true"] { border-color: var(--accent); background: var(--accent-soft); }
+      .thumb svg { display: block; width: 100%; height: auto; overflow: visible; }
+      .thumb path { fill: none; stroke: var(--accent); stroke-width: 2; }
+      .thumb .t-base { stroke: rgba(15,23,42,.12); stroke-width: 1; }
+      .thumb circle { fill: var(--violet); }
+      .thumb span { color: var(--muted); font: .62rem/1.3 var(--mono); }
+
+      /* Trivia dialogs */
+      dialog { width: min(640px, calc(100% - 32px)); max-height: min(86vh, 820px); padding: 0; border: 1px solid var(--line); border-radius: 22px; color: var(--ink); background: #fff; box-shadow: 0 30px 80px rgba(15,23,42,.25); }
+      dialog::backdrop { background: rgba(15,23,42,.38); backdrop-filter: blur(4px); }
+      dialog[open] { animation: pop .3s cubic-bezier(.16,1,.3,1); }
+      @keyframes pop { from { opacity: 0; transform: translateY(14px) scale(.98); } }
+      .dialog-body { max-height: inherit; overflow-y: auto; padding: 28px clamp(20px, 4vw, 34px) 30px; }
+      .dialog-body h2 { margin: 0 44px 6px 0; font-size: 1.6rem; letter-spacing: -.03em; }
+      .dialog-body .eyebrow { margin-bottom: 8px; }
+      .dialog-body ul { display: grid; gap: 10px; margin: 16px 0 0; padding-left: 18px; color: var(--muted); font-size: .9rem; line-height: 1.65; }
+      .dialog-body li::marker { color: var(--accent); }
+      .dialog-body li strong { color: var(--ink); }
+      .timeline { display: grid; gap: 0; margin: 18px 0 0; padding: 0; list-style: none; }
+      .timeline li { display: grid; grid-template-columns: 64px 1fr; gap: 14px; padding: 12px 0; border-top: 1px solid var(--line); color: var(--muted); font-size: .88rem; line-height: 1.6; }
+      .timeline b { color: var(--accent); font: 700 .85rem var(--mono); }
+      .close { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 50%; background: #fff; cursor: pointer; font-size: 1.2rem; line-height: 1; }
+      .close:hover { border-color: var(--accent); color: var(--accent); }
+
+      @media (max-width: 980px) {
+        .layout { grid-template-columns: 1fr; }
+        .families { position: static; display: flex; overflow-x: auto; gap: 4px; padding: 8px; }
+        .families h2 { display: none; }
+        .family-btn { flex: none; width: auto; }
+        .stage, .explain { grid-template-columns: 1fr; }
+      }
+      @media (max-width: 560px) {
+        .sliders { grid-template-columns: 1fr; }
+        .demos { grid-template-columns: 1fr; }
+        .slider { grid-template-columns: 90px minmax(80px, 1fr) 7ch; gap: 8px; }
+        .control-row .status { width: 100%; margin-left: 0; }
+      }
+      @media (prefers-reduced-motion: reduce) { dialog[open] { animation: none; } }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="top">
+        <a class="pill" href="../animations.html"><span aria-hidden="true">←</span> Studies</a>
+        <div class="top-actions">
+          <button class="pill" id="history-btn" type="button" aria-haspopup="dialog">History of easing</button>
+          <a class="pill primary" href="easing_guide.html" download="easing_guide.html" title="Download this guide as a single HTML file">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download
+          </a>
+        </div>
+      </header>
+
+      <section class="hero">
+        <p class="eyebrow">GUIDE / MOTION MATH</p>
+        <h1>Easing<br><em>functions.</em></h1>
+        <p>An easing function reshapes time. It takes progress <code>t</code> from 0 to 1 and returns how far along the motion should be, so an animation can start slowly, overshoot, or bounce instead of moving at a constant speed. Pick a curve, change its settings, watch it drive real animations, and copy the code.</p>
+      </section>
+
+      <div class="layout">
+        <nav class="card families" aria-label="Easing families">
+          <h2>Families</h2>
+          <div id="family-list" style="display: contents"></div>
+        </nav>
+
+        <div class="detail">
+          <div class="card head">
+            <div>
+              <h2 id="family-name">Sine</h2>
+              <p id="family-tagline"></p>
+            </div>
+            <div class="head-actions">
+              <div class="segmented" id="variants" role="group" aria-label="Variant"></div>
+              <button class="pill" id="trivia-btn" type="button" aria-haspopup="dialog">Trivia &amp; origins</button>
+            </div>
+          </div>
+
+          <div class="stage">
+            <div class="card graph">
+              <svg id="graph" viewBox="0 0 400 300" role="img" aria-label="Graph of the selected easing curve"></svg>
+              <div class="legend"><span><i></i>Eased value f(t)</span><span><i class="ref"></i>Linear</span><span><i class="ball"></i>Output value</span></div>
+            </div>
+            <div class="card demos" aria-label="Sample animations">
+              <div class="demo wide"><span class="demo-label">Move · vs linear</span><div class="track"><div class="ball ghost" id="demo-ghost"></div><div class="ball" id="demo-ball"></div></div></div>
+              <div class="demo"><span class="demo-label">Scale</span><div class="demo-center"><div class="square" id="demo-square"></div></div></div>
+              <div class="demo"><span class="demo-label">Rotate</span><div class="demo-center"><div class="dial"><div class="needle" id="demo-needle"></div></div></div></div>
+              <div class="demo"><span class="demo-label">Fade &amp; colour</span><div class="demo-center"><div class="swatch" id="demo-swatch"></div></div></div>
+              <div class="demo toast-area"><span class="demo-label">UI · toast</span><div class="toast" id="demo-toast"><b>✓</b><div>Saved<br><span>Changes synced</span></div></div></div>
+            </div>
+          </div>
+
+          <div class="card controls">
+            <div class="control-row">
+              <button class="pill primary" id="play" type="button">Pause</button>
+              <button class="pill" id="replay" type="button">Replay</button>
+              <button class="pill" id="loop" type="button" aria-pressed="true">Loop: on</button>
+              <button class="pill" id="reset" type="button">Reset sliders</button>
+              <span class="status" id="status">t = 0.00 · f(t) = 0.000</span>
+            </div>
+            <div class="sliders" id="sliders"></div>
+            <div class="presets" id="presets" hidden></div>
+          </div>
+
+          <div class="explain">
+            <section class="card">
+              <h3>The math</h3>
+              <pre class="formula" id="formula"></pre>
+              <div id="prose"></div>
+            </section>
+            <section class="card">
+              <h3>Use it</h3>
+              <div class="code-head"><span>JavaScript</span><button class="copy" type="button" data-copy="js-code">Copy</button></div>
+              <pre class="code" id="js-code"></pre>
+              <div class="code-head"><span>CSS timing function</span><button class="copy" type="button" data-copy="css-code">Copy</button></div>
+              <pre class="code" id="css-code"></pre>
+              <p class="note" id="css-note"></p>
+            </section>
+          </div>
+        </div>
+      </div>
+
+      <section class="card overview" aria-label="All easing curves">
+        <div class="overview-head">
+          <h3>Every curve, racing</h3>
+          <p>All curves run on the same clock, using the current slider values. Click one to open it.</p>
+        </div>
+        <div class="thumbs" id="thumbs"></div>
+      </section>
+    </div>
+
+    <dialog id="trivia-dialog" aria-labelledby="trivia-title">
+      <button class="close" type="button" aria-label="Close">×</button>
+      <div class="dialog-body" id="trivia-body"></div>
+    </dialog>
+    <dialog id="history-dialog" aria-labelledby="history-title">
+      <button class="close" type="button" aria-label="Close">×</button>
+      <div class="dialog-body">
+        <p class="eyebrow">HISTORY</p>
+        <h2 id="history-title">Where easing came from</h2>
+        <ol class="timeline">
+          <li><b>1930s</b><span>Disney animators develop the rule of <strong>slow in and slow out</strong>: drawings bunch up near key poses, so motion gathers speed and settles, the way real objects do.</span></li>
+          <li><b>1960s</b><span>Pierre Bézier (Renault) and Paul de Casteljau (Citroën) independently develop the curves that later become CSS's <code>cubic-bezier()</code>.</span></li>
+          <li><b>1981</b><span>Ollie Johnston and Frank Thomas publish <strong>The Illusion of Life</strong>, setting out Disney's 12 principles of animation. Slow in and slow out is one of them, and <em>anticipation</em> (the wind-up that the Back easing imitates) is another.</span></li>
+          <li><b>~2001</b><span><strong>Robert Penner</strong> publishes his easing equations for Flash's ActionScript: quad, cubic, quart, quint, sine, expo, circ, back, elastic and bounce, each in in/out/in-out forms. He released them under a permissive open-source licence, and almost every easing library since descends from them. He covered them in his 2002 book on Flash MX programming.</span></li>
+          <li><b>2007</b><span>Apple's WebKit team proposes CSS transitions and animations, with timing functions defined as cubic Bézier curves (<code>ease</code>, <code>ease-in</code>, <code>ease-out</code>, <code>ease-in-out</code>).</span></li>
+          <li><b>2008</b><span>George McGinley Smith's <strong>jQuery Easing</strong> plugin ports Penner's equations to JavaScript, bringing names like <code>easeOutBounce</code> to a generation of web developers.</span></li>
+          <li><b>2013</b><span>iOS 7 adds spring-based animations to UIKit. Physics-based springs become a staple of mobile and later web UI (React Spring, Framer Motion, SwiftUI).</span></li>
+          <li><b>2023</b><span>Browsers ship CSS <code>linear()</code>, which accepts a list of points. For the first time, bounce and elastic curves can be approximated in pure CSS.</span></li>
+        </ol>
+        <ul>
+          <li><strong>Why "in" and "out"?</strong> The name says where the easing (the slowness) is. <em>Ease-in</em> starts slowly and accelerates; <em>ease-out</em> starts fast and decelerates; <em>in-out</em> does both.</li>
+          <li><strong>One trick builds them all:</strong> out(t) = 1 − in(1 − t). Any ease-out is its ease-in flipped and rotated, and in-out runs a half-size ease-in followed by a half-size ease-out.</li>
+          <li>A popular reference site for these curves, <strong>easings.net</strong>, was made by Andrey Sitnik and Ivan Solovev.</li>
+        </ul>
+      </div>
+    </dialog>
+
+    <script>
+      (() => {
+        "use strict";
+
+        // ------------------------------------------------------------------
+        // Families. Each variant's `code` is a function body of (t, p): it is
+        // compiled to run the demos, and shown (with p.* filled in) as the JS
+        // to copy, so the code on screen is exactly the code that runs.
+        // ------------------------------------------------------------------
+        const POLY = (n, name, coef) => ({
+          in: { code: `return t ** ${n};`, math: `f(t) = t${sup(n)}` },
+          out: { code: `return 1 - (1 - t) ** ${n};`, math: `f(t) = 1 − (1 − t)${sup(n)}` },
+          inOut: {
+            code: `return t < 0.5 ? ${coef} * t ** ${n} : 1 - (-2 * t + 2) ** ${n} / 2;`,
+            math: `f(t) = ${coef}t${sup(n)}              for t < ½\nf(t) = 1 − (−2t + 2)${sup(n)} / 2   for t ≥ ½`
+          }
+        });
+        function sup(n) { return String(n).replace(/\d/g, (d) => "⁰¹²³⁴⁵⁶⁷⁸⁹"[d]); }
+
+        const BOUNCE_OUT = `const r = p.restitution, n = Math.round(p.bounces);
+// Each bounce lasts r times as long as the one before and rises r² as high.
+let total = 1;
+for (let k = 1; k <= n; k++) total += 2 * r ** k;
+let x = t * total;
+if (x < 1) return x * x; // the first fall
+x -= 1;
+for (let k = 1; k <= n; k++) {
+  const half = r ** k;
+  if (x < 2 * half) return 1 - half * half + (x - half) ** 2;
+  x -= 2 * half;
+}
+return 1;`;
+        const indent = (text, pad = "  ") => text.split("\n").map((line) => (line ? pad + line : line)).join("\n");
+        const bounceWrap = (ret) => `const out = (t) => {\n${indent(BOUNCE_OUT)}\n};\n${ret}`;
+
+        const PENNER = "Robert Penner, ~2001";
+        const families = [
+          {
+            id: "linear", name: "Linear", fn: "linear", tagline: "Constant speed: the reference every other curve is measured against.",
+            variants: { only: { code: "return t;", math: "f(t) = t" } },
+            prose: "<strong>No easing at all.</strong> Equal steps of time give equal steps of distance, so the speed is constant. That's right for spinners, marquee scrolling and progress that tracks real work, but objects in the real world rarely move this way, so linear UI motion tends to look mechanical.",
+            css: () => ({ code: "linear", note: "Exact." }),
+            trivia: [
+              "Every easing is a reshaped <strong>linear interpolation</strong>: value = a + (b − a) · f(t). Linear is just f(t) = t.",
+              "Disney's principle of <strong>slow in and slow out</strong> exists precisely because constant-speed motion looks robotic on screen.",
+              "CSS's default timing function is <code>ease</code>, not <code>linear</code>. Many developers are surprised when an unstyled transition isn't constant speed."
+            ],
+            origin: "The baseline; no single inventor"
+          },
+          {
+            id: "sine", name: "Sine", tagline: "The gentlest classic easing: a slice of a cosine wave.",
+            variants: {
+              in: { code: "return 1 - Math.cos((t * Math.PI) / 2);", math: "f(t) = 1 − cos(πt / 2)" },
+              out: { code: "return Math.sin((t * Math.PI) / 2);", math: "f(t) = sin(πt / 2)" },
+              inOut: { code: "return -(Math.cos(Math.PI * t) - 1) / 2;", math: "f(t) = −(cos(πt) − 1) / 2" }
+            },
+            prose: "Uses a quarter (in, out) or half (in-out) of a cosine wave. <strong>Sine in-out peaks at π/2 ≈ 1.57× the average speed</strong>, the softest acceleration of the classic set, which makes it a good fit for ambient, looping, breathing motion.",
+            trivia: [
+              "Sine easing follows the curve of <strong>simple harmonic motion</strong>, the motion of a pendulum or a mass on a spring.",
+              "Legend says Galileo noticed that a pendulum's swing takes the same time regardless of its width by timing a swaying lamp in Pisa cathedral against his pulse. The story may be embellished, but the physics is real for small swings.",
+              "Because cos is smooth everywhere, sine in-out has no sudden change in acceleration at the midpoint, unlike the polynomial in-outs."
+            ],
+            origin: PENNER
+          },
+          { id: "quad", name: "Quad", tagline: "t²: the shape of constant acceleration.", variants: POLY(2, "Quad", 2),
+            prose: "Power 2. The in-out version has a <strong>peak speed of 2× the average</strong>. It's a subtle, natural-feeling acceleration.",
+            trivia: [
+              "t² is the curve of <strong>constant acceleration</strong>. Galileo showed that a falling body's distance grows with the square of time, published in <em>Two New Sciences</em> (1638).",
+              "Flash's ActionScript 2 shipped built-in easing classes, where quadratic easing was named <strong>Regular</strong>.",
+              "In every power family, the in-out peak speed equals the power: quad 2×, cubic 3×, quart 4×, quint 5×."
+            ], origin: PENNER },
+          { id: "cubic", name: "Cubic", tagline: "t³: a dependable default for interface motion.", variants: POLY(3, "Cubic", 4),
+            prose: "Power 3. <strong>In-out peaks at 3× the average speed.</strong> It's clearly eased without feeling slow, which is why so many design systems pick something in this range.",
+            trivia: [
+              "Material Design's standard curve is <code>cubic-bezier(0.4, 0, 0.2, 1)</code>. That's a Bézier, not a true t³, even though they feel similar.",
+              "Cubic ease-out is popular for elements <strong>entering</strong> a screen: they arrive fast and settle softly, so the interface feels responsive.",
+              "The in-out formula's coefficient 4 is 2³⁻¹, chosen so the two halves meet exactly at (½, ½)."
+            ], origin: PENNER },
+          { id: "quart", name: "Quart", tagline: "t⁴: a longer hold, then a quicker move.", variants: POLY(4, "Quart", 8),
+            prose: "Power 4. <strong>In-out peaks at 4× the average speed.</strong> The start and end linger longer, so the middle has to move faster to make up the time.",
+            trivia: [
+              "Higher powers don't make an animation take longer. They <strong>redistribute</strong> the same time, spending more of it near the ends.",
+              "Quart ease-out works well for large panels and drawers: a strong start and a long, calm settle.",
+              "Coefficient 8 = 2³ keeps the two halves of the in-out meeting at the midpoint."
+            ], origin: PENNER },
+          { id: "quint", name: "Quint", tagline: "t⁵: the most dramatic of the polynomial family.", variants: POLY(5, "Quint", 16),
+            prose: "Power 5. <strong>In-out peaks at 5× the average speed</strong>: almost still at the ends, then a fast sweep. Good for big, deliberate transitions.",
+            trivia: [
+              "Flash's ActionScript 2 easing classes called quintic easing <strong>Strong</strong>.",
+              "Quint and expo look similar at a glance. Expo's start is even flatter, because it's not a polynomial at all.",
+              "Coefficient 16 = 2⁴ keeps the halves joined at (½, ½)."
+            ], origin: PENNER },
+          {
+            id: "power", name: "Power", tagline: "tⁿ with any exponent: quad to quint and everything in between.",
+            params: [{ key: "power", label: "Exponent n", min: 1, max: 10, step: .1, value: 2.5, digits: 1 }],
+            variants: {
+              in: { code: "return t ** p.power;", math: "f(t) = tⁿ" },
+              out: { code: "return 1 - (1 - t) ** p.power;", math: "f(t) = 1 − (1 − t)ⁿ" },
+              inOut: { code: "return t < 0.5\n  ? 2 ** (p.power - 1) * t ** p.power\n  : 1 - (-2 * t + 2) ** p.power / 2;", math: "f(t) = 2ⁿ⁻¹ · tⁿ               for t < ½\nf(t) = 1 − (−2t + 2)ⁿ / 2       for t ≥ ½" }
+            },
+            prose: "The general form of the polynomial family. <strong>n = 1 is linear, 2 is quad, 3 cubic, 4 quart, 5 quint</strong>, and the slider lets you try anything in between. In-out peak speed is exactly n× the average.",
+            trivia: [
+              "Fractional exponents are perfectly valid. n = 2.5 sits between quad and cubic, handy when one feels too soft and the other too strong.",
+              "Values of n below 1 flip the character: t^0.5 starts fast and slows down, like an ease-out.",
+              "The peak-speed fact comes from calculus: the derivative of 2ⁿ⁻¹tⁿ at t = ½ is n."
+            ], origin: "Generalisation of Penner's polynomial easings"
+          },
+          {
+            id: "expo", name: "Expo", tagline: "2^(kt): nearly frozen, then a rush.",
+            params: [{ key: "steepness", label: "Steepness k", min: 2, max: 20, step: .5, value: 10, digits: 1 }],
+            variants: {
+              in: { code: "return t === 0 ? 0 : 2 ** (p.steepness * t - p.steepness);", math: "f(t) = 2^(k(t − 1))        (f(0) = 0)" },
+              out: { code: "return t === 1 ? 1 : 1 - 2 ** (-p.steepness * t);", math: "f(t) = 1 − 2^(−kt)         (f(1) = 1)" },
+              inOut: { code: "if (t === 0 || t === 1) return t;\nreturn t < 0.5\n  ? 2 ** (2 * p.steepness * t - p.steepness) / 2\n  : (2 - 2 ** (-2 * p.steepness * t + p.steepness)) / 2;", math: "f(t) = 2^(2kt − k) / 2          for t < ½\nf(t) = (2 − 2^(k − 2kt)) / 2    for t ≥ ½" }
+            },
+            prose: "Exponential curves are extremely flat at one end. With the classic k = 10, <strong>in-out peaks at k·ln 2 ≈ 6.9× the average speed</strong>, making it the snappiest of the smooth easings. Higher k means a more dramatic snap.",
+            trivia: [
+              "At t = 0 the formula gives 2⁻¹⁰ ≈ 0.001, not 0. That's why every implementation <strong>special-cases the endpoints</strong>.",
+              "Exponential change describes radioactive decay, capacitor discharge and cooling coffee (Newton's law of cooling).",
+              "Expo ease-out is a favourite for page transitions: the movement is mostly over almost immediately, then it settles quietly."
+            ], origin: PENNER
+          },
+          {
+            id: "circ", name: "Circ", tagline: "A quarter circle: x² + y² = 1.",
+            variants: {
+              in: { code: "return 1 - Math.sqrt(1 - t ** 2);", math: "f(t) = 1 − √(1 − t²)" },
+              out: { code: "return Math.sqrt(1 - (t - 1) ** 2);", math: "f(t) = √(1 − (t − 1)²)" },
+              inOut: { code: "return t < 0.5\n  ? (1 - Math.sqrt(1 - (2 * t) ** 2)) / 2\n  : (Math.sqrt(1 - (-2 * t + 2) ** 2) + 1) / 2;", math: "f(t) = (1 − √(1 − 4t²)) / 2         for t < ½\nf(t) = (√(1 − (2 − 2t)²) + 1) / 2   for t ≥ ½" }
+            },
+            prose: "The curve is literally an arc of a circle. <strong>Circ-in ends with a vertical tangent</strong>, meaning infinite speed at the very end, so it finishes with a distinct snap.",
+            trivia: [
+              "The derivative of 1 − √(1 − t²) is t / √(1 − t²), which goes to infinity as t → 1. The snap is built into the geometry.",
+              "Circ in-out is two quarter circles joined back to back, with a vertical 'cliff' right at the midpoint.",
+              "Because of that infinite slope, circ curves can't be matched exactly by a cubic Bézier; CSS approximations always soften the snap."
+            ], origin: PENNER
+          },
+          {
+            id: "back", name: "Back", tagline: "Anticipation and overshoot: it pulls back before going, or past before settling.",
+            params: [{ key: "overshoot", label: "Overshoot c", min: 0, max: 5, step: .01, value: 1.70158, digits: 3 }],
+            variants: {
+              in: { code: "const c1 = p.overshoot, c3 = c1 + 1;\nreturn c3 * t ** 3 - c1 * t ** 2;", math: "f(t) = (c + 1)t³ − ct²" },
+              out: { code: "const c1 = p.overshoot, c3 = c1 + 1;\nreturn 1 + c3 * (t - 1) ** 3 + c1 * (t - 1) ** 2;", math: "f(t) = 1 + (c + 1)(t − 1)³ + c(t − 1)²" },
+              inOut: { code: "const c2 = p.overshoot * 1.525;\nreturn t < 0.5\n  ? ((2 * t) ** 2 * ((c2 + 1) * 2 * t - c2)) / 2\n  : ((2 * t - 2) ** 2 * ((c2 + 1) * (t * 2 - 2) + c2) + 2) / 2;", math: "c₂ = 1.525 · c\nf(t) = (2t)²((c₂ + 1)·2t − c₂) / 2              for t < ½\nf(t) = ((2t − 2)²((c₂ + 1)(2t − 2) + c₂) + 2) / 2   for t ≥ ½" }
+            },
+            prose: "A cubic with an extra negative t² term that dips below 0 (in) or rises above 1 (out). <strong>c = 1.70158 gives exactly a 10% overshoot</strong>, and c = 0 turns it back into plain cubic. Try the slider to see how the dip grows.",
+            trivia: [
+              "The odd constant <strong>1.70158</strong> comes from Robert Penner, tuned so the curve overshoots by 10%.",
+              "In-out multiplies c by <strong>1.525</strong> so that the shorter halves still overshoot by about 10% on each side.",
+              "Back-in models Disney's <strong>anticipation</strong> principle: a character winds up before throwing or jumping, and back-in does the same with a small step backwards."
+            ], origin: PENNER
+          },
+          {
+            id: "elastic", name: "Elastic", tagline: "A decaying sine wave: it wobbles like a plucked rubber band.",
+            params: [
+              { key: "period", label: "Period", min: .1, max: 1, step: .01, value: .3, digits: 2 },
+              { key: "decay", label: "Decay", min: 3, max: 20, step: .5, value: 10, digits: 1 }
+            ],
+            variants: {
+              in: { code: "const c4 = (2 * Math.PI) / (10 * p.period);\nif (t === 0 || t === 1) return t;\nreturn -(2 ** (p.decay * t - p.decay)) * Math.sin((10 * t - 10 - 2.5 * p.period) * c4);", math: "f(t) = −2^(d(t − 1)) · sin((10t − 10 − 2.5P) · 2π / 10P)" },
+              out: { code: "const c4 = (2 * Math.PI) / (10 * p.period);\nif (t === 0 || t === 1) return t;\nreturn 2 ** (-p.decay * t) * Math.sin((10 * t - 2.5 * p.period) * c4) + 1;", math: "f(t) = 2^(−dt) · sin((10t − 2.5P) · 2π / 10P) + 1" },
+              inOut: { code: "const c5 = (2 * Math.PI) / (15 * p.period);\nif (t === 0 || t === 1) return t;\nconst wave = Math.sin((20 * t - 10 - 3.75 * p.period) * c5);\nreturn t < 0.5\n  ? -(2 ** (2 * p.decay * t - p.decay) * wave) / 2\n  : (2 ** (-2 * p.decay * t + p.decay) * wave) / 2 + 1;", math: "f(t) = −2^(2dt − d) · sin(φ) / 2        for t < ½\nf(t) = 2^(d − 2dt) · sin(φ) / 2 + 1     for t ≥ ½\nφ = (20t − 10 − 3.75P) · 2π / 15P" }
+            },
+            prose: "An exponential envelope (<strong>decay d</strong>) multiplied by a sine wave (<strong>period P</strong>). This is the shape of an underdamped spring. The phase offset (2.5P) puts the curve exactly at 0 at the start. With the classic P = 0.3 and d = 10 you get Penner's elastic.",
+            trivia: [
+              "Robert Hooke first published his spring law in 1676 as the Latin anagram <strong>ceiiinosssttuv</strong>, and revealed it in 1678: <em>ut tensio, sic vis</em> (\"as the extension, so the force\").",
+              "Elastic can't be written as a CSS <code>cubic-bezier()</code>, since a cubic can't wobble several times. It needs keyframes or <code>linear()</code>.",
+              "Use it sparingly in UI: one elastic element delights, a whole screen of them feels like jelly."
+            ], origin: PENNER
+          },
+          {
+            id: "bounce", name: "Bounce", tagline: "A ball dropped on the floor, losing energy with every bounce.",
+            params: [
+              { key: "restitution", label: "Bounciness r", min: .1, max: .8, step: .01, value: .5, digits: 2 },
+              { key: "bounces", label: "Bounces", min: 1, max: 6, step: 1, value: 3, digits: 0 }
+            ],
+            variants: {
+              in: { code: bounceWrap("return 1 - out(1 - t);"), math: "f(t) = 1 − out(1 − t)" },
+              out: { code: BOUNCE_OUT, math: "x = t · (1 + 2(r + r² + … + rⁿ))\nf = x²                     first fall (x < 1)\nf = 1 − h² + (x − h)²       each bounce, h = r, r², r³ …" },
+              inOut: { code: bounceWrap("return t < 0.5\n  ? (1 - out(1 - 2 * t)) / 2\n  : (1 + out(2 * t - 1)) / 2;"), math: "f(t) = (1 − out(1 − 2t)) / 2    for t < ½\nf(t) = (1 + out(2t − 1)) / 2    for t ≥ ½" }
+            },
+            prose: "A chain of parabolas, one per bounce, like a ball under gravity. Each bounce lasts <strong>r</strong> times as long as the one before and reaches <strong>r²</strong> of its height. With r = 0.5 and 3 bounces this reproduces Penner's classic <code>easeOutBounce</code> exactly.",
+            trivia: [
+              "Penner's mysterious constants decode neatly: <strong>2.75 = 1 + 2(½ + ¼ + ⅛)</strong> is the total time in units of the first fall, and <strong>7.5625 = 2.75²</strong> rescales that time to 0–1.",
+              "r is the physicist's <strong>coefficient of restitution</strong>. Newton studied it by colliding pendulum balls, described in the <em>Principia</em> (1687).",
+              "A real basketball has r ≈ 0.75–0.85. Try it on the slider: the bounces go on much longer."
+            ], origin: PENNER
+          },
+          {
+            id: "spring", name: "Spring", fn: "spring", tagline: "A physical spring: overshoots and settles, set by damping and frequency.",
+            params: [
+              { key: "damping", label: "Damping ζ", min: .05, max: .99, step: .01, value: .35, digits: 2 },
+              { key: "frequency", label: "Frequency", min: .5, max: 6, step: .1, value: 2.2, digits: 1 }
+            ],
+            variants: { only: { code: "const zeta = p.damping, omega = 2 * Math.PI * p.frequency;\nif (t >= 1) return 1;\n// Underdamped oscillator released from 0, settling at 1.\nconst wd = omega * Math.sqrt(1 - zeta * zeta);\nreturn 1 - Math.exp(-zeta * omega * t) *\n  (Math.cos(wd * t) + (zeta * omega / wd) * Math.sin(wd * t));", math: "f(t) = 1 − e^(−ζωt) · (cos(ω_d t) + (ζω / ω_d) · sin(ω_d t))\nω = 2π · frequency,   ω_d = ω√(1 − ζ²)" } },
+            prose: "The exact solution of a <strong>damped harmonic oscillator</strong>, a mass on a spring with friction, starting at rest. <strong>Damping ζ</strong> controls how quickly the wobble dies; <strong>frequency</strong> controls how many oscillations fit into the duration. It snaps to 1 at the very end, so a long, low-damping spring may visibly jump.",
+            css: null,
+            trivia: [
+              "ζ = 1 is <strong>critical damping</strong>, the fastest return with no overshoot. Car suspensions and door closers aim close to it.",
+              "iOS 7 (2013) added spring animations to UIKit, and springs have dominated touch interfaces ever since.",
+              "Real spring engines (React Spring, Framer Motion, SwiftUI) simulate the physics over time instead of using a fixed duration. That lets an interrupted animation keep its velocity, which feels natural under a finger."
+            ], origin: "Classical mechanics; popularised in UI by iOS 7"
+          },
+          {
+            id: "steps", name: "Steps", fn: "steps", tagline: "No interpolation: it jumps between n discrete values.",
+            labels: { in: "jump-start", out: "jump-end", inOut: "jump-both" },
+            params: [{ key: "steps", label: "Steps n", min: 1, max: 16, step: 1, value: 5, digits: 0 }],
+            variants: {
+              in: { code: "return Math.min(1, (Math.floor(t * p.steps) + 1) / p.steps);", math: "f(t) = min(1, (⌊t·n⌋ + 1) / n)" },
+              out: { code: "return Math.min(1, Math.floor(t * p.steps) / p.steps);", math: "f(t) = ⌊t·n⌋ / n" },
+              inOut: { code: "return Math.min(1, (Math.floor(t * p.steps) + 1) / (p.steps + 1));", math: "f(t) = min(1, (⌊t·n⌋ + 1) / (n + 1))" }
+            },
+            prose: "A staircase. <strong>jump-start</strong> jumps at the beginning of each interval, <strong>jump-end</strong> at the end, and <strong>jump-both</strong> at both (giving n + 1 levels). It's perfect for sprite sheets, ticking clocks and typewriter effects.",
+            trivia: [
+              "<code>steps()</code> is the standard CSS tool for <strong>sprite-sheet animation</strong>: each step moves the background to show the next frame.",
+              "The <code>jump-*</code> keywords arrived with CSS Easing Level 1; older code uses <code>start</code> and <code>end</code>, which mean jump-start and jump-end.",
+              "Hand-drawn animation is often shot <strong>on twos</strong>: each drawing is held for two frames, giving 12 drawings per second at 24 fps. That's a kind of stepped timing too."
+            ], origin: "CSS Transitions / Easing specifications"
+          },
+          {
+            id: "bezier", name: "Cubic Bézier", fn: "cubicBezier", tagline: "The curve behind every CSS timing keyword. Drag the handles.",
+            params: [
+              { key: "x1", label: "x₁", min: 0, max: 1, step: .01, value: .42, digits: 2 },
+              { key: "y1", label: "y₁", min: -1, max: 2, step: .01, value: 0, digits: 2 },
+              { key: "x2", label: "x₂", min: 0, max: 1, step: .01, value: .58, digits: 2 },
+              { key: "y2", label: "y₂", min: -1, max: 2, step: .01, value: 1, digits: 2 }
+            ],
+            presets: [
+              ["ease", [.25, .1, .25, 1]], ["ease-in", [.42, 0, 1, 1]], ["ease-out", [0, 0, .58, 1]],
+              ["ease-in-out", [.42, 0, .58, 1]], ["Material standard", [.4, 0, .2, 1]], ["Overshoot", [.34, 1.56, .64, 1]]
+            ],
+            variants: { only: { code: "const x1 = p.x1, y1 = p.y1, x2 = p.x2, y2 = p.y2;\n// Find the curve parameter s whose x equals t, then return its y.\nconst bx = (s) => 3 * (1 - s) ** 2 * s * x1 + 3 * (1 - s) * s * s * x2 + s ** 3;\nconst by = (s) => 3 * (1 - s) ** 2 * s * y1 + 3 * (1 - s) * s * s * y2 + s ** 3;\nlet lo = 0, hi = 1, s = t;\nfor (let i = 0; i < 30; i++) {\n  if (bx(s) < t) lo = s; else hi = s;\n  s = (lo + hi) / 2;\n}\nreturn by(s);", math: "B(s) = 3(1 − s)²s·P₁ + 3(1 − s)s²·P₂ + s³        (P₀ = 0, P₃ = 1)\nsolve  Bₓ(s) = t,   then   f(t) = B_y(s)" } },
+            prose: "Two fixed end points (0,0) and (1,1), and two handles <strong>P₁ = (x₁, y₁)</strong> and <strong>P₂ = (x₂, y₂)</strong>. The x values must stay within 0–1 so time never runs backwards. The y values may go outside that range, which is how CSS gets overshoot. Because the curve is defined by s, not t, finding f(t) means solving for s first (here by bisection).",
+            css: (variant, p) => ({ code: `cubic-bezier(${[p.x1, p.y1, p.x2, p.y2].map((v) => +v.toFixed(2)).join(", ")})`, note: "Exact. This is CSS's native curve type." }),
+            trivia: [
+              "CSS's keywords are all cubic Béziers: <strong>ease</strong> = (0.25, 0.1, 0.25, 1), <strong>ease-in</strong> = (0.42, 0, 1, 1), <strong>ease-out</strong> = (0, 0, 0.58, 1), <strong>ease-in-out</strong> = (0.42, 0, 0.58, 1). Try the presets.",
+              "Named after <strong>Pierre Bézier</strong>, who used the curves to design Renault car bodies in the 1960s. <strong>Paul de Casteljau</strong> found them first at Citroën around 1959, but his work stayed confidential.",
+              "Browsers solve for s with a few Newton–Raphson steps and fall back to bisection, much like the code shown here."
+            ], origin: "Bézier & de Casteljau; adopted by CSS in 2007"
+          }
+        ];
+
+        // ------------------------------------------------------------------
+        // State, compilation and helpers
+        // ------------------------------------------------------------------
+        const params = {};
+        families.forEach((f) => (f.params || []).forEach((p) => { params[p.key] = p.value; }));
+        const compiled = new Map();
+        const getFn = (family, variant) => {
+          const key = family.id + ":" + variant;
+          if (!compiled.has(key)) compiled.set(key, new Function("t", "p", `"use strict";\n${family.variants[variant].code}`));
+          const fn = compiled.get(key);
+          return (t) => fn(t, params);
+        };
+        const variantKeys = (family) => Object.keys(family.variants);
+        const variantLabel = (family, v) => (family.labels && family.labels[v]) || { in: "In", out: "Out", inOut: "In-Out", only: "" }[v];
+        const fnName = (family, v) => {
+          if (family.fn && v === "only") return family.fn;
+          if (family.id === "steps") return "steps" + variantLabel(family, v).replace(/(^|-)(\w)/g, (_, __, c) => c.toUpperCase());
+          return "ease" + { in: "In", out: "Out", inOut: "InOut" }[v] + family.name.replace(/\s/g, "");
+        };
+        const fmt = (value, digits) => (digits === 0 ? String(Math.round(value)) : (+value.toFixed(digits)).toString());
+        const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+
+        const state = { family: families[1], variant: "out", playing: true, loop: true, duration: 1.4, startedAt: performance.now(), pausedAt: 0 };
+        const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reduced) state.playing = false;
+        const REST = .55; // seconds paused at the end of each run before looping
+
+        // ------------------------------------------------------------------
+        // Family list, variant switch, overview thumbnails
+        // ------------------------------------------------------------------
+        const familyList = document.getElementById("family-list");
+        const sparkPath = (fn, w, h, pad, lo = -.25, hi = 1.25) => {
+          let d = "";
+          for (let i = 0; i <= 60; i++) {
+            const t = i / 60;
+            const v = Math.max(lo, Math.min(hi, fn(t)));
+            d += `${i ? "L" : "M"}${(pad + t * (w - 2 * pad)).toFixed(1)} ${(h - pad - (v - lo) / (hi - lo) * (h - 2 * pad)).toFixed(1)}`;
+          }
+          return d;
+        };
+        families.forEach((family) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "family-btn";
+          button.dataset.family = family.id;
+          const preview = getFn(family, variantKeys(family).includes("inOut") ? "inOut" : variantKeys(family)[0]);
+          button.innerHTML = `<span>${family.name}</span><svg viewBox="0 0 34 22" aria-hidden="true"><path d="${sparkPath(preview, 34, 22, 2)}"/></svg>`;
+          button.addEventListener("click", () => select(family, state.family === family ? state.variant : null));
+          familyList.append(button);
+        });
+
+        const thumbs = document.getElementById("thumbs");
+        const thumbItems = [];
+        function buildThumbs() {
+          thumbs.innerHTML = "";
+          thumbItems.length = 0;
+          families.forEach((family) => variantKeys(family).forEach((v) => {
+            const fn = getFn(family, v);
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "thumb";
+            const label = v === "only" ? family.name : `${family.name} · ${variantLabel(family, v)}`;
+            button.innerHTML = `<svg viewBox="0 0 100 60" aria-hidden="true"><line class="t-base" x1="6" x2="94" y1="${map01(0)}" y2="${map01(0)}" stroke="currentColor"/><line class="t-base" x1="6" x2="94" y1="${map01(1)}" y2="${map01(1)}" stroke="currentColor"/><path d="${sparkPath(fn, 100, 60, 6, -.3, 1.3)}"/><circle r="3.5" cx="6" cy="${map01(0)}"/></svg><span>${label}</span>`;
+            button.setAttribute("aria-label", `Open ${label}`);
+            button.addEventListener("click", () => { select(family, v); document.querySelector(".layout").scrollIntoView({ behavior: reduced ? "auto" : "smooth" }); });
+            thumbs.append(button);
+            thumbItems.push({ family, v, fn, dot: button.querySelector("circle"), button });
+          }));
+          markCurrentThumb();
+        }
+        function map01(v) { return 60 - 6 - (v + .3) / 1.6 * 48; }
+        function markCurrentThumb() { thumbItems.forEach((item) => item.button.setAttribute("aria-current", String(item.family === state.family && item.v === state.variant))); }
+
+        // ------------------------------------------------------------------
+        // Selection
+        // ------------------------------------------------------------------
+        const variantsEl = document.getElementById("variants");
+        function select(family, variant) {
+          state.family = family;
+          const keys = variantKeys(family);
+          state.variant = variant && keys.includes(variant) ? variant : keys.includes(state.variant) ? state.variant : keys.includes("out") ? "out" : keys[0];
+          document.querySelectorAll(".family-btn").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.family === family.id)));
+          document.getElementById("family-name").textContent = family.name;
+          document.getElementById("family-tagline").textContent = family.tagline;
+          variantsEl.innerHTML = "";
+          variantsEl.hidden = keys.length < 2;
+          keys.forEach((v) => {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.textContent = variantLabel(family, v);
+            b.setAttribute("aria-pressed", String(v === state.variant));
+            b.addEventListener("click", () => select(family, v));
+            variantsEl.append(b);
+          });
+          buildSliders();
+          refresh();
+          restart();
+        }
+
+        // ------------------------------------------------------------------
+        // Sliders: duration for every curve, plus the family's own parameters
+        // ------------------------------------------------------------------
+        const slidersEl = document.getElementById("sliders");
+        const presetsEl = document.getElementById("presets");
+        const sliderRefs = [];
+        function addSlider(def, get, set) {
+          const label = document.createElement("label");
+          label.className = "slider";
+          label.innerHTML = `<span>${def.label}</span><input type="range" min="${def.min}" max="${def.max}" step="${def.step}"><output></output>`;
+          const input = label.querySelector("input");
+          const output = label.querySelector("output");
+          const sync = () => { input.value = get(); output.textContent = fmt(get(), def.digits) + (def.suffix || ""); };
+          input.addEventListener("input", () => { set(+input.value); sync(); onParamChange(def.key); });
+          sync();
+          slidersEl.append(label);
+          sliderRefs.push(sync);
+        }
+        function buildSliders() {
+          slidersEl.innerHTML = "";
+          sliderRefs.length = 0;
+          addSlider({ key: "duration", label: "Duration", min: .2, max: 4, step: .05, digits: 2, suffix: "s" }, () => state.duration, (v) => { state.duration = v; });
+          (state.family.params || []).forEach((def) => addSlider(def, () => params[def.key], (v) => { params[def.key] = v; }));
+          presetsEl.hidden = !state.family.presets;
+          presetsEl.innerHTML = "";
+          (state.family.presets || []).forEach(([name, values]) => {
+            const chip = document.createElement("button");
+            chip.type = "button";
+            chip.className = "chip";
+            chip.textContent = name;
+            chip.addEventListener("click", () => {
+              ["x1", "y1", "x2", "y2"].forEach((k, i) => { params[k] = values[i]; });
+              sliderRefs.forEach((sync) => sync());
+              onParamChange("x1");
+            });
+            presetsEl.append(chip);
+          });
+        }
+        function onParamChange(key) {
+          if (key !== "duration") { refresh(); buildThumbs(); }
+          restart();
+        }
+        document.getElementById("reset").addEventListener("click", () => {
+          state.duration = 1.4;
+          families.forEach((f) => (f.params || []).forEach((p) => { params[p.key] = p.value; }));
+          sliderRefs.forEach((sync) => sync());
+          refresh(); buildThumbs(); restart();
+        });
+
+        // ------------------------------------------------------------------
+        // Graph, math, code
+        // ------------------------------------------------------------------
+        const graph = document.getElementById("graph");
+        const G = { x0: 46, x1: 384, top: 22, bottom: 268, lo: -.45, hi: 1.45 };
+        const gx = (t) => G.x0 + t * (G.x1 - G.x0);
+        const gy = (v) => G.bottom - (v - G.lo) / (G.hi - G.lo) * (G.bottom - G.top);
+        let playDot, playhead, valueBall;
+        function drawGraph(fn) {
+          const lines = [];
+          for (let i = 0; i <= 10; i++) lines.push(`<line class="grid-line" x1="${gx(i / 10)}" x2="${gx(i / 10)}" y1="${G.top}" y2="${G.bottom}"/>`);
+          [-.25, .25, .5, .75, 1.25].forEach((v) => lines.push(`<line class="grid-line" x1="${G.x0}" x2="${G.x1}" y1="${gy(v)}" y2="${gy(v)}"/>`));
+          [0, 1].forEach((v) => lines.push(`<line class="axis-line" x1="${G.x0}" x2="${G.x1}" y1="${gy(v)}" y2="${gy(v)}"/>`));
+          lines.push(`<line class="ref-line" x1="${gx(0)}" y1="${gy(0)}" x2="${gx(1)}" y2="${gy(1)}"/>`);
+          const labels = [[0, "0"], [.5, "0.5"], [1, "1"]].map(([v, s]) => `<text class="axis-label" x="${G.x0 - 8}" y="${gy(v) + 4}" text-anchor="end">${s}</text>`);
+          labels.push(`<text class="axis-label" x="${gx(0)}" y="${G.bottom + 18}" text-anchor="middle">t = 0</text>`, `<text class="axis-label" x="${gx(1)}" y="${G.bottom + 18}" text-anchor="middle">t = 1</text>`);
+          let d = "";
+          for (let i = 0; i <= 400; i++) {
+            const t = i / 400;
+            const v = Math.max(G.lo, Math.min(G.hi, fn(t)));
+            d += `${i ? "L" : "M"}${gx(t).toFixed(2)} ${gy(v).toFixed(2)}`;
+          }
+          graph.innerHTML = `${lines.join("")}${labels.join("")}<path class="curve-path" d="${d}"/><line class="playhead" y1="${G.top}" y2="${G.bottom}"/><line class="axis-line" x1="394" x2="394" y1="${gy(0)}" y2="${gy(1)}"/><circle class="value-ball" r="6" cx="394"/><circle class="play-dot" r="7"/>`;
+          playDot = graph.querySelector(".play-dot");
+          playhead = graph.querySelector(".playhead");
+          valueBall = graph.querySelector(".value-ball");
+        }
+
+        function jsCode(family, v) {
+          let body = family.variants[v].code;
+          (family.params || []).slice().sort((a, b) => b.key.length - a.key.length)
+            .forEach((def) => { body = body.split(`p.${def.key}`).join(fmt(params[def.key], def.digits)); });
+          return `function ${fnName(family, v)}(t) {\n${indent(body)}\n}`;
+        }
+        function cssCode(family, v, fn) {
+          if (family.css === undefined && family.id === "steps") {
+            return { code: `steps(${Math.round(params.steps)}, ${variantLabel(family, v)})`, note: "Exact. Native CSS stepping." };
+          }
+          if (family.css) return family.css(v, params);
+          // Everything else: sample the curve into CSS linear() points.
+          const wobbly = ["elastic", "bounce", "spring", "back"].includes(family.id);
+          const n = wobbly ? 40 : 20;
+          const points = Array.from({ length: n + 1 }, (_, i) => +fn(i / n).toFixed(3));
+          return { code: `linear(${points.join(", ")})`, note: `Approximation: ${n + 1} sampled points, evenly spaced. CSS linear() works in all current browsers (Chrome 113+, Firefox 112+, Safari 17.2+).` };
+        }
+
+        function refresh() {
+          const family = state.family; const v = state.variant;
+          const fn = getFn(family, v);
+          drawGraph(fn);
+          document.getElementById("formula").textContent = family.variants[v].math;
+          document.getElementById("prose").innerHTML = `<p class="prose">${family.prose}</p><p class="prose"><strong>Function:</strong> <code>${fnName(family, v)}</code> · <strong>Origin:</strong> ${family.origin}</p>`;
+          document.getElementById("js-code").textContent = jsCode(family, v);
+          const css = cssCode(family, v, fn);
+          document.getElementById("css-code").textContent = `transition-timing-function: ${css.code};`;
+          document.getElementById("css-note").textContent = css.note;
+          [...variantsEl.children].forEach((b, i) => b.setAttribute("aria-pressed", String(variantKeys(family)[i] === v)));
+          markCurrentThumb();
+        }
+
+        // ------------------------------------------------------------------
+        // Playback
+        // ------------------------------------------------------------------
+        const demo = {
+          ball: document.getElementById("demo-ball"), ghost: document.getElementById("demo-ghost"),
+          square: document.getElementById("demo-square"), needle: document.getElementById("demo-needle"),
+          swatch: document.getElementById("demo-swatch"), toast: document.getElementById("demo-toast")
+        };
+        const playBtn = document.getElementById("play");
+        const loopBtn = document.getElementById("loop");
+        const status = document.getElementById("status");
+        function restart() { state.startedAt = performance.now(); state.pausedAt = 0; if (!state.playing) render(0); }
+        function progress(now) {
+          const elapsed = (state.playing ? now - state.startedAt : state.pausedAt) / 1000;
+          const cycle = state.duration + REST;
+          if (!state.loop) return Math.min(elapsed / state.duration, 1);
+          return Math.min((elapsed % cycle) / state.duration, 1);
+        }
+        function render(t) {
+          const fn = getFn(state.family, state.variant);
+          const v = fn(t);
+          const clampedPlot = Math.max(G.lo, Math.min(G.hi, v));
+          playDot.setAttribute("cx", gx(t)); playDot.setAttribute("cy", gy(clampedPlot));
+          playhead.setAttribute("x1", gx(t)); playhead.setAttribute("x2", gx(t));
+          valueBall.setAttribute("cy", gy(clampedPlot));
+          demo.ball.style.left = `${v * 100}%`;
+          demo.ghost.style.left = `${t * 100}%`;
+          demo.square.style.transform = `scale(${.3 + .7 * v})`;
+          demo.needle.style.transform = `rotate(${-90 + 180 * v}deg)`;
+          demo.swatch.style.opacity = String(Math.max(0, Math.min(1, v)));
+          demo.swatch.style.background = `hsl(${200 - 40 * v} 70% ${55 - 15 * v}%)`;
+          demo.toast.style.transform = `translateY(${(1 - v) * 140}%)`;
+          status.textContent = `t = ${t.toFixed(2)} · f(t) = ${v.toFixed(3)}`;
+          thumbItems.forEach((item) => {
+            const tv = Math.max(-.3, Math.min(1.3, item.fn(t)));
+            item.dot.setAttribute("cx", (6 + t * 88).toFixed(1));
+            item.dot.setAttribute("cy", map01(tv).toFixed(1));
+          });
+        }
+        function frame(now) {
+          if (state.playing) render(progress(now));
+          requestAnimationFrame(frame);
+        }
+        playBtn.addEventListener("click", () => {
+          if (state.playing) { state.pausedAt = performance.now() - state.startedAt; state.playing = false; }
+          else { state.startedAt = performance.now() - state.pausedAt; state.playing = true; }
+          playBtn.textContent = state.playing ? "Pause" : "Play";
+        });
+        document.getElementById("replay").addEventListener("click", () => {
+          state.playing = true; playBtn.textContent = "Pause"; restart();
+        });
+        loopBtn.addEventListener("click", () => {
+          state.loop = !state.loop;
+          loopBtn.textContent = `Loop: ${state.loop ? "on" : "off"}`;
+          loopBtn.setAttribute("aria-pressed", String(state.loop));
+          restart();
+        });
+
+        // ------------------------------------------------------------------
+        // Copy buttons and dialogs
+        // ------------------------------------------------------------------
+        document.querySelectorAll("[data-copy]").forEach((button) => button.addEventListener("click", async () => {
+          const text = document.getElementById(button.dataset.copy).textContent;
+          try { await navigator.clipboard.writeText(text); button.textContent = "Copied"; }
+          catch { button.textContent = "Select & copy"; }
+          setTimeout(() => { button.textContent = "Copy"; }, 1400);
+        }));
+        const triviaDialog = document.getElementById("trivia-dialog");
+        const historyDialog = document.getElementById("history-dialog");
+        document.getElementById("trivia-btn").addEventListener("click", () => {
+          const f = state.family;
+          document.getElementById("trivia-body").innerHTML = `<p class="eyebrow">TRIVIA &amp; ORIGINS</p><h2 id="trivia-title">${f.name}</h2><p class="prose"><strong>Origin:</strong> ${f.origin}</p><ul>${f.trivia.map((x) => `<li>${x}</li>`).join("")}</ul>`;
+          triviaDialog.showModal();
+        });
+        document.getElementById("history-btn").addEventListener("click", () => historyDialog.showModal());
+        [triviaDialog, historyDialog].forEach((d) => {
+          d.querySelector(".close").addEventListener("click", () => d.close());
+          d.addEventListener("click", (event) => { if (event.target === d) d.close(); });
+        });
+
+        // ------------------------------------------------------------------
+        buildThumbs();
+        select(state.family, state.variant);
+        playBtn.textContent = state.playing ? "Pause" : "Play";
+        requestAnimationFrame(frame);
+      })();
+    </script>
+  </body>
+</html>

@@ -41,16 +41,26 @@ canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
   padding: 16px 18px; border: 1px solid var(--line); border-radius: 18px;
   background: var(--panel); box-shadow: 0 12px 30px rgba(0,0,0,.08); backdrop-filter: blur(10px);
 }
+.back-to-studies {
+  position: fixed; z-index: 3;
+  top: calc(16px + env(safe-area-inset-top, 0px)); left: calc(16px + env(safe-area-inset-left, 0px));
+  display: inline-flex; align-items: center; gap: 7px; padding: 7px 14px;
+  border: 1px solid var(--line); border-radius: 999px; background: var(--panel); backdrop-filter: blur(10px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.06); color: var(--fg); font: 12px var(--mono); text-decoration: none;
+}
+.back-to-studies:hover { border-color: rgba(0,0,0,.3); }
+.back-to-studies:focus-visible { outline: 2px solid rgb(var(--red)); outline-offset: 2px; }
 .stat { color: var(--muted); letter-spacing: .06em; text-transform: uppercase; font-size: 11px; font-variant-numeric: tabular-nums; }
 .stat b { color: var(--fg); font-weight: 500; }
 .stat b.hot { color: rgb(var(--red)); }
-button {
+.download { display: inline-block; text-decoration: none; }
+button, .download {
   font: inherit; font-size: 12px; color: var(--fg); background: transparent;
   border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; cursor: pointer;
 }
-button:hover { border-color: rgba(0,0,0,.3); }
+button:hover, .download:hover { border-color: rgba(0,0,0,.3); }
 button[aria-expanded] { min-width: 108px; }
-button:focus-visible, input:focus-visible { outline: 2px solid rgb(var(--red)); outline-offset: 2px; }
+button:focus-visible, input:focus-visible, .download:focus-visible { outline: 2px solid rgb(var(--red)); outline-offset: 2px; }
 .slider-control { display: grid; grid-template-columns: minmax(82px, auto) 1fr 5ch; align-items: center; gap: 10px; color: var(--muted); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
 .slider-control > span { white-space: nowrap; }
 input[type=range] {
@@ -77,6 +87,8 @@ input[type=range]::-moz-range-thumb { width: 15px; height: 15px; border: 2px sol
 
 <canvas id="c" aria-label="Animated 3D ring of orbiting dots where red arcs show one compromised node attacking the next"></canvas>
 
+<a class="back-to-studies" href="../animations.html"><span aria-hidden="true">←</span> Studies</a>
+
 <div class="hud">
   <div class="hud-bar">
     <div class="panel">
@@ -88,6 +100,7 @@ input[type=range]::-moz-range-thumb { width: 15px; height: 15px; border: 2px sol
       <button id="pause" type="button">Pause</button>
       <button id="restart" type="button">Restart</button>
       <button id="toggleSliders" type="button" aria-controls="sliderPanel" aria-expanded="true">Hide sliders</button>
+      <a class="download" href="orbit_breach.html" download="orbit_breach.html" title="Download this animation as a single HTML file">Download</a>
     </div>
   </div>
   <div class="settings-panel" id="sliderPanel">

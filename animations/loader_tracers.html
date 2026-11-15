@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Loading-screen study: tracer lines hop between waypoints on randomly eased paths before landing on the name.">
+    <title>Eased Tracers — Loader Study</title>
+    <style>
+      /* The loader's light backdrop, the name the prelude lands on, and the slider panel. */
+      :root {
+        --ink: #172033;
+        --muted: #64748b;
+        --accent: #087f6a;
+        --panel: rgba(255, 255, 255, .84);
+        --line: rgba(15, 23, 42, .12);
+        --mono: "DM Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        color-scheme: light;
+        font-family: "Manrope", system-ui, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+      body { color: var(--ink); background: linear-gradient(135deg, #ffffff 0%, #f7f9fb 55%, #eef2f6 100%); }
+      .grid { position: fixed; inset: 0; background-image: linear-gradient(rgba(15,23,42,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,.05) 1px, transparent 1px); background-size: 44px 44px; -webkit-mask-image: radial-gradient(ellipse 75% 70% at 50% 50%, #000 5%, transparent 78%); mask-image: radial-gradient(ellipse 75% 70% at 50% 50%, #000 5%, transparent 78%); }
+      canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+
+      .top { position: fixed; z-index: 2; top: 16px; left: 16px; right: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+      .back { padding: 8px 13px; border: 1px solid var(--line); border-radius: 999px; color: #475569; background: rgba(255,255,255,.7); backdrop-filter: blur(8px); font: 500 .66rem var(--mono); letter-spacing: .12em; text-decoration: none; text-transform: uppercase; }
+      .back:hover { color: var(--ink); border-color: rgba(8,127,106,.5); }
+      .title { margin: 0; color: var(--accent); font: 500 .7rem var(--mono); letter-spacing: .16em; text-transform: uppercase; }
+
+      /* The name the prelude lands on, sized like the loader's. */
+      .stage { position: fixed; inset: 0; display: grid; place-items: center; padding: 0 16px 12vh; pointer-events: none; }
+      .name { margin: 0; font-size: min(clamp(3rem, 9vw, 7.5rem), 22vh); font-weight: 700; line-height: .82; letter-spacing: -.075em; }
+      .name-line { display: block; clip-path: inset(-.12em -.2em -.24em -.05em); }
+      .name-line > span { display: block; transform: translateY(110%); }
+      /* Hidden until it rises: the line clip extends below the text, so the parked glyphs would peek through. */
+      .stage:not(.is-revealed) .name { visibility: hidden; }
+      .name b { color: var(--accent); font-weight: inherit; }
+      .is-revealed .name-line > span { animation: rise 1s cubic-bezier(.16,1,.3,1) both; }
+      .is-revealed .name-line:nth-child(2) > span { animation-delay: .17s; }
+      @keyframes rise { from { transform: translateY(110%); } to { transform: none; } }
+
+      .hud { position: fixed; z-index: 2; left: 16px; right: 16px; bottom: 16px; display: grid; justify-items: start; gap: 10px; max-width: 920px; pointer-events: none; font-family: var(--mono); }
+      .bar, .sliders { pointer-events: auto; border: 1px solid var(--line); background: var(--panel); backdrop-filter: blur(10px); box-shadow: 0 10px 28px rgba(15,23,42,.07); }
+      .bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 999px; }
+      .status { padding: 0 6px; color: var(--muted); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; font-variant-numeric: tabular-nums; }
+      .status b { color: var(--ink); font-weight: 500; }
+      .download { display: inline-block; text-decoration: none; }
+      button, .download { font: 12px var(--mono); color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+      button:hover, .download:hover { border-color: rgba(8,127,106,.5); }
+      button:focus-visible, input:focus-visible, .back:focus-visible, .download:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+      .sliders { display: grid; width: 100%; grid-template-columns: repeat(2, minmax(240px, 1fr)); gap: 10px 24px; padding: 14px 18px; border-radius: 18px; }
+      .sliders[hidden] { display: none; }
+      .slider { display: grid; grid-template-columns: minmax(96px, auto) 1fr 6ch; align-items: center; gap: 10px; color: var(--muted); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+      .slider output { justify-self: end; color: var(--ink); font-variant-numeric: tabular-nums; text-transform: none; letter-spacing: 0; }
+      input[type=range] { appearance: none; -webkit-appearance: none; width: 100%; min-width: 80px; height: 24px; margin: 0; background: transparent; cursor: pointer; touch-action: pan-y; }
+      input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 999px; background: rgba(15,23,42,.14); }
+      input[type=range]::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 16px; height: 16px; margin-top: -6px; border: 2px solid #fff; border-radius: 50%; background: var(--accent); box-shadow: 0 1px 5px rgba(8,127,106,.45); }
+      input[type=range]::-moz-range-track { height: 4px; border: 0; border-radius: 999px; background: rgba(15,23,42,.14); }
+      input[type=range]::-moz-range-progress { height: 4px; border-radius: 999px; background: rgba(8,127,106,.7); }
+      input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border: 2px solid #fff; border-radius: 50%; background: var(--accent); }
+
+      @media (max-width: 680px) {
+        .top { top: 10px; left: 10px; right: 10px; }
+        .title { display: none; }
+        .hud { left: 10px; right: 10px; bottom: 10px; }
+        .sliders { grid-template-columns: 1fr; gap: 4px; max-height: 46vh; overflow-y: auto; padding: 12px 14px; }
+        .slider { grid-template-columns: 92px minmax(80px, 1fr) 6ch; gap: 8px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grid" aria-hidden="true"></div>
+    <canvas id="canvas" aria-label="Glowing lines darting between random points on eased curves, then sweeping along the lines under a name"></canvas>
+    <div class="stage" aria-hidden="true">
+      <p class="name"><span class="name-line"><span>Humprey</span></span><span class="name-line"><span>Cogay<b>.</b></span></span></p>
+    </div>
+
+    <header class="top">
+      <a class="back" href="../animations.html"><span aria-hidden="true">←</span> Studies</a>
+      <p class="title">Loader / Eased Tracers</p>
+    </header>
+
+    <div class="hud">
+      <div class="bar">
+        <span class="status">Run <b id="run">00</b></span>
+        <button id="replay" type="button">Replay</button>
+        <button id="loop" type="button" aria-pressed="true">Loop: on</button>
+        <button id="reset" type="button">Reset</button>
+        <button id="toggle-sliders" type="button" aria-controls="sliders" aria-expanded="true">Hide sliders</button>
+        <a class="download" href="loader_tracers.html" download="loader_tracers.html" title="Download this animation as a single HTML file">Download</a>
+      </div>
+      <div class="sliders" id="sliders"></div>
+    </div>
+
+    <script type="module">
+      // Prelude: a copy of js/intro-tracers.js from the portfolio loader, kept inline so this study is a single file.
+      // Startup prelude. Tracer lines dart in from the screen edges and hop between random
+      // waypoints. Every hop eases its x and y with two independently chosen easing curves
+      // (overshoots, bounces, springs, exponential snaps), so no two paths bend alike. The
+      // tracers then dive onto the two rules the name rises from, sweep along them, and zip away.
+
+      const TRACERS_REVEAL_AT = 3750; // ms: when the rules are laid down well enough for the name to rise
+
+      const TAU = Math.PI * 2;
+      const SAMPLE_STEP = 1 / 120; // seconds between trail samples
+      const WANDER_UNTIL = 2.55; // seconds: last moment a wander hop may begin
+      const RETRACT_FOR = .75;
+      const END_AT = 5.4; // seconds: every tracer has retracted and faded by now
+
+      // Tunable parameters; the loader uses these defaults, the study page overrides them.
+      // trail: seconds the tail lags the head while wandering. reach: longest hop, as a screen fraction.
+      const TRACERS_DEFAULTS = { speed: 1, tracers: 10, trail: .38, reach: .48, holdChance: .16, lineWidth: 1.6, ripples: 1 };
+
+      const clamp01 = (value) => Math.min(Math.max(value, 0), 1);
+      const lerp = (from, to, amount) => from + (to - from) * amount;
+      const span = (time, start, duration) => clamp01((time - start) / duration);
+      const random = (min, max) => min + Math.random() * (max - min);
+      const pick = (list) => list[Math.floor(Math.random() * list.length)];
+
+      const ease = {
+        inOutSine: (t) => -(Math.cos(Math.PI * t) - 1) / 2,
+        inQuart: (t) => t ** 4,
+        outQuart: (t) => 1 - (1 - t) ** 4,
+        inOutCubic: (t) => (t < .5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2),
+        inOutCirc: (t) => (t < .5 ? (1 - Math.sqrt(1 - (2 * t) ** 2)) / 2 : (Math.sqrt(1 - (-2 * t + 2) ** 2) + 1) / 2),
+        inOutExpo: (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t < .5 ? 2 ** (20 * t - 10) / 2 : (2 - 2 ** (10 - 20 * t)) / 2),
+        outBack: (t) => 1 + 2.70158 * (t - 1) ** 3 + 1.70158 * (t - 1) ** 2,
+        inOutBack: (t) => {
+          const c = 1.70158 * 1.525;
+          return t < .5 ? ((2 * t) ** 2 * ((c + 1) * 2 * t - c)) / 2 : ((2 * t - 2) ** 2 * ((c + 1) * (t * 2 - 2) + c) + 2) / 2;
+        },
+        outElastic: (t) => (t <= 0 ? 0 : t >= 1 ? 1 : 2 ** (-10 * t) * Math.sin((t * 10 - .75) * (TAU / 3)) + 1),
+        outBounce: (t) => {
+          const n = 7.5625; const d = 2.75;
+          if (t < 1 / d) return n * t * t;
+          if (t < 2 / d) return n * (t -= 1.5 / d) * t + .75;
+          if (t < 2.5 / d) return n * (t -= 2.25 / d) * t + .9375;
+          return n * (t -= 2.625 / d) * t + .984375;
+        }
+      };
+      // Wander hops draw each axis from this pool independently; the mismatch is what curves the paths.
+      const wanderEasings = Object.values(ease);
+
+      const palette = [
+        { color: "#087f6a", alpha: .95 },
+        { color: "#167da3", alpha: .8 },
+        { color: "#7456c9", alpha: .65 }
+      ];
+
+      // A node is where a hop ends: `at` is its arrival time, `ex`/`ey` ease the hop into it.
+      // Rule nodes (`rule`, `u`) are resolved against the live name geometry every frame.
+      function planTracer(index, o) {
+        const nodes = [];
+        // Launch from just beyond a random screen edge.
+        const edge = Math.floor(Math.random() * 4);
+        const along = random(.1, .9);
+        const launch = [[along, -.08], [1.08, along], [along, 1.08], [-.08, along]][edge];
+        let at = random(.1, .7);
+        let x = launch[0]; let y = launch[1];
+        nodes.push({ at, x, y });
+
+        while (at < WANDER_UNTIL) {
+          if (nodes.length > 2 && Math.random() < o.holdChance) {
+            // A short hold: the head stops dead and the tail catches up before the next dart.
+            at += random(.1, .26);
+            nodes.push({ at, x, y, ex: ease.inOutSine, ey: ease.inOutSine });
+            continue;
+          }
+          const reach = random(Math.min(.18, o.reach), o.reach);
+          const angle = Math.random() * TAU;
+          x = clamp01(x + Math.cos(angle) * reach) * .84 + .08;
+          y = clamp01(y + Math.sin(angle) * reach) * .76 + .12;
+          at += random(.26, .72);
+          nodes.push({ at, x, y, ex: pick(wanderEasings), ey: pick(wanderEasings) });
+        }
+
+        // Dive onto a rule, then sweep to one of its ends. Tracers sharing a rule alternate
+        // directions, so between them they cover its full length.
+        const rule = index % 2;
+        const toRight = Math.floor(index / 2) % 2 === 0;
+        const landU = toRight ? random(.08, .5) : random(.5, .92);
+        at = Math.max(at, 2.75) + random(.42, .62);
+        nodes.push({ at, rule, u: landU, ex: ease.inOutCubic, ey: ease.outBack, landing: true });
+        at += random(.55, .8);
+        nodes.push({ at, rule, u: toRight ? 1 : 0, ex: ease.inOutExpo, ey: ease.inOutExpo });
+        return { nodes, ...palette[index % palette.length], landAt: nodes.at(-2).at, endAt: at };
+      }
+
+      /** Plays the prelude on `canvas`, landing on the bottom edges of `nameLines`. Returns a stop function. */
+      function playIntroTracers(canvas, nameLines, options = {}) {
+        const o = { ...TRACERS_DEFAULTS, ...options };
+        const TRAIL = o.trail;
+        const context = canvas.getContext("2d");
+        const tracers = Array.from({ length: Math.max(1, Math.round(o.tracers)) }, (_, i) => planTracer(i, o));
+        const startedAt = performance.now();
+        let width = 0; let height = 0; let frame = 0; let rules = [];
+
+        function fitCanvas() {
+          if (canvas.clientWidth === width && canvas.clientHeight === height) return;
+          width = canvas.clientWidth; height = canvas.clientHeight;
+          const ratio = Math.min(window.devicePixelRatio || 1, 2);
+          canvas.width = Math.round(width * ratio); canvas.height = Math.round(height * ratio);
+          context.setTransform(ratio, 0, 0, ratio, 0, 0);
+        }
+
+        const resolve = (node) => {
+          if (node.rule === undefined) return { x: node.x * width, y: node.y * height };
+          const rule = rules[node.rule % rules.length];
+          return { x: lerp(rule.left, rule.right, node.u), y: rule.bottom };
+        };
+
+        // Head position of `tracer` at `time`: a pure function of time, so trails are resampled
+        // from the plan every frame instead of being recorded.
+        const positionAt = (tracer, time) => {
+          const { nodes } = tracer;
+          if (time <= nodes[0].at) return resolve(nodes[0]);
+          for (let k = 1; k < nodes.length; k++) {
+            const node = nodes[k];
+            if (time > node.at) continue;
+            const previous = nodes[k - 1];
+            const progress = (time - previous.at) / (node.at - previous.at);
+            const from = resolve(previous); const to = resolve(node);
+            return { x: lerp(from.x, to.x, node.ex(progress)), y: lerp(from.y, to.y, node.ey(progress)) };
+          }
+          return resolve(nodes.at(-1));
+        };
+
+        function draw(now) {
+          const t = Math.max(0, now - startedAt) / 1000 * o.speed;
+          fitCanvas();
+          context.clearRect(0, 0, width, height);
+          if (t >= END_AT) { stop(); return; }
+          rules = nameLines.map((line) => line.getBoundingClientRect());
+
+          context.lineCap = "round"; context.lineJoin = "round";
+          tracers.forEach((tracer, i) => {
+            const retractAt = tracer.endAt + .2 + (i % 2) * .1;
+            const retracted = ease.inOutExpo(span(t, retractAt, RETRACT_FOR));
+            // The tail trails the head, pins at the landing point, then zips to the rule's end.
+            const tailTime = retracted > 0 ? lerp(tracer.landAt, tracer.endAt, retracted) : Math.min(t - TRAIL, tracer.landAt);
+            const headTime = Math.min(t, tracer.endAt);
+            const landed = ease.inOutCubic(span(t, tracer.landAt, .4));
+            const faded = ease.inOutCubic(span(t, retractAt + RETRACT_FOR * .6, .35));
+            if (faded >= 1 || t < tracer.nodes[0].at) return;
+
+            // Waypoint ripples mark each hop's arrival.
+            context.lineWidth = 1;
+            if (o.ripples > 0) tracer.nodes.forEach((node, k) => {
+              if (k === 0 || node.rule !== undefined) return;
+              const age = t - node.at;
+              if (age < 0 || age > .7) return;
+              const grow = ease.outQuart(age / .7);
+              const point = resolve(node);
+              context.beginPath();
+              context.arc(point.x, point.y, 2 + grow * 9 * o.ripples, 0, TAU);
+              context.strokeStyle = tracer.color;
+              context.globalAlpha = tracer.alpha * .55 * (1 - grow);
+              context.stroke();
+            });
+
+            // Trail: drawn in chunks that brighten toward the head; the taper flattens once landed.
+            const samples = Math.max(1, Math.ceil((headTime - tailTime) / SAMPLE_STEP));
+            const points = [];
+            for (let s = 0; s <= samples; s++) points.push(positionAt(tracer, lerp(tailTime, headTime, s / samples)));
+            const CHUNK = 6;
+            context.lineWidth = o.lineWidth;
+            context.strokeStyle = tracer.color;
+            for (let start = 0; start < points.length - 1; start += CHUNK) {
+              const end = Math.min(start + CHUNK, points.length - 1);
+              const taper = .12 + .88 * ((start + end) / 2 / (points.length - 1)) ** .9;
+              context.beginPath();
+              context.moveTo(points[start].x, points[start].y);
+              for (let s = start + 1; s <= end; s++) context.lineTo(points[s].x, points[s].y);
+              context.globalAlpha = tracer.alpha * lerp(taper, 1, landed) * (1 - faded);
+              context.stroke();
+            }
+
+            // Glowing head.
+            const head = points.at(-1);
+            context.fillStyle = tracer.color;
+            context.globalAlpha = tracer.alpha * .16 * (1 - faded);
+            context.beginPath(); context.arc(head.x, head.y, 6, 0, TAU); context.fill();
+            context.globalAlpha = tracer.alpha * (1 - faded);
+            context.beginPath(); context.arc(head.x, head.y, 2.2, 0, TAU); context.fill();
+          });
+          context.globalAlpha = 1;
+          frame = requestAnimationFrame(draw);
+        }
+
+        function stop() {
+          cancelAnimationFrame(frame);
+        }
+
+        frame = requestAnimationFrame(draw);
+        return stop;
+      }
+
+      // Study harness: plays the prelude on a loop and rebuilds it whenever a slider changes.
+
+      const RUN_FOR = 5.6; // seconds of prelude time per run (every prelude finishes by 5.4s)
+      const HOLD = 1.1; // seconds the finished name stays up before the next run
+
+      /**
+       * @param {object} study
+       * @param {Function} study.play     prelude function: (canvas, nameLines, options) => stop
+       * @param {number|Function} study.revealAt ms of prelude time when the name rises, or (options) => ms
+       * @param {number|Function} [study.runFor] seconds of prelude time per run, or (options) => seconds
+       * @param {object}   study.defaults the prelude's default options
+       * @param {Array}    study.sliders  [{ key, label, min, max, step, format? }]
+       */
+      function mountStudy({ play, revealAt, runFor = RUN_FOR, defaults, sliders }) {
+        const canvas = document.querySelector("#canvas");
+        const stage = document.querySelector(".stage");
+        const nameLines = [...document.querySelectorAll(".name-line")];
+        const panel = document.querySelector("#sliders");
+        const runLabel = document.querySelector("#run");
+        const loopButton = document.querySelector("#loop");
+        const toggleButton = document.querySelector("#toggle-sliders");
+        const options = { ...defaults };
+        let stop = () => {};
+        let timers = [];
+        let runs = 0;
+        let loop = true;
+        let rebuild;
+        const resolve = (value) => (typeof value === "function" ? value(options) : value);
+
+        const controls = sliders.map((slider) => {
+          const format = slider.format ?? ((value) => String(value));
+          const label = document.createElement("label");
+          label.className = "slider";
+          label.innerHTML = `<span>${slider.label}</span><input type="range" min="${slider.min}" max="${slider.max}" step="${slider.step}"><output></output>`;
+          const input = label.querySelector("input");
+          const output = label.querySelector("output");
+          const sync = () => { output.textContent = format(options[slider.key]); };
+          input.value = options[slider.key];
+          sync();
+          input.addEventListener("input", () => {
+            options[slider.key] = Number(input.value);
+            sync();
+            // Replay once the slider settles, so dragging doesn't restart every frame.
+            clearTimeout(rebuild);
+            rebuild = setTimeout(start, 220);
+          });
+          panel.append(label);
+          return { slider, input, sync };
+        });
+
+        function clear() {
+          stop();
+          timers.forEach(clearTimeout);
+          timers = [];
+        }
+
+        function start() {
+          clear();
+          runs += 1;
+          runLabel.textContent = String(runs).padStart(2, "0");
+          stage.classList.remove("is-revealed");
+          void stage.offsetWidth; // restart the name's rise animation
+          const scale = 1 / options.speed;
+          stop = play(canvas, nameLines, { ...options });
+          timers.push(setTimeout(() => stage.classList.add("is-revealed"), resolve(revealAt) * scale));
+          timers.push(setTimeout(() => { if (loop) start(); }, (resolve(runFor) + HOLD) * 1000 * scale));
+        }
+
+        document.querySelector("#replay").addEventListener("click", start);
+        document.querySelector("#reset").addEventListener("click", () => {
+          Object.assign(options, defaults);
+          controls.forEach(({ slider, input, sync }) => { input.value = options[slider.key]; sync(); });
+          start();
+        });
+        loopButton.addEventListener("click", () => {
+          loop = !loop;
+          loopButton.textContent = `Loop: ${loop ? "on" : "off"}`;
+          loopButton.setAttribute("aria-pressed", String(loop));
+          if (loop) start();
+        });
+        toggleButton.addEventListener("click", () => {
+          panel.hidden = !panel.hidden;
+          toggleButton.textContent = panel.hidden ? "Show sliders" : "Hide sliders";
+          toggleButton.setAttribute("aria-expanded", String(!panel.hidden));
+        });
+
+        start();
+      }
+
+      const fixed = (digits, suffix = "") => (value) => `${value.toFixed(digits)}${suffix}`;
+
+      mountStudy({
+        play: playIntroTracers, revealAt: TRACERS_REVEAL_AT, defaults: TRACERS_DEFAULTS,
+        sliders: [
+          { key: "speed", label: "Speed", min: .25, max: 2, step: .05, format: fixed(2, "×") },
+          { key: "tracers", label: "Tracers", min: 2, max: 30, step: 1 },
+          { key: "trail", label: "Trail", min: .1, max: 1.2, step: .02, format: fixed(2, "s") },
+          { key: "reach", label: "Hop reach", min: .1, max: .9, step: .02, format: fixed(2) },
+          { key: "holdChance", label: "Hold chance", min: 0, max: .6, step: .01, format: (v) => `${Math.round(v * 100)}%` },
+          { key: "lineWidth", label: "Line width", min: .5, max: 5, step: .1, format: fixed(1, "px") },
+          { key: "ripples", label: "Ripples", min: 0, max: 3, step: .1, format: fixed(1, "×") }
+        ]
+      });
+    </script>
+  </body>
+</html>

@@ -2,16 +2,19 @@
 // into travelling waves that ring down like a damped spring, then settle into the
 // two rules the name rises from. Every dot becomes a vertex in the line mesh.
 
-export const LINES_REVEAL_AT = 3750; // ms: when the rules are close enough for the name to rise
 
 const TAU = Math.PI * 2;
-const POINTS = 150;
-const DOT_STEP = 5;
 const DOTS_BEGIN_AT = .25;
 const DOTS_LOADED_AT = 1.15;
 const GATHER_AT = 1.5;
 const MESH_DELAY = 2;
-const END_AT = 5.35; // seconds: every strand has retracted by now
+const END_AT = 5.35; // seconds: every strand has retracted by now (before any hold is added)
+
+// Tunable parameters; the loader uses these defaults, the study page overrides them.
+// hold: extra seconds the Lissajous strands keep spinning before they unfold into waves.
+export const LINES_DEFAULTS = { speed: 1, strands: 6, points: 150, dotStep: 5, waveHeight: 1, damping: 3.2, push: 46, hold: 1.4 };
+export const LINES_REVEAL_AT = 3750 + LINES_DEFAULTS.hold * 1000; // ms: when the rules are close enough for the name to rise
+export const LINES_DURATION = 5450 + LINES_DEFAULTS.hold * 1000; // ms: minimum loader time for one full play
 
 const clamp01 = (value) => Math.min(Math.max(value, 0), 1);
 const lerp = (from, to, amount) => from + (to - from) * amount;
@@ -36,11 +39,15 @@ const strands = [
 ];
 
 /** Plays the prelude on `canvas`, landing on the bottom edges of `nameLines`. Returns a stop function. */
-export function playIntroLines(canvas, nameLines) {
+export function playIntroLines(canvas, nameLines, options = {}) {
+  const o = { ...LINES_DEFAULTS, ...options };
+  const active = strands.slice(0, Math.max(1, Math.round(o.strands)));
+  const POINTS = Math.round(o.points);
+  const DOT_STEP = Math.max(1, Math.round(o.dotStep));
   const context = canvas.getContext("2d");
   const pointer = { x: 0, y: 0, targetX: 0, targetY: 0, energy: 0, moved: false };
   // Normalized origins keep the random field stable if the viewport changes mid-intro.
-  const origins = strands.map(() => Array.from({ length: POINTS + 1 }, () => ({
+  const origins = active.map(() => Array.from({ length: POINTS + 1 }, () => ({
     x: Math.random(), y: Math.random(), phase: Math.random() * TAU,
     speed: .45 + Math.random() * .55, size: .8 + Math.random() * 1.4,
     appearsAt: DOTS_BEGIN_AT + Math.random() * (DOTS_LOADED_AT - DOTS_BEGIN_AT - .2)
@@ -63,10 +70,10 @@ export function playIntroLines(canvas, nameLines) {
   }
 
   function draw(now) {
-    const t = Math.max(0, now - startedAt) / 1000;
+    const t = Math.max(0, now - startedAt) / 1000 * o.speed;
     fitCanvas();
     context.clearRect(0, 0, width, height);
-    if (t >= END_AT) { stop(); return; }
+    if (t >= END_AT + o.hold) { stop(); return; }
 
     // The pointer eases toward the cursor, and its influence eases in once it has moved.
     pointer.x += (pointer.targetX - pointer.x) * .12;
@@ -75,16 +82,18 @@ export function playIntroLines(canvas, nameLines) {
 
     const centerX = width / 2; const centerY = height / 2;
     const radius = Math.min(width, height) * .24;
-    const waveHeight = Math.min(height * .13, 96);
+    const waveHeight = Math.min(height * .13, 96) * o.waveHeight;
     const waveGap = Math.min(height * .035, 22);
-    const meshTime = Math.max(0, t - MESH_DELAY);
+    // The figures spin from MESH_DELAY on; everything after (unfold, rules, retract) waits out the hold.
+    const spinTime = Math.max(0, t - MESH_DELAY);
+    const meshTime = Math.max(0, spinTime - o.hold);
     // Damped spring: the waves overshoot through zero a few times as they flatten.
     const sinceUnfold = Math.max(0, meshTime - .7);
-    const ring = Math.exp(-3.2 * sinceUnfold) * Math.cos(9 * sinceUnfold);
+    const ring = Math.exp(-o.damping * sinceUnfold) * Math.cos(9 * sinceUnfold);
     const rules = nameLines.map((line) => line.getBoundingClientRect());
 
     context.lineWidth = 1.5; context.lineCap = "round"; context.lineJoin = "round";
-    strands.forEach((strand, i) => {
+    active.forEach((strand, i) => {
       const rule = rules[i % rules.length];
       // The complete random field holds briefly before any particle starts gathering.
       const gathered = ease.inOutExpo(span(t, GATHER_AT + i * .02, .75));
@@ -94,8 +103,8 @@ export function playIntroLines(canvas, nameLines) {
       const toRule = ease.inOutQuint(span(meshTime, 1.1 + i * .04, .6));
       const traced = ease.outCubic(span(t, 2.08 + i * .04, .48));
       const retracted = ease.inOutExpo(span(meshTime, 2.35 + (i % rules.length) * .12, .7));
-      const phase = meshTime * .9 + i * .5;
-      const push = 46 * pointer.energy * (1 - toRule);
+      const phase = spinTime * .9 + i * .5;
+      const push = o.push * pointer.energy * (1 - toRule);
 
       const pointAt = (j) => {
         const u = j / POINTS;
@@ -105,7 +114,7 @@ export function playIntroLines(canvas, nameLines) {
         // Two travelling harmonics, pinched to nothing at both screen edges.
         const swell = Math.sin(TAU * (1.5 + i * .25) * u - meshTime * 3 + i) + .45 * Math.sin(TAU * (3.5 + i * .4) * u + meshTime * 4.4 + i * 1.7);
         const waveX = u * width;
-        const waveY = centerY + (i - (strands.length - 1) / 2) * waveGap + waveHeight * ring * Math.sin(Math.PI * u) ** 2 * swell;
+        const waveY = centerY + (i - (active.length - 1) / 2) * waveGap + waveHeight * ring * Math.sin(Math.PI * u) ** 2 * swell;
         const origin = origins[i][j];
         const drift = 7 * (1 - gathered);
         const randomX = origin.x * width + Math.cos(origin.phase + t * origin.speed) * drift;

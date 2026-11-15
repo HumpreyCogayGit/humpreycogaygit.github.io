@@ -7,7 +7,7 @@
     <meta name="description" content="Interactive HTML, CSS, and JavaScript animation studies by Humprey Cogay.">
     <title>Animation Studies — Humprey Cogay</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%23f1f5f9'/%3E%3Cpath d='M8 38c8-22 16 22 24 0s16 22 24 0' fill='none' stroke='%23087f6a' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
-    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/animations.css?v=2">
   </head>
   <body>
     <div class="page-glow page-glow-one" aria-hidden="true"></div>
@@ -31,48 +31,134 @@
       <section class="collection" aria-label="Animation experiments">
         <div class="collection-heading">
           <p class="eyebrow">SELECT AN EXPERIMENT</p>
-          <p class="collection-count"><strong>03</strong> studies</p>
+          <p class="collection-count"><strong>07</strong> studies</p>
         </div>
 
         <div class="animation-grid">
-          <a class="animation-card card-brain" href="animations/brain_wiremesh.html" aria-label="Open Wiremesh Neural Brain Sculpture">
-            <span class="card-number">01</span>
-            <span class="animation-preview">
-              <img src="images/animations/brain-wiremesh.jpg" width="1200" height="750" alt="Wireframe neural brain animation glowing cyan and orange on a dark canvas">
-            </span>
-            <span class="card-content">
-              <span class="card-meta">CANVAS / INTERACTIVE</span>
-              <strong>Wiremesh Neural Brain</strong>
-              <span>A responsive neural sculpture with a rotatable mesh, energy pulses, and adjustable display modes.</span>
-            </span>
-            <span class="card-action">Launch study <span aria-hidden="true">↗</span></span>
-          </a>
+          <article class="study">
+            <a class="animation-card card-brain" href="animations/brain_wiremesh.html" aria-label="Open Wiremesh Neural Brain Sculpture">
+              <span class="card-number">01</span>
+              <span class="animation-preview">
+                <img src="images/animations/brain-wiremesh.jpg" width="1200" height="750" alt="Wireframe neural brain animation glowing cyan and orange on a dark canvas">
+              </span>
+              <span class="card-content">
+                <span class="card-meta">CANVAS / INTERACTIVE</span>
+                <strong>Wiremesh Neural Brain</strong>
+                <span>A responsive neural sculpture with a rotatable mesh, energy pulses, and adjustable display modes.</span>
+              </span>
+              <span class="card-action">Launch study <span aria-hidden="true">↗</span></span>
+            </a>
+            <button class="info-btn" type="button" data-info="brain" aria-haspopup="dialog" title="Math, easing &amp; trivia">
+              <span class="info-icon" aria-hidden="true">i</span>Info<span class="visually-hidden">: Wiremesh Neural Brain, math, easing and trivia</span>
+            </button>
+          </article>
 
-          <a class="animation-card card-orbit" href="animations/orbit_breach.html" aria-label="Open Orbit Breach">
-            <span class="card-number">02</span>
-            <span class="animation-preview">
-              <img src="images/animations/orbit-breach.jpg" width="1200" height="750" alt="Orbit Breach particle ring with red attack arcs crossing a white canvas">
-            </span>
-            <span class="card-content">
-              <span class="card-meta">PARTICLES / SIMULATION</span>
-              <strong>Orbit Breach</strong>
-              <span>Thousands of orbiting points form a shifting ring while red attack arcs travel between compromised nodes.</span>
-            </span>
-            <span class="card-action">Launch study <span aria-hidden="true">↗</span></span>
-          </a>
+          <article class="study">
+            <a class="animation-card card-orbit" href="animations/orbit_breach.html" aria-label="Open Orbit Breach">
+              <span class="card-number">02</span>
+              <span class="animation-preview">
+                <img src="images/animations/orbit-breach.jpg" width="1200" height="750" alt="Orbit Breach particle ring with red attack arcs crossing a white canvas">
+              </span>
+              <span class="card-content">
+                <span class="card-meta">PARTICLES / SIMULATION</span>
+                <strong>Orbit Breach</strong>
+                <span>Thousands of orbiting points form a shifting ring while red attack arcs travel between compromised nodes.</span>
+              </span>
+              <span class="card-action">Launch study <span aria-hidden="true">↗</span></span>
+            </a>
+            <button class="info-btn" type="button" data-info="orbit" aria-haspopup="dialog" title="Math, easing &amp; trivia">
+              <span class="info-icon" aria-hidden="true">i</span>Info<span class="visually-hidden">: Orbit Breach, math, easing and trivia</span>
+            </button>
+          </article>
 
-          <a class="animation-card card-wave" href="animations/waving_mesh.html" aria-label="Open Interactive Waving Wiremesh Ribbon">
-            <span class="card-number">03</span>
-            <span class="animation-preview">
-              <img src="images/animations/waving-mesh.jpg" width="1200" height="750" alt="Blue three-dimensional waving wiremesh ribbon on a dark canvas">
-            </span>
-            <span class="card-content">
-              <span class="card-meta">WIREFRAME / RESPONSIVE</span>
-              <strong>Waving Mesh Ribbon</strong>
-              <span>An atmospheric 3D ribbon that bends, twists, and responds to pointer movement and wave controls.</span>
-            </span>
-            <span class="card-action">Launch study <span aria-hidden="true">↗</span></span>
-          </a>
+          <article class="study">
+            <a class="animation-card card-wave" href="animations/waving_mesh.html" aria-label="Open Interactive Waving Wiremesh Ribbon">
+              <span class="card-number">03</span>
+              <span class="animation-preview">
+                <img src="images/animations/waving-mesh.jpg" width="1200" height="750" alt="Blue three-dimensional waving wiremesh ribbon on a dark canvas">
+              </span>
+              <span class="card-content">
+                <span class="card-meta">WIREFRAME / RESPONSIVE</span>
+                <strong>Waving Mesh Ribbon</strong>
+                <span>An atmospheric 3D ribbon that bends, twists, and responds to pointer movement and wave controls.</span>
+              </span>
+              <span class="card-action">Launch study <span aria-hidden="true">↗</span></span>
+            </a>
+            <button class="info-btn" type="button" data-info="wave" aria-haspopup="dialog" title="Math, easing &amp; trivia">
+              <span class="info-icon" aria-hidden="true">i</span>Info<span class="visually-hidden">: Waving Mesh Ribbon, math, easing and trivia</span>
+            </button>
+          </article>
+          <article class="study">
+            <a class="animation-card card-loader" href="animations/loader_lissajous.html" aria-label="Open Lissajous Mesh Loader">
+              <span class="card-number">04</span>
+              <span class="animation-preview">
+                <img src="images/animations/loader-lissajous.svg" width="1200" height="750" alt="Six coloured Lissajous curves woven through scattered dots on a light grid">
+              </span>
+              <span class="card-content">
+                <span class="card-meta">LOADER / CANVAS</span>
+                <strong>Lissajous Mesh Loader</strong>
+                <span>Scattered dots gather into Lissajous strands that unfold into damped waves and settle under the name.</span>
+              </span>
+              <span class="card-action">Launch study <span aria-hidden="true">↗</span></span>
+            </a>
+            <button class="info-btn" type="button" data-info="lissajous" aria-haspopup="dialog" title="Math, easing &amp; trivia">
+              <span class="info-icon" aria-hidden="true">i</span>Info<span class="visually-hidden">: Lissajous Mesh Loader, math, easing and trivia</span>
+            </button>
+          </article>
+
+          <article class="study">
+            <a class="animation-card card-loader" href="animations/loader_tracers.html" aria-label="Open Eased Tracers Loader">
+              <span class="card-number">05</span>
+              <span class="animation-preview">
+                <img src="images/animations/loader-tracers.svg" width="1200" height="750" alt="Tapered tracer lines curving between waypoint ripples on a light grid">
+              </span>
+              <span class="card-content">
+                <span class="card-meta">LOADER / EASING</span>
+                <strong>Eased Tracers Loader</strong>
+                <span>Tracer lines dart between waypoints, each axis on its own random easing curve, then sweep onto the name.</span>
+              </span>
+              <span class="card-action">Launch study <span aria-hidden="true">↗</span></span>
+            </a>
+            <button class="info-btn" type="button" data-info="tracers" aria-haspopup="dialog" title="Math, easing &amp; trivia">
+              <span class="info-icon" aria-hidden="true">i</span>Info<span class="visually-hidden">: Eased Tracers Loader, math, easing and trivia</span>
+            </button>
+          </article>
+
+          <article class="study">
+            <a class="animation-card card-loader" href="animations/loader_orbits.html" aria-label="Open Bouncing Orbits Loader">
+              <span class="card-number">06</span>
+              <span class="animation-preview">
+                <img src="images/animations/loader-orbits.svg" width="1200" height="750" alt="Rings and discs arranged on three orbits above a beaded line on a light grid">
+              </span>
+              <span class="card-content">
+                <span class="card-meta">LOADER / CIRCLES</span>
+                <strong>Bouncing Orbits Loader</strong>
+                <span>Circles bloom with a spring, spin in kicking orbits, then bounce onto the name as threaded beads.</span>
+              </span>
+              <span class="card-action">Launch study <span aria-hidden="true">↗</span></span>
+            </a>
+            <button class="info-btn" type="button" data-info="orbits" aria-haspopup="dialog" title="Math, easing &amp; trivia">
+              <span class="info-icon" aria-hidden="true">i</span>Info<span class="visually-hidden">: Bouncing Orbits Loader, math, easing and trivia</span>
+            </button>
+          </article>
+
+          <article class="study">
+            <a class="animation-card card-loader" href="animations/easing_guide.html" aria-label="Open Easing Guide">
+              <span class="card-number">07</span>
+              <span class="animation-preview">
+                <img src="images/animations/easing-guide.svg" width="1200" height="750" alt="Six easing curves (sine, cubic, expo, back, elastic and bounce) plotted on cards">
+              </span>
+              <span class="card-content">
+                <span class="card-meta">GUIDE / EASING</span>
+                <strong>Easing Guide</strong>
+                <span>Every classic easing function with live demos, formulas, adjustable parameters, copyable code and the history behind each curve.</span>
+              </span>
+              <span class="card-action">Launch study <span aria-hidden="true">↗</span></span>
+            </a>
+            <button class="info-btn" type="button" data-info="easing" aria-haspopup="dialog" title="Math, easing &amp; trivia">
+              <span class="info-icon" aria-hidden="true">i</span>Info<span class="visually-hidden">: Easing Guide, math, easing and trivia</span>
+            </button>
+          </article>
         </div>
       </section>
     </main>
@@ -81,5 +167,12 @@
       <p>Built as small, browser-native motion studies.</p>
       <a href="index.html">Back to portfolio <span aria-hidden="true">→</span></a>
     </footer>
+    <dialog class="study-info" id="study-info" aria-labelledby="study-info-title">
+      <div class="info-panel">
+        <button class="info-close" type="button" aria-label="Close">×</button>
+        <div class="info-body"></div>
+      </div>
+    </dialog>
+    <script type="module" src="js/study-info.js?v=4"></script>
   </body>
 </html>

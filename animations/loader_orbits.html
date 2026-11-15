@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Loading-screen study: circles bloom, spin in kicking orbits, then bounce onto the name as beads.">
+    <title>Bouncing Orbits — Loader Study</title>
+    <style>
+      /* The loader's light backdrop, the name the prelude lands on, and the slider panel. */
+      :root {
+        --ink: #172033;
+        --muted: #64748b;
+        --accent: #087f6a;
+        --panel: rgba(255, 255, 255, .84);
+        --line: rgba(15, 23, 42, .12);
+        --mono: "DM Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        color-scheme: light;
+        font-family: "Manrope", system-ui, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+      body { color: var(--ink); background: linear-gradient(135deg, #ffffff 0%, #f7f9fb 55%, #eef2f6 100%); }
+      .grid { position: fixed; inset: 0; background-image: linear-gradient(rgba(15,23,42,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,.05) 1px, transparent 1px); background-size: 44px 44px; -webkit-mask-image: radial-gradient(ellipse 75% 70% at 50% 50%, #000 5%, transparent 78%); mask-image: radial-gradient(ellipse 75% 70% at 50% 50%, #000 5%, transparent 78%); }
+      canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+
+      .top { position: fixed; z-index: 2; top: 16px; left: 16px; right: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+      .back { padding: 8px 13px; border: 1px solid var(--line); border-radius: 999px; color: #475569; background: rgba(255,255,255,.7); backdrop-filter: blur(8px); font: 500 .66rem var(--mono); letter-spacing: .12em; text-decoration: none; text-transform: uppercase; }
+      .back:hover { color: var(--ink); border-color: rgba(8,127,106,.5); }
+      .title { margin: 0; color: var(--accent); font: 500 .7rem var(--mono); letter-spacing: .16em; text-transform: uppercase; }
+
+      /* The name the prelude lands on, sized like the loader's. */
+      .stage { position: fixed; inset: 0; display: grid; place-items: center; padding: 0 16px 12vh; pointer-events: none; }
+      .name { margin: 0; font-size: min(clamp(3rem, 9vw, 7.5rem), 22vh); font-weight: 700; line-height: .82; letter-spacing: -.075em; }
+      .name-line { display: block; clip-path: inset(-.12em -.2em -.24em -.05em); }
+      .name-line > span { display: block; transform: translateY(110%); }
+      /* Hidden until it rises: the line clip extends below the text, so the parked glyphs would peek through. */
+      .stage:not(.is-revealed) .name { visibility: hidden; }
+      .name b { color: var(--accent); font-weight: inherit; }
+      .is-revealed .name-line > span { animation: rise 1s cubic-bezier(.16,1,.3,1) both; }
+      .is-revealed .name-line:nth-child(2) > span { animation-delay: .17s; }
+      @keyframes rise { from { transform: translateY(110%); } to { transform: none; } }
+
+      .hud { position: fixed; z-index: 2; left: 16px; right: 16px; bottom: 16px; display: grid; justify-items: start; gap: 10px; max-width: 920px; pointer-events: none; font-family: var(--mono); }
+      .bar, .sliders { pointer-events: auto; border: 1px solid var(--line); background: var(--panel); backdrop-filter: blur(10px); box-shadow: 0 10px 28px rgba(15,23,42,.07); }
+      .bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 999px; }
+      .status { padding: 0 6px; color: var(--muted); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; font-variant-numeric: tabular-nums; }
+      .status b { color: var(--ink); font-weight: 500; }
+      .download { display: inline-block; text-decoration: none; }
+      button, .download { font: 12px var(--mono); color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+      button:hover, .download:hover { border-color: rgba(8,127,106,.5); }
+      button:focus-visible, input:focus-visible, .back:focus-visible, .download:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+      .sliders { display: grid; width: 100%; grid-template-columns: repeat(2, minmax(240px, 1fr)); gap: 10px 24px; padding: 14px 18px; border-radius: 18px; }
+      .sliders[hidden] { display: none; }
+      .slider { display: grid; grid-template-columns: minmax(96px, auto) 1fr 6ch; align-items: center; gap: 10px; color: var(--muted); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+      .slider output { justify-self: end; color: var(--ink); font-variant-numeric: tabular-nums; text-transform: none; letter-spacing: 0; }
+      input[type=range] { appearance: none; -webkit-appearance: none; width: 100%; min-width: 80px; height: 24px; margin: 0; background: transparent; cursor: pointer; touch-action: pan-y; }
+      input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 999px; background: rgba(15,23,42,.14); }
+      input[type=range]::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 16px; height: 16px; margin-top: -6px; border: 2px solid #fff; border-radius: 50%; background: var(--accent); box-shadow: 0 1px 5px rgba(8,127,106,.45); }
+      input[type=range]::-moz-range-track { height: 4px; border: 0; border-radius: 999px; background: rgba(15,23,42,.14); }
+      input[type=range]::-moz-range-progress { height: 4px; border-radius: 999px; background: rgba(8,127,106,.7); }
+      input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border: 2px solid #fff; border-radius: 50%; background: var(--accent); }
+
+      @media (max-width: 680px) {
+        .top { top: 10px; left: 10px; right: 10px; }
+        .title { display: none; }
+        .hud { left: 10px; right: 10px; bottom: 10px; }
+        .sliders { grid-template-columns: 1fr; gap: 4px; max-height: 46vh; overflow-y: auto; padding: 12px 14px; }
+        .slider { grid-template-columns: 92px minmax(80px, 1fr) 6ch; gap: 8px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grid" aria-hidden="true"></div>
+    <canvas id="canvas" aria-label="Circles blooming, spinning in orbits around the centre, then dropping and bouncing onto the lines under a name"></canvas>
+    <div class="stage" aria-hidden="true">
+      <p class="name"><span class="name-line"><span>Humprey</span></span><span class="name-line"><span>Cogay<b>.</b></span></span></p>
+    </div>
+
+    <header class="top">
+      <a class="back" href="../animations.html"><span aria-hidden="true">←</span> Studies</a>
+      <p class="title">Loader / Bouncing Orbits</p>
+    </header>
+
+    <div class="hud">
+      <div class="bar">
+        <span class="status">Run <b id="run">00</b></span>
+        <button id="replay" type="button">Replay</button>
+        <button id="loop" type="button" aria-pressed="true">Loop: on</button>
+        <button id="reset" type="button">Reset</button>
+        <button id="toggle-sliders" type="button" aria-controls="sliders" aria-expanded="true">Hide sliders</button>
+        <a class="download" href="loader_orbits.html" download="loader_orbits.html" title="Download this animation as a single HTML file">Download</a>
+      </div>
+      <div class="sliders" id="sliders"></div>
+    </div>
+
+    <script type="module">
+      // Prelude: a copy of js/intro-orbits.js from the portfolio loader, kept inline so this study is a single file.
+      // Startup prelude. Circles pop in with an elastic bloom, drift, then get pulled into
+      // three counter-rotating orbits around the centre, each hop eased per axis with a random
+      // curve. The orbits spin up in sudden eased kicks, then the circles shrink into beads,
+      // drop onto the two rules the name rises from, bounce to rest, and get threaded together.
+
+      const ORBITS_REVEAL_AT = 3800; // ms: when the beaded rules are in place for the name to rise
+
+      const TAU = Math.PI * 2;
+      const ORBITS = [.42, .72, 1.02]; // orbit radii, as a fraction of the base radius
+      const BEAD = 2.6; // px: radius of a circle once it rests on a rule
+      const END_AT = 5.4; // seconds: every bead has popped by now
+
+      // Tunable parameters; the loader uses these defaults, the study page overrides them.
+      // spin and kick scale the orbit rotation; bounce blends the drop from a plain ease-out to a full bounce.
+      const ORBITS_DEFAULTS = { speed: 1, circles: 36, maxRadius: 22, orbitSize: .3, spin: 1, kick: 1, bounce: 1 };
+
+      const clamp01 = (value) => Math.min(Math.max(value, 0), 1);
+      const lerp = (from, to, amount) => from + (to - from) * amount;
+      const span = (time, start, duration) => clamp01((time - start) / duration);
+      const random = (min, max) => min + Math.random() * (max - min);
+      const pick = (list) => list[Math.floor(Math.random() * list.length)];
+
+      const ease = {
+        inOutSine: (t) => -(Math.cos(Math.PI * t) - 1) / 2,
+        outQuart: (t) => 1 - (1 - t) ** 4,
+        inOutCubic: (t) => (t < .5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2),
+        inOutCirc: (t) => (t < .5 ? (1 - Math.sqrt(1 - (2 * t) ** 2)) / 2 : (Math.sqrt(1 - (-2 * t + 2) ** 2) + 1) / 2),
+        inOutExpo: (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t < .5 ? 2 ** (20 * t - 10) / 2 : (2 - 2 ** (10 - 20 * t)) / 2),
+        inBack: (t) => 2.70158 * t ** 3 - 1.70158 * t ** 2,
+        outBack: (t) => 1 + 2.70158 * (t - 1) ** 3 + 1.70158 * (t - 1) ** 2,
+        inOutBack: (t) => {
+          const c = 1.70158 * 1.525;
+          return t < .5 ? ((2 * t) ** 2 * ((c + 1) * 2 * t - c)) / 2 : ((2 * t - 2) ** 2 * ((c + 1) * (t * 2 - 2) + c) + 2) / 2;
+        },
+        outElastic: (t) => (t <= 0 ? 0 : t >= 1 ? 1 : 2 ** (-10 * t) * Math.sin((t * 10 - .75) * (TAU / 3)) + 1),
+        outBounce: (t) => {
+          const n = 7.5625; const d = 2.75;
+          if (t < 1 / d) return n * t * t;
+          if (t < 2 / d) return n * (t -= 1.5 / d) * t + .75;
+          if (t < 2.5 / d) return n * (t -= 2.25 / d) * t + .9375;
+          return n * (t -= 2.625 / d) * t + .984375;
+        }
+      };
+      const gatherEasings = [ease.inOutSine, ease.outQuart, ease.inOutCubic, ease.inOutCirc, ease.inOutExpo, ease.outBack, ease.inOutBack, ease.outElastic];
+      const kickEasings = [ease.inOutBack, ease.inOutExpo, ease.outElastic, ease.outBack];
+
+      const colors = ["#087f6a", "#167da3", "#7456c9"];
+      const ruleColors = ["#087f6a", "#167da3"];
+
+      function planCircles(o) {
+        const count = Math.max(2, Math.round(o.circles));
+        const circles = Array.from({ length: count }, (_, i) => {
+          const orbit = i % ORBITS.length;
+          const slot = Math.floor(i / ORBITS.length);
+          const perOrbit = Math.floor((count - 1 - orbit) / ORBITS.length) + 1;
+          return {
+            homeX: random(.1, .9), homeY: random(.14, .86),
+            wobble: Math.random() * TAU, wobbleSpeed: random(.6, 1.4),
+            radius: random(Math.min(3, o.maxRadius), o.maxRadius), ring: Math.random() < .6,
+            color: pick(colors), alpha: random(.5, .95),
+            appearAt: random(.15, 1),
+            orbit, angle: (slot / perOrbit) * TAU + random(-.15, .15),
+            gatherAt: random(1.15, 1.5), gatherFor: random(.7, 1.05),
+            ex: pick(gatherEasings), ey: pick(gatherEasings)
+          };
+        });
+        // Each rule gets every other circle, ordered left to right by where it sits on the orbit,
+        // so the drop reads as a cascade rather than a tangle.
+        [0, 1].forEach((rule) => {
+          const onRule = circles.filter((_, i) => i % 2 === rule).sort((a, b) => Math.cos(a.angle) - Math.cos(b.angle));
+          onRule.forEach((circle, k) => {
+            circle.rule = rule;
+            circle.u = onRule.length > 1 ? k / (onRule.length - 1) : .5;
+            circle.dropAt = 2.75 + circle.u * .35 + random(0, .15) + rule * .08;
+            circle.dropFor = random(.6, .8);
+            circle.popAt = 4.55 + circle.u * .45 + rule * .1;
+          });
+        });
+        // Each orbit spins at its own pace, direction, and with its own sudden eased kicks.
+        const orbits = ORBITS.map((size, k) => ({
+          size, direction: k % 2 ? -1 : 1, speed: o.spin * random(.35, .6) / (k + 1),
+          kicks: [
+            { at: random(1.75, 2.0), for: random(.45, .7), turn: o.kick * random(.6, 1.3), ease: pick(kickEasings) },
+            { at: random(2.25, 2.5), for: random(.4, .6), turn: o.kick * random(.4, 1), ease: pick(kickEasings) }
+          ]
+        }));
+        return { circles, orbits };
+      }
+
+      /** Plays the prelude on `canvas`, landing on the bottom edges of `nameLines`. Returns a stop function. */
+      function playIntroOrbits(canvas, nameLines, options = {}) {
+        const o = { ...ORBITS_DEFAULTS, ...options };
+        const context = canvas.getContext("2d");
+        const { circles, orbits } = planCircles(o);
+        const startedAt = performance.now();
+        let width = 0; let height = 0; let frame = 0;
+
+        function fitCanvas() {
+          if (canvas.clientWidth === width && canvas.clientHeight === height) return;
+          width = canvas.clientWidth; height = canvas.clientHeight;
+          const ratio = Math.min(window.devicePixelRatio || 1, 2);
+          canvas.width = Math.round(width * ratio); canvas.height = Math.round(height * ratio);
+          context.setTransform(ratio, 0, 0, ratio, 0, 0);
+        }
+
+        const orbitAngle = (orbit, t) => orbit.direction * (orbit.speed * t +
+          orbit.kicks.reduce((turned, kick) => turned + kick.turn * kick.ease(span(t, kick.at, kick.for)), 0));
+
+        function draw(now) {
+          const t = Math.max(0, now - startedAt) / 1000 * o.speed;
+          fitCanvas();
+          context.clearRect(0, 0, width, height);
+          if (t >= END_AT) { stop(); return; }
+
+          const rules = nameLines.map((line) => line.getBoundingClientRect());
+          const centerX = width / 2; const centerY = height / 2;
+          const base = Math.min(width, height) * o.orbitSize;
+
+          // Guide rings breathe open behind the orbits, then implode as the circles drop.
+          context.lineWidth = 1;
+          orbits.forEach((orbit, k) => {
+            const opened = ease.outBack(span(t, 1.15 + k * .12, .9));
+            const closed = ease.inBack(span(t, 2.7 + k * .08, .55));
+            const radius = base * orbit.size * opened * (1 - closed);
+            if (radius <= .5) return;
+            context.beginPath();
+            context.setLineDash(k === 1 ? [2, 7] : []);
+            context.lineDashOffset = -orbitAngle(orbit, t) * radius;
+            context.arc(centerX, centerY, radius, 0, TAU);
+            context.strokeStyle = colors[k];
+            context.globalAlpha = .22 * (1 - closed);
+            context.stroke();
+          });
+          context.setLineDash([]);
+
+          // Threads draw through each rule's beads, then unspool as the beads pop.
+          rules.forEach((rule, k) => {
+            const drawn = ease.outQuart(span(t, 3.55 + k * .1, .65));
+            const unspooled = ease.inOutExpo(span(t, 4.55 + k * .1, .7));
+            if (drawn <= unspooled) return;
+            context.beginPath();
+            context.moveTo(lerp(rule.left, rule.right, unspooled), rule.bottom);
+            context.lineTo(lerp(rule.left, rule.right, drawn), rule.bottom);
+            context.lineWidth = 1.5;
+            context.strokeStyle = ruleColors[k % ruleColors.length];
+            context.globalAlpha = .85;
+            context.stroke();
+          });
+
+          circles.forEach((circle) => {
+            const appeared = ease.outElastic(span(t, circle.appearAt, .8));
+            const popped = ease.inBack(span(t, circle.popAt, .3));
+            if (appeared <= 0 || popped >= 1) return;
+
+            const orbit = orbits[circle.orbit];
+            const theta = circle.angle + orbitAngle(orbit, t);
+            const orbitRadius = base * orbit.size * (1 + .06 * Math.sin(t * 3 + circle.angle * 2));
+            const drift = 14 * Math.min(t, 1);
+            const homeX = circle.homeX * width + Math.cos(circle.wobble + t * circle.wobbleSpeed) * drift;
+            const homeY = circle.homeY * height + Math.sin(circle.wobble * 1.3 + t * circle.wobbleSpeed * .8) * drift;
+            const gathered = span(t, circle.gatherAt, circle.gatherFor);
+            let x = lerp(homeX, centerX + Math.cos(theta) * orbitRadius, circle.ex(gathered));
+            let y = lerp(homeY, centerY + Math.sin(theta) * orbitRadius, circle.ey(gathered));
+
+            // The drop: a smooth glide sideways, a bouncing fall onto the rule.
+            const rule = rules[circle.rule % rules.length];
+            const dropped = span(t, circle.dropAt, circle.dropFor);
+            x = lerp(x, lerp(rule.left, rule.right, circle.u), ease.inOutCubic(dropped));
+            y = lerp(y, rule.bottom, lerp(ease.outQuart(dropped), ease.outBounce(dropped), o.bounce));
+
+            const shrunk = ease.inOutCubic(span(t, circle.dropAt - .15, .45));
+            const radius = Math.max(0, lerp(circle.radius * (1 - .35 * ease.inOutSine(gathered)), BEAD, shrunk) * appeared * (1 - popped));
+            const filled = circle.ring ? shrunk : 1;
+            const color = shrunk > .5 ? ruleColors[circle.rule % ruleColors.length] : circle.color;
+            const alpha = lerp(circle.alpha, .95, shrunk);
+
+            context.beginPath();
+            context.arc(x, y, radius, 0, TAU);
+            context.fillStyle = color; context.strokeStyle = color;
+            if (filled > 0) {
+              // Large filled circles stay translucent so they read as soft discs, not blots.
+              context.globalAlpha = alpha * filled * lerp(.35, 1, shrunk);
+              context.fill();
+            }
+            if (circle.ring && filled < 1) {
+              context.lineWidth = 1.4;
+              context.globalAlpha = alpha * (1 - filled);
+              context.stroke();
+            }
+          });
+          context.globalAlpha = 1;
+          frame = requestAnimationFrame(draw);
+        }
+
+        function stop() {
+          cancelAnimationFrame(frame);
+        }
+
+        frame = requestAnimationFrame(draw);
+        return stop;
+      }
+
+      // Study harness: plays the prelude on a loop and rebuilds it whenever a slider changes.
+
+      const RUN_FOR = 5.6; // seconds of prelude time per run (every prelude finishes by 5.4s)
+      const HOLD = 1.1; // seconds the finished name stays up before the next run
+
+      /**
+       * @param {object} study
+       * @param {Function} study.play     prelude function: (canvas, nameLines, options) => stop
+       * @param {number|Function} study.revealAt ms of prelude time when the name rises, or (options) => ms
+       * @param {number|Function} [study.runFor] seconds of prelude time per run, or (options) => seconds
+       * @param {object}   study.defaults the prelude's default options
+       * @param {Array}    study.sliders  [{ key, label, min, max, step, format? }]
+       */
+      function mountStudy({ play, revealAt, runFor = RUN_FOR, defaults, sliders }) {
+        const canvas = document.querySelector("#canvas");
+        const stage = document.querySelector(".stage");
+        const nameLines = [...document.querySelectorAll(".name-line")];
+        const panel = document.querySelector("#sliders");
+        const runLabel = document.querySelector("#run");
+        const loopButton = document.querySelector("#loop");
+        const toggleButton = document.querySelector("#toggle-sliders");
+        const options = { ...defaults };
+        let stop = () => {};
+        let timers = [];
+        let runs = 0;
+        let loop = true;
+        let rebuild;
+        const resolve = (value) => (typeof value === "function" ? value(options) : value);
+
+        const controls = sliders.map((slider) => {
+          const format = slider.format ?? ((value) => String(value));
+          const label = document.createElement("label");
+          label.className = "slider";
+          label.innerHTML = `<span>${slider.label}</span><input type="range" min="${slider.min}" max="${slider.max}" step="${slider.step}"><output></output>`;
+          const input = label.querySelector("input");
+          const output = label.querySelector("output");
+          const sync = () => { output.textContent = format(options[slider.key]); };
+          input.value = options[slider.key];
+          sync();
+          input.addEventListener("input", () => {
+            options[slider.key] = Number(input.value);
+            sync();
+            // Replay once the slider settles, so dragging doesn't restart every frame.
+            clearTimeout(rebuild);
+            rebuild = setTimeout(start, 220);
+          });
+          panel.append(label);
+          return { slider, input, sync };
+        });
+
+        function clear() {
+          stop();
+          timers.forEach(clearTimeout);
+          timers = [];
+        }
+
+        function start() {
+          clear();
+          runs += 1;
+          runLabel.textContent = String(runs).padStart(2, "0");
+          stage.classList.remove("is-revealed");
+          void stage.offsetWidth; // restart the name's rise animation
+          const scale = 1 / options.speed;
+          stop = play(canvas, nameLines, { ...options });
+          timers.push(setTimeout(() => stage.classList.add("is-revealed"), resolve(revealAt) * scale));
+          timers.push(setTimeout(() => { if (loop) start(); }, (resolve(runFor) + HOLD) * 1000 * scale));
+        }
+
+        document.querySelector("#replay").addEventListener("click", start);
+        document.querySelector("#reset").addEventListener("click", () => {
+          Object.assign(options, defaults);
+          controls.forEach(({ slider, input, sync }) => { input.value = options[slider.key]; sync(); });
+          start();
+        });
+        loopButton.addEventListener("click", () => {
+          loop = !loop;
+          loopButton.textContent = `Loop: ${loop ? "on" : "off"}`;
+          loopButton.setAttribute("aria-pressed", String(loop));
+          if (loop) start();
+        });
+        toggleButton.addEventListener("click", () => {
+          panel.hidden = !panel.hidden;
+          toggleButton.textContent = panel.hidden ? "Show sliders" : "Hide sliders";
+          toggleButton.setAttribute("aria-expanded", String(!panel.hidden));
+        });
+
+        start();
+      }
+
+      const fixed = (digits, suffix = "") => (value) => `${value.toFixed(digits)}${suffix}`;
+
+      mountStudy({
+        play: playIntroOrbits, revealAt: ORBITS_REVEAL_AT, defaults: ORBITS_DEFAULTS,
+        sliders: [
+          { key: "speed", label: "Speed", min: .25, max: 2, step: .05, format: fixed(2, "×") },
+          { key: "circles", label: "Circles", min: 6, max: 120, step: 2 },
+          { key: "maxRadius", label: "Max size", min: 4, max: 60, step: 1, format: (v) => `${v}px` },
+          { key: "orbitSize", label: "Orbit size", min: .1, max: .45, step: .01, format: fixed(2) },
+          { key: "spin", label: "Spin", min: 0, max: 4, step: .1, format: fixed(1, "×") },
+          { key: "kick", label: "Kick", min: 0, max: 4, step: .1, format: fixed(1, "×") },
+          { key: "bounce", label: "Bounce", min: 0, max: 1, step: .05, format: (v) => `${Math.round(v * 100)}%` }
+        ]
+      });
+    </script>
+  </body>
+</html>

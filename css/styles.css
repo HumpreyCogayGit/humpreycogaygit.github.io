@@ -64,7 +64,7 @@ noscript { position: fixed; z-index: 10000; inset: 0 auto auto 0; width: 100%; p
 .startup.is-running .startup-brand { animation: startup-fade-down .7s .05s var(--ease-out) both; }
 .startup.is-running .startup-brand path { animation: startup-draw .9s .25s ease-out both; }
 .startup.is-running .startup-skip { animation: startup-fade-down .7s .15s var(--ease-out) both; }
-/* The stage waits for the line prelude (js/intro-lines.js) to lay down its rules. */
+/* The stage waits for the line prelude (one of js/intros.js) to lay down its rules. */
 .startup.is-revealed .startup-eyebrow { animation: startup-rise .7s var(--ease-out) both; }
 .startup.is-revealed .startup-name-line > span { animation: startup-line-up 1s .05s var(--ease-out) both; }
 .startup.is-revealed .startup-name-line:nth-child(2) > span { animation-delay: .17s; }

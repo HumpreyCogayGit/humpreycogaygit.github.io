@@ -92,6 +92,8 @@
         box-shadow 0.2s ease;
     }
 
+    a.glass-btn { text-decoration: none; }
+
     .glass-btn:hover {
       background: rgba(255, 255, 255, 0.12);
       border-color: rgba(125, 211, 252, 0.32);
@@ -187,6 +189,38 @@
       cursor: pointer;
     }
 
+    /* Back to the studies list */
+    .back-to-studies {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 30;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(20, 22, 28, 0.72);
+      border: 1px solid rgba(125, 211, 252, 0.16);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      color: #e2e8f0;
+      font-size: 12.5px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .back-to-studies:hover {
+      background: rgba(30, 35, 46, 0.85);
+      border-color: rgba(77, 208, 225, 0.45);
+    }
+
+    .back-to-studies:focus-visible {
+      outline: 2px solid #4dd0e1;
+      outline-offset: 2px;
+    }
+
     /* Subtle Restore Button when UI is Hidden */
     .restore-ui-btn {
       position: fixed;
@@ -259,6 +293,8 @@
 </head>
 <body>
 
+  <a class="back-to-studies" href="../animations.html"><span aria-hidden="true">←</span> Studies</a>
+
   <!-- Full-Viewport Interactive 3D Wiremesh Canvas -->
   <canvas id="waveCanvas"></canvas>
 
@@ -292,6 +328,15 @@
     </div>
 
     <div class="divider"></div>
+
+    <a class="glass-btn" href="waving_mesh.html" download="waving_mesh.html" title="Download this animation as a single HTML file">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+      </svg>
+      <span>Download</span>
+    </a>
 
     <button id="hideUiBtn" class="glass-btn" type="button" title="Hide controls for pure fullscreen artwork">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

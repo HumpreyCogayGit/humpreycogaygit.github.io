@@ -74,6 +74,38 @@
       cursor: grabbing;
     }
 
+    /* Back to the studies list */
+    .back-to-studies {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 30;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      color: var(--text-primary);
+      font-size: 12.5px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .back-to-studies:hover {
+      background: var(--btn-hover);
+      border-color: var(--accent-cyan);
+    }
+
+    .back-to-studies:focus-visible {
+      outline: 2px solid var(--accent-cyan);
+      outline-offset: 2px;
+    }
+
     /* Subtle Top Hint Pill */
     .top-hint {
       position: fixed;
@@ -153,6 +185,8 @@
       transition: transform 0.16s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
       white-space: nowrap;
     }
+
+    a.ctrl-btn { text-decoration: none; }
 
     .ctrl-btn:hover {
       background: var(--btn-hover);
@@ -242,7 +276,7 @@
     /* Responsive Adjustments for Mobile Screens */
     @media (max-width: 640px) {
       .top-hint {
-        top: 12px;
+        top: 58px;
         font-size: 11px;
         padding: 6px 12px;
       }
@@ -270,6 +304,8 @@
 <body>
 
   <!-- Subtle Interactive Guidance Pill -->
+  <a class="back-to-studies" href="../animations.html"><span aria-hidden="true">←</span> Studies</a>
+
   <div class="top-hint">
     <span class="pulse-dot"></span>
     <span>Click any region to spark neural dialogue • Drag to rotate</span>
@@ -306,6 +342,15 @@
       </svg>
       <span id="themeLabel">Studio Light</span>
     </button>
+
+    <a class="ctrl-btn" href="brain_wiremesh.html" download="brain_wiremesh.html" title="Download this animation as a single HTML file">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+      </svg>
+      <span>Download</span>
+    </a>
 
     <div class="divider"></div>
 
