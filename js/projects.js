@@ -2,7 +2,7 @@ export const projects = {
   "ai-engineering": {
     title: "AI Engineering: Building with LLMs",
     className: "project-ai",
-    accent: "#70f0c4",
+    accent: "#087f6a",
     kicker: "FROM API CALL TO PRODUCTION",
     headline: "Build beyond the prompt.",
     visualDetail: "httpx → RAG → agents → MCP → production",
@@ -15,7 +15,7 @@ export const projects = {
   precis: {
     title: "Precis — Daily Tech Brief",
     className: "project-precis",
-    accent: "#f0c985",
+    accent: "#8a5d0a",
     kicker: "FROM NOISE TO SIGNAL",
     headline: "One clear briefing.",
     visualDetail: "AI + cybersecurity · ranked · summarized · sourced",
@@ -28,7 +28,7 @@ export const projects = {
   speculo: {
     title: "Speculo — Text Workbench",
     className: "project-speculo",
-    accent: "#ad85ff",
+    accent: "#6d4bc3",
     kicker: "WRITE · TRANSFORM · KEEP IT PRIVATE",
     headline: "Your text stays yours.",
     visualDetail: "Markdown + 250 local developer operations",
@@ -41,7 +41,7 @@ export const projects = {
   scapesaur: {
     title: "Scapesaur — Dino Runner",
     className: "project-scapesaur",
-    accent: "#8edc78",
+    accent: "#397a35",
     kicker: "JUMP · DUCK · DON’T LOOK BACK",
     headline: "Small dino. Big adventure.",
     visualDetail: "Adventure · Endless Run · Boss Rush",
