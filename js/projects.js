@@ -50,6 +50,19 @@ export const projects = {
     tags: ["Boss encounters", "3 game modes", "Multiplayer", "Customization", "Accessible play"],
     url: "https://scapesaur.vercel.app/",
     action: "Play Scapesaur"
+  },
+  numero: {
+    title: "Numero — Instant Analytics",
+    className: "project-numero",
+    accent: "#2a78d6",
+    kicker: "DROP IN DATA · GET A DASHBOARD",
+    headline: "Answers at a glance.",
+    visualDetail: "CSV + JSON + Excel → instant analytics",
+    name: "Numero",
+    description: "A private, browser-based analytics workspace that turns CSV, JSON, and Excel files into interactive dashboards. Imported data stays on your device while Numero handles profiling, visualization, filtering, formulas, and data preparation.",
+    tags: ["Instant dashboards", "15 chart types", "Local processing", "Data preparation", "Ask a question"],
+    url: "https://humpreycogaygit.github.io/numero/",
+    action: "Open Numero"
   }
 };
 

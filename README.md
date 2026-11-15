@@ -6,7 +6,7 @@ A dependency-free desktop-style portfolio built with semantic HTML, CSS, and van
 
 - Draggable, minimizable, maximizable application windows
 - Automatic, line-driven technology intro whose signal core, rails, and terminology transform into the desktop shortcuts, taskbar, and heading
-- Project introductions for AI Engineering, Precis, Speculo, and Scapesaur
+- Project introductions for AI Engineering, Precis, Speculo, Scapesaur, and Numero
 - Working keyboard-enabled calculator (without `eval`)
 - Navigable monthly calendar
 - Live Open-Meteo weather with city search, geolocation, and unit switching

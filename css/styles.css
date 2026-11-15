@@ -220,6 +220,8 @@ body:not(.intro-active) .desktop { transform: scale(1); filter: none; }
 .icon-precis { background: #f4eddf; color: #172035; font-family: Georgia, serif; font-size: 1.7rem; }
 .icon-speculo { background: linear-gradient(145deg, #754eff, #ad77ff); }
 .icon-scapesaur { background: linear-gradient(#9de9ff, #65ba79); font-size: 1.8rem; }
+.icon-numero { background: #2a78d6; color: #fff; }
+.icon-numero svg { width: 42px; height: 42px; fill: currentColor; }
 .icon-calculator { background: linear-gradient(145deg, #263958, #15223a); color: #7bf2ca; font-family: "DM Mono"; }
 .icon-calendar { grid-template-rows: 18px 1fr; background: #f5f7fa; color: #172035; }
 .icon-calendar b { align-self: stretch; padding-top: 3px; color: #fff; background: #f04f65; font: 500 .55rem "DM Mono"; text-align: center; }
@@ -316,9 +318,11 @@ body.desktop-ready .ambient { opacity: .55; transform: scale(1); }
 .project-precis { --project-accent: #8a5d0a; }
 .project-speculo { --project-accent: #6d4bc3; }
 .project-scapesaur { --project-accent: #397a35; }
+.project-numero { --project-accent: #2a78d6; }
 .project-precis .visual-copy h3 { font-family: Georgia, serif; font-weight: 400; letter-spacing: -.04em; }
 .project-scapesaur .project-visual { background: linear-gradient(#e0f2fe, #dcfce7); }
 .project-scapesaur .visual-copy h3 { text-transform: uppercase; letter-spacing: .04em; }
+.project-numero .project-visual { background: linear-gradient(145deg, #eff6ff, #e0ecfb); }
 .code-line { display: block; margin: 12px auto 0; padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px; color: #334155; background: rgba(255,255,255,.74); font: .68rem "DM Mono"; animation: pulse-code 2.5s ease-in-out infinite; }
 @keyframes pulse-code { 50% { border-color: var(--project-accent); box-shadow: 0 0 25px color-mix(in srgb, var(--project-accent) 18%, transparent); } }
 
