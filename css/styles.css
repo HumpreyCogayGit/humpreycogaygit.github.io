@@ -221,11 +221,15 @@ body:not(.intro-active) .desktop { transform: scale(1); filter: none; }
 .desktop-intro { max-width: 500px; margin: 28px 0 0; color: var(--muted); font-size: clamp(.9rem, 1.3vw, 1.12rem); line-height: 1.65; }
 
 .desktop-icons { position: absolute; z-index: 2; top: 28px; right: clamp(20px, 3.5vw, 56px); display: grid; max-height: calc(100dvh - var(--taskbar-height) - 56px); grid-template-columns: repeat(2, 105px); gap: 10px; overflow-y: auto; }
-.desktop-icon { display: flex; min-height: 105px; padding: 10px 5px; flex-direction: column; align-items: center; gap: 7px; border: 1px solid transparent; border-radius: 10px; color: var(--ink); background: transparent; cursor: default; font-size: .78rem; text-shadow: 0 1px 2px rgba(255,255,255,.8); }
+.desktop-icon { display: flex; min-height: 105px; padding: 10px 5px; flex-direction: column; align-items: center; gap: 7px; border: 0; border-radius: 10px; outline: 0; color: var(--ink); background: transparent; cursor: pointer; font-size: .78rem; text-shadow: 0 1px 2px rgba(255,255,255,.8); }
 .desktop-icon-link { cursor: pointer; text-decoration: none; }
-.desktop-icon:hover, .desktop-icon:focus-visible { border-color: rgba(15,23,42,.13); background: rgba(255,255,255,.72); }
-.desktop-icon:active { background: rgba(8,127,106,.1); }
-.icon-tile { display: grid; width: 56px; height: 56px; place-items: center; overflow: hidden; border: 1px solid rgba(15,23,42,.1); border-radius: 15px; box-shadow: 0 10px 24px rgba(15,23,42,.16); font-weight: 800; font-size: 1.2rem; }
+.desktop-icon:focus-visible { outline: 0; }
+.desktop-icon:focus-visible > span:last-child { color: var(--accent); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.icon-tile { display: grid; width: 56px; height: 56px; place-items: center; overflow: hidden; border: 1px solid rgba(15,23,42,.1); border-radius: 15px; box-shadow: 0 10px 24px rgba(15,23,42,.16); font-weight: 800; font-size: 1.2rem; transition: transform .2s cubic-bezier(.2,.75,.25,1), box-shadow .2s ease; transform-origin: center bottom; }
+@media (hover: hover) and (pointer: fine) {
+  .desktop-icon:hover .icon-tile, .desktop-icon:focus-visible .icon-tile { transform: translateY(-2px) scale(1.08); box-shadow: 0 13px 28px rgba(15,23,42,.2); }
+  .desktop-icon:active .icon-tile { transform: translateY(-1px) scale(1.04); }
+}
 .icon-ai { background: linear-gradient(145deg, #52e1b3, #146886); color: #061821; }
 .icon-precis { background: #f4eddf; color: #172035; font-family: Georgia, serif; font-size: 1.7rem; }
 .icon-speculo { background: linear-gradient(145deg, #754eff, #ad77ff); }
