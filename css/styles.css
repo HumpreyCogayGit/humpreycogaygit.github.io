@@ -387,9 +387,15 @@ body.desktop-ready .ambient { opacity: .55; transform: scale(1); }
   .desktop-heading { left: 24px; right: 24px; bottom: 88px; }
   .desktop-heading h1 { font-size: clamp(3.4rem, 20vw, 5.5rem); }
   .desktop-intro { max-width: 90%; margin-top: 20px; font-size: .85rem; }
-  .desktop-icons { top: 18px; right: 15px; grid-template-columns: repeat(2, 84px); max-height: calc(100dvh - 88px); overflow-y: auto; }
-  .desktop-icon { min-height: 88px; font-size: .68rem; }
-  .icon-tile { width: 48px; height: 48px; border-radius: 13px; }
+  .desktop-icons { left: 0; top: 10px; right: 0; display: grid; max-height: none; padding: 2px 12px 8px; grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 64px; gap: 4px; overflow-x: auto; overflow-y: hidden; overscroll-behavior-inline: contain; scrollbar-width: none; }
+  .desktop-icons::-webkit-scrollbar { display: none; }
+  .desktop-icon { min-height: 66px; padding: 4px 2px; gap: 4px; font-size: .58rem; line-height: 1.15; }
+  .desktop-icon > span:last-child { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+  .icon-tile { width: 40px; height: 40px; border-radius: 11px; font-size: 1rem; box-shadow: 0 6px 15px rgba(15,23,42,.14); }
+  .icon-linkedin svg, .icon-instagram svg, .icon-build-blog svg, .icon-substack svg { width: 25px; height: 25px; }
+  .icon-calendar { grid-template-rows: 13px 1fr; }
+  .icon-calendar b { padding-top: 2px; font-size: .42rem; }
+  .icon-calendar span { font-size: .95rem; }
   .desktop-icons.is-collapsed { display: none; }
   .app-window, .app-window[data-app] { inset: 5px !important; width: calc(100% - 10px) !important; height: calc(100% - 10px) !important; min-width: 0; min-height: 0; border-radius: 13px; transform: none !important; }
   .window-controls button { width: 43px; }
