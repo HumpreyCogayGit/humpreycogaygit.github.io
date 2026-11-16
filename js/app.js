@@ -1,4 +1,4 @@
-import { projects, projectMarkup } from "./projects.js?v=4";
+import { projects, projectMarkup } from "./projects.js?v=6";
 import { calculatorMarkup, initCalculator } from "./calculator.js";
 import { calendarMarkup, initCalendar } from "./calendar.js";
 import { weatherMarkup, initWeather } from "./weather.js";

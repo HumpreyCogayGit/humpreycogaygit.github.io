@@ -49,7 +49,7 @@ export const projects = {
     accent: "#2a78d6",
     name: "Numero",
     subtitle: "A private browser tool that turns your files into dashboards.",
-    screenshot: new URL("../images/projects/numero.png", import.meta.url).href,
+    screenshot: new URL("../images/projects/numero.png?v=3", import.meta.url).href,
     tags: ["Data analysis", "15 chart types", "Private"],
     url: "https://humpreycogaygit.github.io/numero/",
     action: "Open Numero"
