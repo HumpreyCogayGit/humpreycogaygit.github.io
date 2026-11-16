@@ -15,18 +15,11 @@ const manager = new WindowManager({ layer: document.querySelector("#window-layer
 document.addEventListener("click", (event) => { const trigger = event.target.closest("[data-open]"); if (trigger) manager.open(trigger.dataset.open); });
 document.querySelectorAll(".desktop-icon").forEach((icon) => icon.addEventListener("dblclick", (event) => event.preventDefault()));
 
-const iconNav = document.querySelector(".desktop-icons"); const launcher = document.querySelector("#launcher");
-launcher.addEventListener("click", () => {
-  if (innerWidth > 720) return;
-  const collapsed = iconNav.classList.toggle("is-collapsed");
-  launcher.setAttribute("aria-expanded", String(!collapsed));
-});
-
 function updateClock() {
-  const now = new Date(); document.querySelector("#clock-time").textContent = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); document.querySelector("#clock-date").textContent = now.toLocaleDateString([], { month: "short", day: "numeric" });
+  const now = new Date(); document.querySelector("#clock-time").textContent = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }); document.querySelector("#clock-date").textContent = now.toLocaleDateString([], { month: "short", day: "numeric" });
   document.querySelector("#calendar-icon-month").textContent = now.toLocaleDateString([], { month: "short" }).toUpperCase(); document.querySelector("#calendar-icon-day").textContent = now.getDate();
 }
-updateClock(); setInterval(updateClock, 30000);
+updateClock(); setInterval(updateClock, 1000);
 
 const startup = document.querySelector("#startup");
 const desktop = document.querySelector("#desktop");
