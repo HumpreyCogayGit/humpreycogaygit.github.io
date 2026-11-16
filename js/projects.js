@@ -7,7 +7,7 @@ export const projects = {
     subtitle: "A hands-on course for building and running real LLM applications.",
     screenshot: new URL("../images/projects/ai-engineering.png", import.meta.url).href,
     tags: ["49 lectures", "10 modules", "Hands-on"],
-    url: "https://humpreycogaygit.github.io/AiEngineering101/",
+    url: "https://humpreycogay.github.io/AiEngineering101/",
     action: "Start the course"
   },
   precis: {
@@ -51,7 +51,7 @@ export const projects = {
     subtitle: "A private browser tool that turns your files into dashboards.",
     screenshot: new URL("../images/projects/numero.png?v=3", import.meta.url).href,
     tags: ["Data analysis", "15 chart types", "Private"],
-    url: "https://humpreycogaygit.github.io/numero/",
+    url: "https://humpreycogay.github.io/numero/",
     action: "Open Numero"
   }
 };
