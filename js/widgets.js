@@ -14,6 +14,7 @@ function initWeatherWidget() {
   const temperature = document.querySelector("#widget-weather-temp");
   const condition = document.querySelector("#widget-weather-condition");
   const range = document.querySelector("#widget-weather-range");
+  const updated = document.querySelector("#widget-weather-updated");
   let units = "celsius";
   try { units = localStorage.getItem("portfolio-weather-units") || units; } catch { /* Use Celsius when browser storage is unavailable. */ }
 
@@ -34,6 +35,7 @@ function initWeatherWidget() {
       temperature.textContent = `${Math.round(data.current.temperature_2m)}°`;
       condition.textContent = label;
       range.textContent = `H:${Math.round(data.daily.temperature_2m_max[0])}°  L:${Math.round(data.daily.temperature_2m_min[0])}°`;
+      updated.textContent = `Updated ${new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
       if (place !== defaultWeatherPlace) {
         try { localStorage.setItem("portfolio-weather-place", JSON.stringify(place)); } catch { /* Weather still works without caching. */ }
       }
@@ -41,6 +43,7 @@ function initWeatherWidget() {
       temperature.textContent = "Unavailable";
       condition.textContent = "Weather unavailable";
       range.textContent = "Open Weather to retry";
+      updated.textContent = "Update failed";
     }
   }
 

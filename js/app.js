@@ -47,12 +47,14 @@ const introName = document.querySelector("#startup-name");
 const introCount = document.querySelector("#startup-count");
 const introProgress = document.querySelector("#startup-progress");
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let returningVisitor = false;
+try { returningVisitor = localStorage.getItem("portfolio-intro-seen") === "true"; } catch { /* Play the intro when storage is unavailable. */ }
 const INTRO_MIN = 5450; // default: long enough for a line prelude and the name sequence to play once
 const INTRO_MAX = 7000; // never wait much longer than this for assets
 // Bump INTRO_VERSION whenever a prelude changes: the query string keeps browsers from pairing a
 // fresh module with a stale cached one. Loaded dynamically so a broken prelude can never block the desktop.
 const INTRO_VERSION = 11;
-const introModule = import(`./intros.js?v=${INTRO_VERSION}`).catch((error) => {
+const introModule = returningVisitor ? Promise.resolve(null) : import(`./intros.js?v=${INTRO_VERSION}`).catch((error) => {
   console.error("Intro prelude failed to load; continuing without it.", error);
   return null;
 });
@@ -167,6 +169,7 @@ function finishIntro() {
   document.body.classList.add("desktop-entering");
   document.body.classList.remove("intro-active");
   desktop.removeAttribute("inert");
+  try { localStorage.setItem("portfolio-intro-seen", "true"); } catch { /* The desktop does not depend on storage. */ }
   setTimeout(hideStartup, reducedMotion ? 50 : 950);
   setTimeout(() => {
     document.body.classList.remove("desktop-entering", "intro-handoff");
@@ -184,10 +187,17 @@ skipIntro.addEventListener("click", finishIntro);
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && !startup.hidden) finishIntro();
 });
-startIntro();
-skipIntro.focus();
+if (returningVisitor) {
+  startup.hidden = true;
+  document.body.classList.remove("intro-active");
+  document.body.classList.add("desktop-ready");
+  desktop.removeAttribute("inert");
+} else {
+  startIntro();
+  skipIntro.focus();
+}
 
 // Widgets are optional desktop enhancements and must never block the startup controller.
-import("./widgets.js?v=6")
+import("./widgets.js?v=7")
   .then(({ initDesktopWidgets }) => initDesktopWidgets())
   .catch((error) => console.error("Desktop widgets failed to initialize.", error));

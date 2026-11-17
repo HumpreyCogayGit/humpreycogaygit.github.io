@@ -8,7 +8,7 @@
   --accent: #087f6a;
   --taskbar-height: 50px;
   --radius: 18px;
-  font-family: "Manrope", system-ui, sans-serif;
+  font-family: "Manrope", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -21,6 +21,8 @@ noscript { position: fixed; z-index: 10000; inset: 0 auto auto 0; width: 100%; p
 /* Startup sequence */
 .startup { --p: 0; --mx: 0; --my: 0; --ease-out: cubic-bezier(.16,1,.3,1); position: fixed; z-index: 5000; inset: 0; display: grid; grid-template-rows: auto 1fr auto; padding: clamp(18px, 3vw, 36px) clamp(20px, 5vw, 80px) clamp(22px, 4vw, 44px); overflow: hidden; color: var(--ink); isolation: isolate; }
 .startup[hidden] { display: none; }
+.returning-visitor .startup { display: none; }
+.returning-visitor body.intro-active .desktop { opacity: 1; transform: scale(1); filter: none; }
 .startup.is-leaving { pointer-events: none; }
 .startup-backdrop { position: absolute; z-index: -1; inset: 0; overflow: hidden; background: linear-gradient(135deg, #ffffff 0%, #f7f9fb 55%, #eef2f6 100%); transition: opacity .7s .12s ease; }
 .startup-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(15,23,42,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,.05) 1px, transparent 1px); background-size: 44px 44px; -webkit-mask-image: radial-gradient(ellipse 75% 70% at 50% 50%, #000 5%, transparent 78%); mask-image: radial-gradient(ellipse 75% 70% at 50% 50%, #000 5%, transparent 78%); }
@@ -38,12 +40,12 @@ noscript { position: fixed; z-index: 10000; inset: 0 auto auto 0; width: 100%; p
 .startup-brand svg { width: 30px; height: 30px; }
 .startup-brand rect { fill: #fff; stroke: var(--line); }
 .startup-brand path { fill: none; stroke: var(--accent); stroke-width: 7; stroke-dasharray: 30; stroke-dashoffset: 0; }
-.startup-skip { padding: 9px 14px; border: 1px solid var(--line); border-radius: 999px; color: #475569; background: rgba(255,255,255,.7); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); cursor: pointer; font: 500 .62rem "DM Mono", monospace; letter-spacing: .12em; text-transform: uppercase; transition: color .2s, border-color .2s, background .2s; }
+.startup-skip { padding: 9px 14px; border: 1px solid var(--line); border-radius: 999px; color: #475569; background: rgba(255,255,255,.7); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); cursor: pointer; font: 500 .62rem "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; letter-spacing: .12em; text-transform: uppercase; transition: color .2s, border-color .2s, background .2s; }
 .startup-skip:focus-visible { outline-width: 2px; }
 .startup-skip:hover { border-color: rgba(8,127,106,.5); color: var(--ink); background: #fff; }
 
 .startup-stage { place-self: center; display: grid; justify-items: start; }
-.startup-eyebrow { margin: 0 0 16px; color: var(--accent); font: 500 .75rem/1 "DM Mono", monospace; letter-spacing: .18em; }
+.startup-eyebrow { margin: 0 0 16px; color: var(--accent); font: 500 .75rem/1 "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; letter-spacing: .18em; }
 .startup-name { display: flow-root; width: fit-content; margin: 0; font-size: min(clamp(3.2rem, 9vw, 7.5rem), 24vh); font-weight: 700; line-height: .82; letter-spacing: -.075em; transform-origin: 0 0; will-change: transform; }
 .startup-name-line { display: block; clip-path: inset(-.12em -.2em -.24em -.05em); }
 .startup-name-line > span { display: block; }
@@ -52,7 +54,7 @@ noscript { position: fixed; z-index: 10000; inset: 0 auto auto 0; width: 100%; p
 .startup-roles span { position: absolute; top: 0; left: 0; white-space: nowrap; }
 
 .startup-footer { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 14px 20px; }
-.startup-status { display: flex; align-items: center; gap: 10px; margin: 0 0 .5em; color: #475569; font: 500 .66rem/1 "DM Mono", monospace; letter-spacing: .16em; text-transform: uppercase; }
+.startup-status { display: flex; align-items: center; gap: 10px; margin: 0 0 .5em; color: #475569; font: 500 .66rem/1 "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; letter-spacing: .16em; text-transform: uppercase; }
 .startup-status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: startup-pulse 1.1s ease-in-out infinite; }
 .startup-count { margin: 0; font-size: clamp(2.6rem, 6vw, 4.6rem); font-weight: 300; line-height: .8; letter-spacing: -.06em; font-variant-numeric: tabular-nums; }
 .startup-count small { margin-left: .12em; color: var(--accent); font-size: .34em; font-weight: 600; letter-spacing: 0; vertical-align: top; }
@@ -123,7 +125,7 @@ body:not(.intro-active) .desktop { transform: scale(1); filter: none; }
 .ambient-two { width: 170px; height: 170px; left: 34%; bottom: 12%; background: rgba(79,118,255,.07); filter: blur(30px); }
 
 .desktop-heading { position: absolute; left: clamp(28px, 5vw, 80px); bottom: calc(var(--taskbar-height) + clamp(24px, 6vh, 72px)); max-width: 620px; pointer-events: none; }
-.eyebrow { margin: 0 0 16px; color: var(--accent); font: 500 .75rem/1 "DM Mono", monospace; letter-spacing: .18em; }
+.eyebrow { margin: 0 0 16px; color: var(--accent); font: 500 .75rem/1 "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; letter-spacing: .18em; }
 .desktop-heading h1 { margin: 0; font-size: clamp(3.8rem, 8.2vw, 8.5rem); line-height: .82; letter-spacing: -.075em; }
 .desktop-heading h1 span { color: var(--accent); }
 .desktop-intro { max-width: 500px; margin: 28px 0 0; color: var(--muted); font-size: clamp(.9rem, 1.3vw, 1.12rem); line-height: 1.65; }
@@ -136,24 +138,25 @@ button.desktop-widget:hover { box-shadow: 0 20px 42px rgba(15,23,42,.17), inset 
 button.desktop-widget:focus-visible { outline: 3px solid rgba(8,127,106,.35); outline-offset: 2px; }
 .calendar-widget { display: grid; padding: 0 !important; grid-template-rows: 36px minmax(0, 1fr); color: var(--ink) !important; background: #fff; text-align: center !important; }
 .calendar-widget-header { display: grid; width: 100%; height: 100%; place-items: center; color: #fff; background: linear-gradient(145deg, #fb4d55, #d91f39); box-shadow: inset 0 -1px rgba(112,0,18,.14); }
-.calendar-widget-today { font: 600 .52rem/1 "DM Mono", monospace; letter-spacing: .18em; }
+.calendar-widget-today { font: 600 .52rem/1 "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; letter-spacing: .18em; }
 .calendar-widget-body { display: flex; min-height: 0; padding: 10px 16px 13px; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(160deg, #fff, #fffafb); }
-.calendar-widget-day { color: #c8273d; font: 600 .7rem/1.1 "DM Mono", monospace; letter-spacing: .08em; text-transform: uppercase; }
+.calendar-widget-day { color: #c8273d; font: 600 .7rem/1.1 "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; }
 .calendar-widget-date { margin-top: 7px; color: #20283a; font-size: 3.45rem; font-weight: 600; line-height: .78; letter-spacing: -.07em; }
 .weather-widget { position: relative; display: flex; padding: 16px !important; flex-direction: column; color: #fff !important; background: radial-gradient(circle at 85% 12%, rgba(255,246,164,.52), transparent 20%), linear-gradient(150deg, #258fd4, #68c4e9); text-shadow: 0 1px 2px rgba(15,58,95,.22); }
-.weather-widget-location { min-width: 0; overflow: hidden; font: 600 .68rem/1.2 "DM Mono", monospace; text-overflow: ellipsis; white-space: nowrap; }
+.weather-widget-location { min-width: 0; overflow: hidden; font: 600 .68rem/1.2 "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; text-overflow: ellipsis; white-space: nowrap; }
 .weather-widget-primary { display: flex; min-height: 0; margin-top: 9px; align-items: center; justify-content: space-between; gap: 7px; }
 .weather-widget-icon { flex: none; font-size: 1.7rem; line-height: 1; filter: drop-shadow(0 5px 8px rgba(0,0,0,.16)); }
 .weather-widget-temp { min-width: 0; overflow: hidden; font-size: 3.1rem; font-weight: 600; line-height: .86; letter-spacing: -.08em; text-overflow: ellipsis; white-space: nowrap; }
 .weather-widget-bottom { display: flex; min-width: 0; margin-top: auto; flex-direction: column; gap: 4px; }
 .weather-widget-condition { overflow: hidden; font-size: .64rem; font-weight: 500; line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; }
-.weather-widget-range { font: 500 .56rem/1.2 "DM Mono", monospace; opacity: .88; }
+.weather-widget-range { font: 500 .56rem/1.2 "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; opacity: .88; }
+.weather-widget-updated { font: 500 .48rem/1.2 "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; opacity: .72; }
 
 .desktop-icons { position: absolute; z-index: 2; top: 18px; right: clamp(20px, 3.5vw, 56px); display: flex; width: min(350px, calc(100vw - 40px)); padding: 2px; flex-direction: column; gap: clamp(6px, 1.1dvh, 10px); overflow: visible; }
 .shortcut-group { min-width: 0; padding: clamp(7px, 1.2dvh, 11px); border: 1.5px solid rgba(15,23,42,.08); border-radius: 15px; background: rgba(255,255,255,.3); box-shadow: 0 8px 24px rgba(15,23,42,.03), inset 0 1px rgba(255,255,255,.3); }
 .shortcut-group-projects { border-color: rgba(8,127,106,.12); background: rgba(242,252,248,.3); }
 .shortcut-group-heading { padding: 0 4px clamp(4px, .8dvh, 8px); }
-.shortcut-group-heading h2 { margin: 0; color: var(--ink); font: 700 .68rem/1.2 "DM Mono", monospace; letter-spacing: .14em; text-transform: uppercase; }
+.shortcut-group-heading h2 { margin: 0; color: var(--ink); font: 700 .68rem/1.2 "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; letter-spacing: .14em; text-transform: uppercase; }
 .shortcut-group-heading p { margin: 3px 0 0; color: var(--muted); font-size: .65rem; line-height: 1.25; }
 .shortcut-group-grid { display: grid; min-width: 0; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; }
 .desktop-icon { display: flex; min-width: 0; min-height: clamp(66px, 10.5dvh, 92px); padding: clamp(4px, .8dvh, 8px) 4px; flex-direction: column; align-items: center; gap: clamp(3px, .7dvh, 6px); border: 0; border-radius: 10px; outline: 0; color: var(--ink); background: transparent; cursor: pointer; font-size: .72rem; line-height: 1.15; text-align: center; text-shadow: 0 1px 2px rgba(255,255,255,.8); }
@@ -169,17 +172,18 @@ button.desktop-widget:focus-visible { outline: 3px solid rgba(8,127,106,.35); ou
 .icon-ai { background: linear-gradient(145deg, #52e1b3, #146886); color: #061821; }
 .icon-precis { background: #f4eddf; color: #172035; font-family: Georgia, serif; font-size: 1.7rem; }
 .icon-speculo { background: linear-gradient(145deg, #754eff, #ad77ff); }
-.icon-scapesaur { background: linear-gradient(#9de9ff, #65ba79); font-size: 1.8rem; }
+.icon-scapesaur { background: #4fb0f5; }
+.icon-scapesaur img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .icon-numero { background: #2a78d6; color: #fff; }
 .icon-numero svg { width: 42px; height: 42px; fill: currentColor; }
-.icon-calculator { background: linear-gradient(145deg, #263958, #15223a); color: #7bf2ca; font-family: "DM Mono"; }
+.icon-calculator { background: linear-gradient(145deg, #263958, #15223a); color: #7bf2ca; font-family: "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; }
 .icon-calendar { grid-template-rows: 18px 1fr; background: #f5f7fa; color: #172035; }
-.icon-calendar b { align-self: stretch; padding-top: 3px; color: #fff; background: #f04f65; font: 500 .55rem "DM Mono"; text-align: center; }
+.icon-calendar b { align-self: stretch; padding-top: 3px; color: #fff; background: #f04f65; font: 500 .55rem "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; text-align: center; }
 .icon-calendar span { font-size: 1.25rem; }
 .icon-weather { background: linear-gradient(145deg, #278ad1, #78cff2); color: #fff6a4; font-size: 1.9rem; }
-.icon-text-file { position: relative; color: #1760a8; background: linear-gradient(145deg, #fff, #dcecff); font: 800 .62rem "DM Mono", monospace; }
+.icon-text-file { position: relative; color: #1760a8; background: linear-gradient(145deg, #fff, #dcecff); font: 800 .62rem "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; }
 .icon-text-file::after { position: absolute; top: 0; right: 0; border-width: 0 0 13px 13px; border-style: solid; border-color: transparent transparent #b8d6f5 transparent; content: ""; }
-.icon-command-line { color: #70f0c4; background: linear-gradient(145deg, #172b46, #091321); font: 700 .95rem "DM Mono", monospace; }
+.icon-command-line { color: #70f0c4; background: linear-gradient(145deg, #172b46, #091321); font: 700 .95rem "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; }
 .icon-linkedin { background: #0a66c2; color: #fff; }
 .icon-linkedin svg { width: 34px; height: 34px; fill: currentColor; }
 .icon-instagram { color: #fff; background: radial-gradient(circle at 31% 106%, #ffd600 0 20%, #ff7a00 38%, #ff0169 62%, #d300c5 78%, #7638fa 100%); }
@@ -207,7 +211,7 @@ button.desktop-widget:focus-visible { outline: 3px solid rgba(8,127,106,.35); ou
 .window-titlebar:active { cursor: grabbing; }
 .window-identity { display: flex; min-width: 0; align-items: center; gap: 9px; }
 .window-mark { width: 9px; height: 9px; border-radius: 50%; background: var(--window-accent, var(--accent)); box-shadow: 0 0 12px var(--window-accent, var(--accent)); }
-.window-title { overflow: hidden; margin: 0; font: 500 .78rem "DM Mono", monospace; text-overflow: ellipsis; white-space: nowrap; }
+.window-title { overflow: hidden; margin: 0; font: 500 .78rem "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; text-overflow: ellipsis; white-space: nowrap; }
 .window-controls { display: flex; align-self: stretch; }
 .window-controls button { width: 47px; border: 0; background: transparent; color: #64748b; cursor: pointer; font-size: 1rem; }
 .window-controls button:hover { background: rgba(15,23,42,.07); color: var(--ink); }
@@ -228,30 +232,30 @@ button.desktop-widget:focus-visible { outline: 3px solid rgba(8,127,106,.35); ou
 .task-button:hover, .task-button.is-active { background: #fff; box-shadow: 0 4px 14px rgba(15,23,42,.08); }
 .task-button::before { width: 7px; height: 7px; flex: none; border-radius: 50%; background: var(--button-accent, var(--accent)); content: ""; }
 .task-button span { overflow: hidden; font-size: .72rem; text-overflow: ellipsis; }
-.version { color: var(--muted); font: 500 .62rem "DM Mono", monospace; font-variant-numeric: tabular-nums; letter-spacing: .05em; white-space: nowrap; }
+.version { color: var(--muted); font: 500 .62rem "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; font-variant-numeric: tabular-nums; letter-spacing: .05em; white-space: nowrap; }
 .clock { display: flex; height: 32px; padding: 0 10px; align-items: baseline; justify-content: flex-end; gap: 8px; border: 0; border-radius: 9px; background: transparent; cursor: pointer; white-space: nowrap; line-height: 32px; }
 .clock:hover { background: rgba(15,23,42,.06); }
-.clock strong { order: 2; font: 500 .8rem "DM Mono"; font-variant-numeric: tabular-nums; }
+.clock strong { order: 2; font: 500 .8rem "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; font-variant-numeric: tabular-nums; }
 .clock span { order: 1; color: var(--muted); font-size: .72rem; }
 
 /* Windows 11-inspired Start launcher */
 .start-menu { position: absolute; z-index: 999; left: 50%; bottom: calc(var(--taskbar-height) + 12px); display: flex; width: min(610px, calc(100vw - 24px)); max-height: calc(100dvh - var(--taskbar-height) - 28px); flex-direction: column; overflow: hidden; border: 1px solid rgba(255,255,255,.75); border-radius: 22px; background: rgba(248,251,253,.9); box-shadow: 0 30px 80px rgba(15,23,42,.24), inset 0 1px #fff; backdrop-filter: blur(30px) saturate(1.25); opacity: 0; pointer-events: none; transform: translate(-50%, 18px) scale(.97); transform-origin: center bottom; transition: opacity .2s ease, transform .24s cubic-bezier(.2,.8,.2,1); }
 .start-menu.is-open { opacity: 1; pointer-events: auto; transform: translate(-50%, 0) scale(1); }
 .start-menu-header { display: flex; padding: 28px 32px 18px; align-items: flex-end; justify-content: space-between; }
-.start-menu-header p { margin: 0 0 5px; color: var(--accent); font: 600 .58rem "DM Mono", monospace; letter-spacing: .15em; text-transform: uppercase; }
+.start-menu-header p { margin: 0 0 5px; color: var(--accent); font: 600 .58rem "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; letter-spacing: .15em; text-transform: uppercase; }
 .start-menu-header h2 { margin: 0; font-size: 1.25rem; letter-spacing: -.03em; }
-.start-menu-header > span { color: var(--muted); font: .62rem "DM Mono", monospace; }
+.start-menu-header > span { color: var(--muted); font: .62rem "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; }
 .start-projects { display: grid; padding: 0 22px 25px; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; overflow-y: auto; }
-.start-project { display: flex; min-width: 0; min-height: 112px; padding: 13px 8px; flex-direction: column; align-items: center; justify-content: center; gap: 9px; border: 0; border-radius: 13px; background: transparent; cursor: pointer; text-align: center; }
+.start-project { display: flex; min-width: 0; min-height: 112px; padding: 13px 8px; flex-direction: column; align-items: center; justify-content: center; gap: 9px; border: 0; border-radius: 13px; color: inherit; background: transparent; cursor: pointer; text-align: center; text-decoration: none; }
 .start-project:hover, .start-project:focus-visible { background: rgba(255,255,255,.82); box-shadow: 0 7px 20px rgba(15,23,42,.07); }
 .start-project .icon-tile { width: 46px; height: 46px; flex: none; border-radius: 12px; font-size: .9rem; }
-.start-project .icon-precis, .start-project .icon-scapesaur { font-size: 1.4rem; }
+.start-project .icon-precis { font-size: 1.4rem; }
 .start-project .icon-numero svg { width: 34px; height: 34px; }
 .start-project > span:last-child { display: flex; min-width: 0; flex-direction: column; gap: 3px; }
 .start-project strong { overflow: hidden; font-size: .75rem; text-overflow: ellipsis; white-space: nowrap; }
 .start-project small { overflow: hidden; color: var(--muted); font-size: .62rem; text-overflow: ellipsis; white-space: nowrap; }
 .start-menu-footer { display: flex; min-height: 70px; padding: 12px 28px; align-items: center; gap: 11px; border-top: 1px solid var(--line); background: rgba(236,243,247,.65); }
-.start-avatar { display: grid; width: 38px; height: 38px; flex: none; place-items: center; border-radius: 50%; color: #fff; background: linear-gradient(145deg, var(--accent), #2a78d6); font: 700 .7rem "DM Mono", monospace; }
+.start-avatar { display: grid; width: 38px; height: 38px; flex: none; place-items: center; border-radius: 50%; color: #fff; background: linear-gradient(145deg, var(--accent), #2a78d6); font: 700 .7rem "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; }
 .start-menu-footer > span:nth-child(2) { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 2px; }
 .start-menu-footer strong { font-size: .72rem; }
 .start-menu-footer small { color: var(--muted); font-size: .62rem; }
@@ -260,12 +264,12 @@ button.desktop-widget:focus-visible { outline: 3px solid rgba(8,127,106,.35); ou
 
 /* Text file and command-line apps */
 .about-file { min-height: 100%; color: #1f2937; background: #fff; }
-.about-file > header { display: flex; padding: 8px 18px; justify-content: space-between; border-bottom: 1px solid #e2e8f0; color: #64748b; background: #f8fafc; font: .62rem "DM Mono", monospace; }
+.about-file > header { display: flex; padding: 8px 18px; justify-content: space-between; border-bottom: 1px solid #e2e8f0; color: #64748b; background: #f8fafc; font: .62rem "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; }
 .about-copy { max-width: 760px; padding: clamp(28px, 5vw, 52px); }
-.about-kicker { margin: 0 0 16px; color: var(--accent); font: 600 .68rem "DM Mono", monospace; letter-spacing: .14em; }
+.about-kicker { margin: 0 0 16px; color: var(--accent); font: 600 .68rem "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; letter-spacing: .14em; }
 .about-copy h3 { margin: 0 0 28px; color: #172033; font-size: clamp(2rem, 5vw, 3.5rem); line-height: .98; letter-spacing: -.055em; }
-.about-copy > p:not(.about-kicker) { max-width: 620px; margin: 0 0 17px; color: #526177; font: .95rem/1.75 "DM Mono", monospace; }
-.about-copy footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #e2e8f0; color: #94a3b8; font: .65rem "DM Mono", monospace; }
+.about-copy > p:not(.about-kicker) { max-width: 620px; margin: 0 0 17px; color: #526177; font: .95rem/1.75 "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; }
+.about-copy footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #e2e8f0; color: #94a3b8; font: .65rem "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; }
 .app-window[data-app="command-line"] .window-titlebar { border-color: #333; color: #f2f2f2; background: #202020; }
 .app-window[data-app="command-line"] .window-mark { border-radius: 2px; background: #0c0c0c; box-shadow: none; }
 .app-window[data-app="command-line"] .window-controls button { color: #f2f2f2; }
@@ -325,14 +329,14 @@ body.desktop-ready .ambient { opacity: .55; transform: scale(1); }
 .project-heading p { max-width: 620px; margin: 10px 0 0; color: #526177; font-size: clamp(.88rem, 1.5vw, 1rem); line-height: 1.5; }
 .project-footer { display: flex; align-items: center; gap: 16px; }
 .project-stats { display: flex; flex-wrap: wrap; gap: 7px; }
-.tag { padding: 6px 9px; border: 1px solid var(--line); border-radius: 999px; color: #526177; background: rgba(255,255,255,.72); font: 500 .6rem "DM Mono", monospace; }
+.tag { padding: 6px 9px; border: 1px solid var(--line); border-radius: 999px; color: #526177; background: rgba(255,255,255,.72); font: 500 .6rem "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; }
 .project-screenshot { display: flex; min-width: 0; overflow: hidden; flex-direction: column; border: 1px solid rgba(15,23,42,.14); border-radius: 14px; color: inherit; background: #e9eef3; box-shadow: 0 20px 50px rgba(15,23,42,.14); text-decoration: none; transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease; }
 .project-screenshot:hover { border-color: color-mix(in srgb, var(--project-accent) 45%, var(--line)); box-shadow: 0 24px 58px rgba(15,23,42,.18); transform: translateY(-2px); }
 .project-browser-bar { display: grid; height: 34px; padding: 0 10px; flex: none; align-items: center; grid-template-columns: 48px minmax(0, 1fr) 48px; border-bottom: 1px solid rgba(15,23,42,.1); background: rgba(248,250,252,.96); }
 .project-browser-controls { display: flex; gap: 5px; }
 .project-browser-controls i { width: 7px; height: 7px; border: 1px solid rgba(15,23,42,.12); border-radius: 50%; background: #cbd5e1; }
 .project-browser-controls i:first-child { background: color-mix(in srgb, var(--project-accent) 65%, #fff); }
-.project-browser-address { min-width: 0; overflow: hidden; color: #64748b; font: 500 .55rem "DM Mono", monospace; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
+.project-browser-address { min-width: 0; overflow: hidden; color: #64748b; font: 500 .55rem "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
 .project-image-wrap { display: block; min-height: 235px; overflow: hidden; flex: 1; background: #e9eef3; }
 .project-screenshot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center; transition: transform .3s ease; }
 .project-screenshot:hover img { transform: scale(1.012); }
@@ -349,10 +353,10 @@ body.desktop-ready .ambient { opacity: .55; transform: scale(1); }
 /* Calculator */
 .calculator { display: flex; height: 100%; padding: 20px; flex-direction: column; background: linear-gradient(#fff, #f1f5f9); }
 .calc-display { display: flex; min-height: 115px; padding: 12px 8px 22px; flex-direction: column; justify-content: flex-end; align-items: flex-end; overflow: hidden; }
-.calc-expression { min-height: 24px; color: var(--muted); font: .8rem "DM Mono"; }
-.calc-value { max-width: 100%; overflow: hidden; font: 500 clamp(2.2rem, 8vw, 3.8rem)/1.1 "DM Mono"; text-overflow: ellipsis; }
+.calc-expression { min-height: 24px; color: var(--muted); font: .8rem "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; }
+.calc-value { max-width: 100%; overflow: hidden; font: 500 clamp(2.2rem, 8vw, 3.8rem)/1.1 "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; text-overflow: ellipsis; }
 .calc-keys { display: grid; flex: 1; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(5, 1fr); gap: 9px; }
-.calc-key { min-height: 54px; border: 1px solid rgba(15,23,42,.1); border-radius: 14px; background: rgba(255,255,255,.8); cursor: pointer; font: 500 1.1rem "DM Mono"; box-shadow: 0 3px 10px rgba(15,23,42,.04); }
+.calc-key { min-height: 54px; border: 1px solid rgba(15,23,42,.1); border-radius: 14px; background: rgba(255,255,255,.8); cursor: pointer; font: 500 1.1rem "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; box-shadow: 0 3px 10px rgba(15,23,42,.04); }
 .calc-key:hover { background: #fff; border-color: rgba(15,23,42,.18); }
 .calc-key:active { transform: scale(.96); }
 .calc-key.utility { color: #526b89; background: rgba(93,134,180,.1); }
@@ -363,13 +367,13 @@ body.desktop-ready .ambient { opacity: .55; transform: scale(1); }
 /* Calendar */
 .calendar-app { min-height: 100%; padding: 25px; background: linear-gradient(145deg, #fff, #f1f5f9); }
 .calendar-toolbar { display: flex; margin-bottom: 20px; align-items: center; justify-content: space-between; gap: 10px; }
-.calendar-heading p { margin: 0 0 5px; color: var(--accent); font: .65rem "DM Mono"; letter-spacing: .14em; }
+.calendar-heading p { margin: 0 0 5px; color: var(--accent); font: .65rem "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; letter-spacing: .14em; }
 .calendar-heading h3 { margin: 0; font-size: clamp(1.5rem, 5vw, 2.4rem); letter-spacing: -.04em; }
 .calendar-nav { display: flex; gap: 7px; }
 .calendar-nav button { min-width: 40px; height: 40px; padding: 0 11px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,.78); cursor: pointer; }
 .calendar-nav button:hover { background: #fff; }
 .calendar-weekdays, .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
-.calendar-weekdays span { padding: 8px 2px; color: #64748b; font: .62rem "DM Mono"; text-align: center; }
+.calendar-weekdays span { padding: 8px 2px; color: #64748b; font: .62rem "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; text-align: center; }
 .calendar-grid { gap: 5px; }
 .calendar-day { position: relative; min-height: 56px; border: 1px solid transparent; border-radius: 10px; background: rgba(255,255,255,.68); cursor: pointer; }
 .calendar-day:hover { border-color: var(--line); background: #fff; }
@@ -391,7 +395,7 @@ body.desktop-ready .ambient { opacity: .55; transform: scale(1); }
 .weather-temp { margin: 10px 0 0; font-size: 4.4rem; line-height: 1; letter-spacing: -.07em; }
 .weather-details { display: grid; margin-top: 20px; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .weather-detail { padding: 12px 5px; border: 1px solid var(--line); border-radius: 11px; background: rgba(255,255,255,.72); }
-.weather-detail span { display: block; color: #64748b; font: .58rem "DM Mono"; letter-spacing: .08em; }
+.weather-detail span { display: block; color: #64748b; font: .58rem "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; letter-spacing: .08em; }
 .weather-detail strong { display: block; margin-top: 5px; font-size: .8rem; }
 .weather-actions { display: flex; justify-content: space-between; gap: 8px; }
 .weather-status { min-height: 20px; margin: 10px 0 0; color: #64748b; font-size: .72rem; text-align: center; }
@@ -409,10 +413,13 @@ body.desktop-ready .ambient { opacity: .55; transform: scale(1); }
 
 @media (max-width: 720px) {
   :root { --taskbar-height: 52px; }
-  .desktop-heading { left: 24px; right: 24px; bottom: calc(var(--taskbar-height) + 28px); }
+  html, body { height: auto; min-height: 100%; overflow-x: hidden; overflow-y: auto; }
+  .desktop { position: relative; display: flex; width: 100%; height: auto; min-height: 100dvh; padding: 14px 0 calc(var(--taskbar-height) + 24px + env(safe-area-inset-bottom)); flex-direction: column; gap: 20px; overflow: visible; }
+  .desktop-widgets, .desktop-icons, .desktop-heading { position: static; inset: auto; }
+  .desktop-heading { order: 3; width: auto; margin: auto 24px 0; }
   .desktop-heading h1 { font-size: clamp(2.4rem, 12vw, 3.6rem); }
   .desktop-intro { max-width: 90%; margin-top: 20px; font-size: .85rem; }
-  .desktop-widgets { left: 16px; top: 14px; grid-template-columns: repeat(2, min(132px, calc((100vw - 42px) / 2))); gap: 10px; }
+  .desktop-widgets { order: 1; margin: 0 16px; grid-template-columns: repeat(2, min(132px, calc((100vw - 42px) / 2))); gap: 10px; }
   .desktop-widget { width: min(132px, calc((100vw - 42px) / 2)); height: min(132px, calc((100vw - 42px) / 2)); border-radius: 22px; }
   .calendar-widget { grid-template-rows: 32px minmax(0, 1fr); }
   .calendar-widget-today { font-size: .44rem; }
@@ -426,9 +433,11 @@ body.desktop-ready .ambient { opacity: .55; transform: scale(1); }
   .weather-widget-temp { font-size: 2.65rem; }
   .weather-widget-condition { font-size: .59rem; }
   .weather-widget-range { font-size: .5rem; }
-  .desktop-icons { left: 0; top: 154px; right: 0; width: auto; min-width: 0; max-width: none; padding: 4px 16px 10px; flex-direction: row; align-items: flex-start; gap: 10px; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: 16px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .weather-widget-updated { font-size: .43rem; }
+  .desktop-icons { order: 2; width: 100%; min-width: 0; max-width: none; padding: 4px 16px 10px; flex: none; flex-direction: row; align-items: flex-start; gap: 10px; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: 16px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
   .desktop-icons::-webkit-scrollbar { display: none; }
-  .shortcut-group { flex: 0 0 min(300px, 80vw); width: min(300px, 80vw); min-width: 0; padding: 8px; border-width: 1.5px; border-radius: 12px; scroll-snap-align: start; }
+  .shortcut-group-projects { order: -1; }
+  .shortcut-group { flex: 0 0 min(320px, 85vw); width: min(320px, 85vw); min-width: 0; padding: 8px; border-width: 1.5px; border-radius: 12px; scroll-snap-align: start; }
   .shortcut-group-heading { padding: 0 4px clamp(3px, .5dvh, 5px); }
   .shortcut-group-heading h2 { font-size: .62rem; }
   .shortcut-group-heading p { margin-top: 2px; font-size: .6rem; line-height: 1.2; }
@@ -440,10 +449,12 @@ body.desktop-ready .ambient { opacity: .55; transform: scale(1); }
   .icon-calendar { grid-template-rows: 13px 1fr; }
   .icon-calendar b { padding-top: 2px; font-size: .42rem; }
   .icon-calendar span { font-size: .95rem; }
+  .window-layer { position: fixed; inset: 0 0 var(--taskbar-height); }
   .app-window, .app-window[data-app] { inset: 5px !important; width: calc(100% - 10px) !important; height: calc(100% - 10px) !important; min-width: 0; min-height: 0; border-radius: 13px; transform: none !important; }
   .window-controls button { width: 43px; }
   .window-controls button[data-window-action="maximize"] { display: none; }
-  .taskbar { padding: 6px 9px; }
+  .taskbar { position: fixed; padding: 6px 9px; }
+  .start-menu { position: fixed; }
   .taskbar-apps { margin-left: 45px; }
   .start-button { left: 9px; width: 40px; height: 40px; transform: none; }
   .start-button:active { transform: scale(.92); }
@@ -495,11 +506,13 @@ body.desktop-ready .ambient { opacity: .55; transform: scale(1); }
   .weather-widget-bottom { gap: 2px; }
   .weather-widget-condition { font-size: .5rem; }
   .weather-widget-range { font-size: .43rem; }
+  .weather-widget-updated { font-size: .38rem; }
 }
 
 @media (max-width: 720px) and (max-height: 520px) {
-  .desktop-widgets { top: 8px; }
-  .desktop-icons { top: 112px; }
+  .desktop { gap: 12px; padding-top: 8px; }
+  .desktop-widgets { margin-inline: 12px; }
+  .desktop-heading { margin-inline: 20px; }
 }
 
 @media (max-width: 560px) {
