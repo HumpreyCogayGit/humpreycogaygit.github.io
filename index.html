@@ -7,7 +7,7 @@
     <meta name="description" content="MangHumps — Humprey Cogay's interactive desktop portfolio.">
     <title>MangHumps — Portfolio Archive</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%23f1f5f9'/%3E%3Cpath d='M17 17v30m0-15h21m0-15v30' fill='none' stroke='%23087f6a' stroke-width='7'/%3E%3C/svg%3E">
-    <link rel="stylesheet" href="css/styles.css?v=14">
+    <link rel="stylesheet" href="css/styles.css?v=19">
   </head>
   <body class="intro-active">
     <noscript>This portfolio needs JavaScript to open projects and desktop apps.</noscript>
@@ -53,6 +53,14 @@
             <h2 id="general-shortcuts-title">General</h2>
           </header>
           <div class="shortcut-group-grid">
+            <button class="desktop-icon" type="button" data-open="about">
+              <span class="icon-tile icon-text-file" aria-hidden="true"><span>TXT</span></span>
+              <span>about.txt</span>
+            </button>
+            <button class="desktop-icon" type="button" data-open="command-line">
+              <span class="icon-tile icon-command-line" aria-hidden="true"><span>&gt;_</span></span>
+              <span>Command Prompt</span>
+            </button>
             <a class="desktop-icon desktop-icon-link" href="https://www.linkedin.com/in/manghumps" target="_blank" rel="noopener noreferrer" aria-label="Open Humprey Cogay's LinkedIn profile">
               <span class="icon-tile icon-linkedin" aria-hidden="true">
                 <svg viewBox="0 0 24 24" role="img"><path d="M5.34 7.67H1.78V19h3.56V7.67ZM3.56 2A2.06 2.06 0 1 0 3.56 6.12 2.06 2.06 0 0 0 3.56 2ZM22.22 12.5c0-3.42-1.83-5.01-4.27-5.01a4.16 4.16 0 0 0-3.75 2.06V7.67h-3.56V19h3.56v-5.61c0-1.48.28-2.91 2.11-2.91 1.8 0 1.83 1.69 1.83 3.01V19h3.56l.02-6.5Z"/></svg>
@@ -73,7 +81,7 @@
             </a>
             <a class="desktop-icon desktop-icon-link" href="https://manghumps.substack.com/" target="_blank" rel="noopener noreferrer" aria-label="Open MangHumps on Substack">
               <span class="icon-tile icon-substack" aria-hidden="true">
-                <svg viewBox="0 0 24 24" role="img"><path d="M3 3h18v2.4H3V3Zm0 4.1h18v2.4H3V7.1Zm0 4.1h18V21l9-5 9 5v-9.8H3Z"/></svg>
+                <svg viewBox="0 0 24 24" role="img"><path d="M1.46 0h21.08v2.84H1.46V0Zm0 5.41h21.08v2.83H1.46V5.41Zm0 5.4h21.08v2.84H1.46v-2.84Zm0 5.4h21.08v1.89L12 24 1.46 18.1v-1.89Z"/></svg>
               </span>
               <span>Substack</span>
             </a>
@@ -143,8 +151,40 @@
 
       <section class="window-layer" id="window-layer" aria-label="Open applications"></section>
 
+      <section class="start-menu" id="start-menu" aria-label="Start menu" aria-hidden="true" inert>
+        <header class="start-menu-header">
+          <div>
+            <p>Portfolio / 2026</p>
+            <h2>My Projects</h2>
+          </div>
+          <span>5 pinned</span>
+        </header>
+        <div class="start-projects">
+          <button class="start-project" type="button" data-open="ai-engineering"><span class="icon-tile icon-ai" aria-hidden="true">AI</span><span><strong>AI Engineering</strong><small>Hands-on LLM course</small></span></button>
+          <button class="start-project" type="button" data-open="precis"><span class="icon-tile icon-precis" aria-hidden="true">P</span><span><strong>Precis</strong><small>Daily tech brief</small></span></button>
+          <button class="start-project" type="button" data-open="speculo"><span class="icon-tile icon-speculo" aria-hidden="true">S</span><span><strong>Speculo</strong><small>Private text workbench</small></span></button>
+          <button class="start-project" type="button" data-open="scapesaur"><span class="icon-tile icon-scapesaur" aria-hidden="true">🦕</span><span><strong>Scapesaur</strong><small>Dinosaur runner</small></span></button>
+          <button class="start-project" type="button" data-open="numero"><span class="icon-tile icon-numero" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="8" y="16" width="4" height="9" rx="1.5"/><rect x="14" y="11" width="4" height="14" rx="1.5"/><rect x="20" y="7" width="4" height="18" rx="1.5" opacity=".75"/></svg></span><span><strong>Numero</strong><small>Instant analytics</small></span></button>
+        </div>
+        <footer class="start-menu-footer">
+          <span class="start-avatar" aria-hidden="true">HC</span>
+          <span><strong>Humprey Cogay</strong><small>AI engineer &amp; builder</small></span>
+          <button type="button" data-open="about">About me <span aria-hidden="true">→</span></button>
+        </footer>
+      </section>
+
       <footer class="taskbar">
         <div class="taskbar-apps" id="taskbar-apps" aria-label="Open windows"></div>
+        <button class="start-button" id="start-button" type="button" aria-label="Open Humprey’s project menu" aria-controls="start-menu" aria-expanded="false">
+          <svg class="humprey-mark" viewBox="0 0 28 28" aria-hidden="true">
+            <rect class="humprey-mark-frame" x="2" y="2" width="24" height="24" rx="7"/>
+            <path class="humprey-mark-monogram" d="M8 8v12M8 14h6M14 8v12M21 9.5a5.5 5.5 0 1 0 0 9"/>
+            <path class="humprey-mark-circuit" d="M8 8 5.5 5.5M14 8l2-2M14 20l2 2M21 9.5l2-2M21 18.5l2 2"/>
+            <g class="humprey-mark-nodes">
+              <circle cx="5.5" cy="5.5" r="1"/><circle cx="16" cy="6" r="1"/><circle cx="16" cy="22" r="1"/><circle cx="23" cy="7.5" r="1"/><circle cx="23" cy="20.5" r="1"/>
+            </g>
+          </svg>
+        </button>
         <span class="version" aria-label="Version 11162026">v11162026</span>
         <button class="clock" id="clock" type="button" data-open="calendar" aria-label="Open calendar">
           <strong id="clock-time">--:--</strong>
@@ -170,6 +210,6 @@
       </section>
     </template>
 
-    <script type="module" src="js/app.js?v=19"></script>
+    <script type="module" src="js/app.js?v=22"></script>
   </body>
 </html>

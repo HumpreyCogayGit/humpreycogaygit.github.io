@@ -2,18 +2,36 @@ import { projects, projectMarkup } from "./projects.js?v=6";
 import { calculatorMarkup, initCalculator } from "./calculator.js";
 import { calendarMarkup, initCalendar } from "./calendar.js";
 import { weatherMarkup, initWeather } from "./weather.js";
+import { aboutMarkup, commandLineMarkup, initCommandLine } from "./desktop-apps.js";
 import { WindowManager } from "./window-manager.js";
 
 const apps = Object.fromEntries(Object.entries(projects).map(([id, project]) => [id, { title: project.title, shortTitle: project.name, accent: project.accent, render: () => projectMarkup(project) }]));
 Object.assign(apps, {
   calculator: { title: "Calculator", accent: "#70f0c4", width: 390, render: calculatorMarkup, init: initCalculator },
   calendar: { title: "Calendar", accent: "#f06b7b", width: 650, render: calendarMarkup, init: initCalendar },
-  weather: { title: "Weather", accent: "#6cccf2", width: 510, render: weatherMarkup, init: initWeather }
+  weather: { title: "Weather", accent: "#6cccf2", width: 510, render: weatherMarkup, init: initWeather },
+  about: { title: "about.txt — Notepad", shortTitle: "about.txt", accent: "#2a78d6", width: 680, render: aboutMarkup },
+  "command-line": { title: "Command Prompt", shortTitle: "Command Prompt", accent: "#0c0c0c", width: 760, render: commandLineMarkup, init: initCommandLine }
 });
 
 const manager = new WindowManager({ layer: document.querySelector("#window-layer"), taskbar: document.querySelector("#taskbar-apps"), template: document.querySelector("#window-template"), apps });
 document.addEventListener("click", (event) => { const trigger = event.target.closest("[data-open]"); if (trigger) manager.open(trigger.dataset.open); });
+document.addEventListener("terminal-open-about", () => manager.open("about"));
 document.querySelectorAll(".desktop-icon").forEach((icon) => icon.addEventListener("dblclick", (event) => event.preventDefault()));
+
+const startButton = document.querySelector("#start-button");
+const startMenu = document.querySelector("#start-menu");
+function setStartMenu(open) {
+  startMenu.classList.toggle("is-open", open);
+  startMenu.setAttribute("aria-hidden", String(!open));
+  startMenu.inert = !open;
+  startButton.setAttribute("aria-expanded", String(open));
+  if (open) startMenu.querySelector(".start-project")?.focus();
+}
+startButton.addEventListener("click", (event) => { event.stopPropagation(); setStartMenu(!startMenu.classList.contains("is-open")); });
+startMenu.addEventListener("click", (event) => { if (event.target.closest("[data-open]")) setStartMenu(false); });
+document.addEventListener("click", (event) => { if (!event.target.closest("#start-menu") && startMenu.classList.contains("is-open")) setStartMenu(false); });
+document.addEventListener("keydown", (event) => { if (event.key === "Escape" && startMenu.classList.contains("is-open")) { setStartMenu(false); startButton.focus(); } });
 
 function updateClock() {
   const now = new Date(); document.querySelector("#clock-time").textContent = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }); document.querySelector("#clock-date").textContent = now.toLocaleDateString([], { month: "short", day: "numeric" });
