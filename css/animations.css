@@ -126,3 +126,8 @@ footer a:hover { color: var(--accent); }
   *, *::before, *::after { transition-duration: .01ms !important; }
   .animation-card:hover { transform: none; }
 }
+/* Imported JSFiddle archive */
+.study-archive .card-meta { display: flex; flex-wrap: wrap; gap: .35em; align-items: baseline; }
+.study-archive .card-meta time { color: var(--muted); letter-spacing: .08em; }
+.study-archive .animation-card { height: 100%; }
+.study-archive .card-content { flex: 1; }

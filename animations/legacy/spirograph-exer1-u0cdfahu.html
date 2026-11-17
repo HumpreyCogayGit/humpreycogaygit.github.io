@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Spirograph Exer1 | Animations and Graphics</title><meta name="description" content="A browser-native animation and graphics experiment.">
+<meta name="jsfiddle-id" content="u0cdfahu"><meta name="created" content="2016-09-08 09:09:19">
+<style>:root{font-family:Inter,system-ui,sans-serif;color:#0f172a;background:#f8fafc}*{box-sizing:border-box}body{margin:0;padding:72px 20px 30px}.archive-bar{position:fixed;z-index:9999;top:0;left:0;right:0;display:flex;min-height:52px;padding:10px 18px;align-items:center;justify-content:space-between;gap:16px;color:#e2e8f0;background:#0f172a;font-size:13px}.archive-bar a{color:#5eead4;text-decoration:none;font-weight:700}.archive-bar time{color:#94a3b8}canvas,img{max-width:100%;height:auto}button,a{font:inherit}#msg{margin:1rem 0;font-weight:700}body>button,body>a{display:inline-block;margin:.25rem;padding:.7rem 1rem}  #mainStage {
+                background-color: white;
+                position: absolute;        
+            }</style>
+  <script src="vendor/jquery-3.7.1.min.js"></script>
+</head><body>
+<header class="archive-bar"><a href="../../animations.html">← Animations and Graphics</a><span>Spirograph Exer1 · <time datetime="2016-09-08T09:09:19">2016-09-08</time></span></header>
+
+    Outer Gear Size
+    <input type="range" id="RadiusOuter" value="117" min=1 max=400 step=1>
+    <span id="RadiusOuterValue">Not Set</span>
+    <br />
+    Inner Gear Size
+    <input type="range" id="RadiusInner" value="96" min=1 max=400 step=1>
+    <span id="RadiusInnerValue">Not Set</span>
+    <br />
+    <input id="generateSpiroGraph" type="button" value="Generate Spirograph">
+
+    <div id="mainDiv">
+        <canvas id="mainStage" width="600" height="600">
+            Your browser does not support canvas. Please try again with a different browser.
+        </canvas>
+    </div>
+
+
+<script>function init() {
+    var canvas = document.getElementById("mainStage");
+    var ctx = canvas.getContext("2d");
+
+    $('#RadiusOuterValue').html($(RadiusOuter).val());
+    $('#RadiusInnerValue').html($(RadiusInner).val());
+    $(document).on('input', '#RadiusOuter', function() {
+        //drawGraphics(ctx,$('#RadiusOuter').val(),$('#RadiusInner').val);
+        $('#RadiusOuterValue').html($(this).val());
+    });
+
+    $(document).on('input', '#RadiusInner', function() {
+        $('#RadiusInnerValue').html($(this).val());
+    });
+
+    $('#generateSpiroGraph').click(function() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawGraphics(ctx, $('#RadiusOuter').val(), $('#RadiusInner').val());
+    });
+}
+
+function drawGraphics(ctx, r1, r2) {
+    var xpos = 0;
+    var ypos = 0;
+    var theta = 0;
+
+    for (var c = 1; c <= r2*360; c++) {    
+    	//convert angles to radians
+        theta = c * Math.PI / 180;
+        
+        //compute x and y coordinates
+        xpos = (600 - r1 * 2) / 2 + (r1 - r2 * Math.cos(theta) - r2 * Math.cos(((r1 / r2) - 1) * theta));
+        ypos = (600 - r1 * 2) / 2 + (r1 - r2 * Math.sin(theta) - r2 * Math.sin(((r1 / r2) - 1) * theta));
+        
+        //draw a new point.
+        ctx.fillStyle = 'red';
+        ctx.fillRect(xpos, ypos, .3, .3); // fill in the pixel at (10,10)
+    }
+}
+
+window.addEventListener("load", function () { init() });</script>
+</body></html>

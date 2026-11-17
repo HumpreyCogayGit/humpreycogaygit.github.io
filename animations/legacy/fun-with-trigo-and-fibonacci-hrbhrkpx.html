@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fun with Trigo and Fibonacci | Animations and Graphics</title><meta name="description" content="A browser-native animation and graphics experiment.">
+<meta name="jsfiddle-id" content="hrbhrkpx"><meta name="created" content="2016-08-15 02:02:37">
+<style>:root{font-family:Inter,system-ui,sans-serif;color:#0f172a;background:#f8fafc}*{box-sizing:border-box}body{margin:0;padding:72px 20px 30px}.archive-bar{position:fixed;z-index:9999;top:0;left:0;right:0;display:flex;min-height:52px;padding:10px 18px;align-items:center;justify-content:space-between;gap:16px;color:#e2e8f0;background:#0f172a;font-size:13px}.archive-bar a{color:#5eead4;text-decoration:none;font-weight:700}.archive-bar time{color:#94a3b8}canvas,img{max-width:100%;height:auto}button,a{font:inherit}#msg{margin:1rem 0;font-weight:700}body>button,body>a{display:inline-block;margin:.25rem;padding:.7rem 1rem}	#mainStage {
+	    position: absolute;
+	    top: 0px;
+	    left: 0px;
+	    background-color: white;
+	}
+</style>
+</head><body>
+<header class="archive-bar"><a href="../../animations.html">← Animations and Graphics</a><span>Fun with Trigo and Fibonacci · <time datetime="2016-08-15T02:02:37">2016-08-15</time></span></header>
+
+    <canvas id="mainStage" width="500" height="500">
+        Your browser does not support canvas. Please try again with a different browser.
+    </canvas>
+
+
+<script>//Notes: 
+//Inspired by original code of 
+//  Richard Eric Montero Lope - https://www.facebook.com/AnyaBasic
+//  Author of Anya Basic - https://github.com/relminator/AnyaBasic
+//  References - Sunflowers and Fibonacci - https://thatsmaths.com/2014/06/05/sunflowers-and-fibonacci-models-of-efficiency/
+
+function init() {
+    var canvas = document.getElementById("mainStage");
+    var ctx = canvas.getContext("2d");
+    drawGraphics(ctx);
+}
+
+function drawGraphics(ctx) {
+	//initialized beauty :)
+    var theta = 0;
+    var radius = 600;
+	
+    //	cx and cy - center point for the invisible main circle
+	var cx = 500 / 2;
+    var cy = 500 / 2;
+    
+    //  r - radius of the visible mini circle
+    var r = 7;
+    
+    //  lw - stroke size of the visible mini circle
+    var lw = .3;
+    
+    //  sc - stroke color of the visible mini circle
+    var sc = 'Brown';
+    
+    //  rg1 and rg2 - radial gradient for the visible mini circle
+    var rg1 = 1;
+    var rg2 = 10;
+    
+    //  rc1 and rc2 - radial colors
+    var rc1 = 'Yellow';
+    var rc2 = 'Green';
+    
+	// delay
+	var d = 10;
+	
+    var delayRoutine = function(c) {
+        c = c || 0;
+        
+        //loop
+        if (c < 1375) {
+
+            //Golden Angle
+            theta += 137.5;
+
+            //radius of main base invisible circle 
+            radius += Math.sqrt(c);
+
+			//  Compute px and py - current positions for the visible mini circle	
+            var px = parseInt(cx + (Math.cos(theta * Math.PI / 180) * radius) / 150);
+            var py = parseInt(cy + (Math.sin(theta * Math.PI / 180) * radius) / 150);
+
+            //Drace a circle on the newly computed coordinate            
+            drawCircle(ctx, px, py, r,lw, sc,rg1, rg2, rc1, rc2);
+            
+            //Increase counter
+            c++;
+            
+            setTimeout(function() {
+                delayRoutine(c)
+            }, d);
+        }
+    }
+    delayRoutine();
+
+    function drawCircle(ctx, px, py, r,lw,sc,rg1,rg2,rc1,rc2) {
+    
+    	//Prepare Gradient
+        var grd = ctx.createRadialGradient(px, py, rg1, px, py, rg2);
+        grd.addColorStop(0, rc1);
+        grd.addColorStop(1, rc2);
+        
+        //Begin Path
+        ctx.beginPath();
+        
+        //Create a circle
+        ctx.arc(px, py, r, 0, 2 * Math.PI, false);
+        
+        //Draw Fill
+        ctx.fillStyle = grd;
+        ctx.fill();
+        
+        //Draw Stroke
+        ctx.lineWidth = lw;
+        ctx.strokeStyle = sc;
+        ctx.stroke();
+    }
+}
+
+
+window.addEventListener("load", function () { init() });</script>
+</body></html>

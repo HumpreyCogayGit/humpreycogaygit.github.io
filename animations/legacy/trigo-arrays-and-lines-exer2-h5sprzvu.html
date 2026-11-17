@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trigo - Arrays and Lines Exer2 | Animations and Graphics</title><meta name="description" content="A browser-native animation and graphics experiment.">
+<meta name="jsfiddle-id" content="h5sprzvu"><meta name="created" content="2016-08-16 16:04:24">
+<style>:root{font-family:Inter,system-ui,sans-serif;color:#0f172a;background:#f8fafc}*{box-sizing:border-box}body{margin:0;padding:72px 20px 30px}.archive-bar{position:fixed;z-index:9999;top:0;left:0;right:0;display:flex;min-height:52px;padding:10px 18px;align-items:center;justify-content:space-between;gap:16px;color:#e2e8f0;background:#0f172a;font-size:13px}.archive-bar a{color:#5eead4;text-decoration:none;font-weight:700}.archive-bar time{color:#94a3b8}canvas,img{max-width:100%;height:auto}button,a{font:inherit}#msg{margin:1rem 0;font-weight:700}body>button,body>a{display:inline-block;margin:.25rem;padding:.7rem 1rem}           #mainStage {
+                background-color: white;
+                position: absolute;
+                top: 0;
+                bottom: 0;</style>
+</head><body>
+<header class="archive-bar"><a href="../../animations.html">← Animations and Graphics</a><span>Trigo - Arrays and Lines Exer2 · <time datetime="2016-08-16T16:04:24">2016-08-16</time></span></header>
+
+    <canvas id="mainStage" width="500" height="500">
+        Your browser does not support canvas. Please try again with a different browser.
+    </canvas>
+
+<script>function init() {
+    var canvas = document.getElementById("mainStage");
+    var ctx = canvas.getContext("2d");
+    drawGraphics(ctx);
+}
+
+function drawGraphics(ctx) {
+    //initialized beauty :)
+    var theta = 0;
+    var radius = 200;
+
+    //	cx and cy - center point for the invisible main circle
+    var cx = 500 / 2;
+    var cy = 500 / 2;
+
+    // dv - no of points on the circumference
+    var dv = 30;
+    //  lw - stroke size of the visible mini circle
+    var lw = .5;
+
+    //x and y coordinates placeholder
+    var polyXPoints = [];
+    var polyYPoints = [];
+
+    //effects
+    var offset1 = 9;
+    var offset2 = 13;
+    
+    //Generate X and Y Point 
+    for (var c = 0; c <= dv - 1; c++) {
+        polyXPoints.push(cx + radius * (Math.cos((c * 360 / dv) * Math.PI / 180)));
+        polyYPoints.push(cy + radius * (Math.sin((c * 360 / dv) * Math.PI / 180)));
+    }
+
+    //Connect all Points
+    for (c = 0; c <= dv - 1; c++) {
+        for (var y = c+offset1; y <=c+offset2 ; y++) {
+            ctx.beginPath();
+            ctx.moveTo(polyXPoints[c], polyYPoints[c]);
+
+            if (y <= dv-1)
+                ctx.lineTo(polyXPoints[y], polyYPoints[y]);
+            else
+                ctx.lineTo(polyXPoints[y-dv], polyYPoints[y-dv]);
+
+            ctx.lineWidth = lw;
+            
+            //random color
+            // 16777215 is ffffff in base 10
+            ctx.strokeStyle = '#' + Math.floor(Math.random() * 16777215).toString(16);
+            ctx.stroke();
+        }
+    }
+
+}
+
+window.addEventListener("load", function () { init() });</script>
+</body></html>

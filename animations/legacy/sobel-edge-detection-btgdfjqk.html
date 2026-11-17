@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sobel Edge Detection | Animations and Graphics</title><meta name="description" content="Visualizes horizontal and vertical image gradients with a Sobel filter.">
+<meta name="jsfiddle-id" content="btgdfjqk"><meta name="created" content="2018-05-22 15:03:42">
+<style>:root{font-family:Inter,system-ui,sans-serif;color:#0f172a;background:#f8fafc}*{box-sizing:border-box}body{margin:0;padding:72px 20px 30px}.archive-bar{position:fixed;z-index:9999;top:0;left:0;right:0;display:flex;min-height:52px;padding:10px 18px;align-items:center;justify-content:space-between;gap:16px;color:#e2e8f0;background:#0f172a;font-size:13px}.archive-bar a{color:#5eead4;text-decoration:none;font-weight:700}.archive-bar time{color:#94a3b8}canvas,img{max-width:100%;height:auto}button,a{font:inherit}#msg{margin:1rem 0;font-weight:700}body>button,body>a{display:inline-block;margin:.25rem;padding:.7rem 1rem}</style>
+</head><body>
+<header class="archive-bar"><a href="../../animations.html">← Animations and Graphics</a><span>Sobel Edge Detection · <time datetime="2018-05-22T15:03:42">2018-05-22</time></span></header>
+
+<h4>Original Image</h4>
+
+<img src='images/legacy-photo-23405988.jpg'>
+<h4>Image with Sobel filter applied</h4>
+<canvas id="canvas" width=1280 height=616></canvas>
+<script>// load an image 
+var image=new Image();
+image.crossOrigin='anonymous';
+image.onload=start;
+image.src="images/legacy-photo-23405988.jpg";
+
+
+function start(){
+
+  // apply Sobel Edge Detection
+  // return ImageData of the filtered canvas
+  var grayscale = Filters.filterImage(Filters.grayscale, image);
+  var vertical = Filters.convoluteFloat32(grayscale,
+                                          [ -1, 0, 1,
+                                           -2, 0, 2,
+                                           -1, 0, 1 ]);
+  var horizontal = Filters.convoluteFloat32(grayscale,
+                                            [ -1, -2, -1,
+                                             0,  0,  0,
+                                             1,  2,  1 ]);
+  var final_image = Filters.createImageData(vertical.width, vertical.height);
+  for (var i=0; i<final_image.data.length; i+=4){
+    // make the vertical gradient red
+    var v = Math.abs(vertical.data[i]);
+    final_image.data[i] = v;
+    // make the horizontal gradient green
+    var h = Math.abs(horizontal.data[i]);
+    final_image.data[i+1] = h;
+    // and mix in some blue for aesthetics
+    final_image.data[i+2] = (v+h)/4;
+    final_image.data[i+3] = 255; // opaque alpha
+  }
+
+  // put the filtered imageData on an in-memory canvas
+  var memCanvas = document.createElement('canvas');
+  memCanvas.width=image.width;
+  memCanvas.height=image.height;
+  memCanvas.getContext('2d').putImageData(final_image,0,0);
+
+  // Display the processed image on the visible canvas.
+  var canvas = document.getElementById('canvas');
+  canvas.width = image.width;
+  canvas.height = image.height;
+  canvas.getContext('2d').drawImage(memCanvas,0,0);
+}
+
+
+
+// Attribution: http://www.html5rocks.com/en/tutorials/canvas/imagefilters/
+Filters = {};
+Filters.getPixels = function(img) {
+  var c,ctx;
+  if (img.getContext) {
+    c = img;
+    try { ctx = c.getContext('2d'); } catch(e) {}
+  }
+  if (!ctx) {
+    c = this.getCanvas(img.width, img.height);
+    ctx = c.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+  }
+  return ctx.getImageData(0,0,c.width,c.height);
+};
+
+Filters.getCanvas = function(w,h) {
+  var c = document.createElement('canvas');
+  c.width = w;
+  c.height = h;
+  return c;
+};
+
+Filters.filterImage = function(filter, image, var_args) {
+  var args = [this.getPixels(image)];
+  for (var i=2; i<arguments.length; i++) {
+    args.push(arguments[i]);
+  }
+  return filter.apply(null, args);
+};
+
+Filters.grayscale = function(pixels, args) {
+  var d = pixels.data;
+  for (var i=0; i<d.length; i+=4) {
+    var r = d[i];
+    var g = d[i+1];
+    var b = d[i+2];
+    // CIE luminance for the RGB
+    var v = 0.2126*r + 0.7152*g + 0.0722*b;
+    d[i] = d[i+1] = d[i+2] = v
+  }
+  return pixels;
+};
+
+Filters.brightness = function(pixels, adjustment) {
+  var d = pixels.data;
+  for (var i=0; i<d.length; i+=4) {
+    d[i] += adjustment;
+    d[i+1] += adjustment;
+    d[i+2] += adjustment;
+  }
+  return pixels;
+};
+
+Filters.threshold = function(pixels, threshold) {
+  var d = pixels.data;
+  for (var i=0; i<d.length; i+=4) {
+    var r = d[i];
+    var g = d[i+1];
+    var b = d[i+2];
+    var v = (0.2126*r + 0.7152*g + 0.0722*b >= threshold) ? 255 : 0;
+    d[i] = d[i+1] = d[i+2] = v
+  }
+  return pixels;
+};
+
+Filters.tmpCanvas = document.createElement('canvas');
+Filters.tmpCtx = Filters.tmpCanvas.getContext('2d');
+
+Filters.createImageData = function(w,h) {
+  return this.tmpCtx.createImageData(w,h);
+};
+
+Filters.convolute = function(pixels, weights, opaque) {
+  var side = Math.round(Math.sqrt(weights.length));
+  var halfSide = Math.floor(side/2);
+
+  var src = pixels.data;
+  var sw = pixels.width;
+  var sh = pixels.height;
+
+  var w = sw;
+  var h = sh;
+  var output = Filters.createImageData(w, h);
+  var dst = output.data;
+
+  var alphaFac = opaque ? 1 : 0;
+
+  for (var y=0; y<h; y++) {
+    for (var x=0; x<w; x++) {
+      var sy = y;
+      var sx = x;
+      var dstOff = (y*w+x)*4;
+      var r=0, g=0, b=0, a=0;
+      for (var cy=0; cy<side; cy++) {
+        for (var cx=0; cx<side; cx++) {
+          var scy = Math.min(sh-1, Math.max(0, sy + cy - halfSide));
+          var scx = Math.min(sw-1, Math.max(0, sx + cx - halfSide));
+          var srcOff = (scy*sw+scx)*4;
+          var wt = weights[cy*side+cx];
+          r += src[srcOff] * wt;
+          g += src[srcOff+1] * wt;
+          b += src[srcOff+2] * wt;
+          a += src[srcOff+3] * wt;
+        }
+      }
+      dst[dstOff] = r;
+      dst[dstOff+1] = g;
+      dst[dstOff+2] = b;
+      dst[dstOff+3] = a + alphaFac*(255-a);
+    }
+  }
+  return output;
+};
+
+if (!window.Float32Array)
+  Float32Array = Array;
+
+Filters.convoluteFloat32 = function(pixels, weights, opaque) {
+  var side = Math.round(Math.sqrt(weights.length));
+  var halfSide = Math.floor(side/2);
+
+  var src = pixels.data;
+  var sw = pixels.width;
+  var sh = pixels.height;
+
+  var w = sw;
+  var h = sh;
+  var output = {
+    width: w, height: h, data: new Float32Array(w*h*4)
+  };
+  var dst = output.data;
+
+  var alphaFac = opaque ? 1 : 0;
+
+  for (var y=0; y<h; y++) {
+    for (var x=0; x<w; x++) {
+      var sy = y;
+      var sx = x;
+      var dstOff = (y*w+x)*4;
+      var r=0, g=0, b=0, a=0;
+      for (var cy=0; cy<side; cy++) {
+        for (var cx=0; cx<side; cx++) {
+          var scy = Math.min(sh-1, Math.max(0, sy + cy - halfSide));
+          var scx = Math.min(sw-1, Math.max(0, sx + cx - halfSide));
+          var srcOff = (scy*sw+scx)*4;
+          var wt = weights[cy*side+cx];
+          r += src[srcOff] * wt;
+          g += src[srcOff+1] * wt;
+          b += src[srcOff+2] * wt;
+          a += src[srcOff+3] * wt;
+        }
+      }
+      dst[dstOff] = r;
+      dst[dstOff+1] = g;
+      dst[dstOff+2] = b;
+      dst[dstOff+3] = a + alphaFac*(255-a);
+    }
+  }
+  return output;
+};
+//
+function runFilter(id, filter, arg1, arg2, arg3) {
+  var c = document.getElementById(id);
+  var s = c.previousSibling.style;
+  var b = c.parentNode.getElementsByTagName('button')[0];
+  if (b.originalText == null) {
+    b.originalText = b.textContent;
+  }
+  if (s.display == 'none') {
+    s.display = 'inline';
+    c.style.display = 'none';
+    b.textContent = b.originalText;
+  } else {
+    var idata = Filters.filterImage(filter, img, arg1, arg2, arg3);
+    c.width = idata.width;
+    c.height = idata.height;
+    var ctx = c.getContext('2d');
+    ctx.putImageData(idata, 0, 0);
+    s.display = 'none';
+    c.style.display = 'inline';
+    b.textContent = 'Restore original image';
+  }
+}
+//
+sobel = function() {
+  runFilter('sobel', function(px){
+    px = Filters.grayscale(px);
+    var vertical = Filters.convoluteFloat32(px,
+      [-1,-2,-1,
+        0, 0, 0,
+        1, 2, 1]);
+    var horizontal = Filters.convoluteFloat32(px,
+      [-1,0,1,
+       -2,0,2,
+       -1,0,1]);
+    var id = Filters.createImageData(vertical.width, vertical.height);
+    for (var i=0; i<id.data.length; i+=4) {
+      var v = Math.abs(vertical.data[i]);
+      id.data[i] = v;
+      var h = Math.abs(horizontal.data[i]);
+      id.data[i+1] = h
+      id.data[i+2] = (v+h)/4;
+      id.data[i+3] = 255;
+    }
+    return id;
+  });
+}</script>
+</body></html>

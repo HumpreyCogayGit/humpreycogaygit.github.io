@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HTML5 Canvas Image Manipulation | Animations and Graphics</title><meta name="description" content="A browser-native animation and graphics experiment.">
+<meta name="jsfiddle-id" content="gqndmyok"><meta name="created" content="2018-05-10 14:02:01">
+<style>:root{font-family:Inter,system-ui,sans-serif;color:#0f172a;background:#f8fafc}*{box-sizing:border-box}body{margin:0;padding:72px 20px 30px}.archive-bar{position:fixed;z-index:9999;top:0;left:0;right:0;display:flex;min-height:52px;padding:10px 18px;align-items:center;justify-content:space-between;gap:16px;color:#e2e8f0;background:#0f172a;font-size:13px}.archive-bar a{color:#5eead4;text-decoration:none;font-weight:700}.archive-bar time{color:#94a3b8}canvas,img{max-width:100%;height:auto}button,a{font:inherit}#msg{margin:1rem 0;font-weight:700}body>button,body>a{display:inline-block;margin:.25rem;padding:.7rem 1rem}</style>
+</head><body>
+<header class="archive-bar"><a href="../../animations.html">← Animations and Graphics</a><span>HTML5 Canvas Image Manipulation · <time datetime="2018-05-10T14:02:01">2018-05-10</time></span></header>
+<canvas id="CanvasOR" width="700" height="500"></canvas>
+<canvas id="CanvasBW" width="700" height="500"></canvas>
+<script>//Image Copyright by: HumpreyCogay
+//images/legacy-photo-23415159.jpg
+
+    var canvasOR = document.getElementById('CanvasOR');
+    var canvasBW = document.getElementById('CanvasBW');
+
+    var contextOR = canvasOR.getContext('2d');
+    var contextBW = canvasBW.getContext('2d');
+    
+    var imageObj = new Image();
+
+    //Luminance Setting
+    var rLum = .3;
+    var gLum = .5;
+    var bLum = .6;
+
+		//Allow CrossOrigin Processing and Reference Image Source
+		imageObj.setAttribute('crossOrigin', '');
+		imageObj.src = 'images/legacy-photo-23415159.jpg';
+	
+		imageObj.onload = function() {
+    	//Draw Original
+      contextOR.drawImage(imageObj, 0, 0, 700, imageObj.height * (700/imageObj.width));
+      
+      //Draw B&W PlaceHolder
+      contextBW.drawImage(imageObj, 0, 0, 700, imageObj.height * (700/imageObj.width));
+      
+			//get image pixel data
+      var imgd = contextBW.getImageData(0, 0, 700, imageObj.height * (700/imageObj.width));
+      var imageData = imgd.data;
+
+			//loop per pixel data
+      for (var c = 0, l = imageData.length; c < l; c += 4) {
+          var luminance = imageData[c ] * rLum + imageData[c+1] * gLum + imageData[c+2] * bLum ;
+          imageData[c ] = luminance; // red
+          imageData[c+1] = luminance; // green
+          imageData[c+2] = luminance; // blue
+      }
+      
+      //update BW context
+      contextBW.putImageData(imgd, 0, 0);
+	}
+
+
+
+</script>
+</body></html>

@@ -1,0 +1,194 @@
+[
+  {
+    "id": "43y2acfe",
+    "title": "PixCular",
+    "slug": "pixcular-43y2acfe",
+    "date": "2025-10-08",
+    "created": "2025-10-08 08:08:44",
+    "description": "Rebuilds an image as a field of sampled, colored circles."
+  },
+  {
+    "id": "vznLa1pt",
+    "title": "Hopping ASCII Rabbit",
+    "slug": "hopping-ascii-rabbit-vznLa1pt",
+    "date": "2025-10-07",
+    "created": "2025-10-07 05:05:53",
+    "description": "A browser-native animation and graphics experiment."
+  },
+  {
+    "id": "2j8vf539",
+    "title": "Unsharp Mask Convolution",
+    "slug": "unsharp-mask-convolution-2j8vf539",
+    "date": "2025-05-26",
+    "created": "2025-05-26 14:02:06",
+    "description": "Sharpens an image by combining it with a blurred copy."
+  },
+  {
+    "id": "g1bfqdjp",
+    "title": "Gaussian Convolution Study",
+    "slug": "gaussian-convolution-study-g1bfqdjp",
+    "date": "2025-05-26",
+    "created": "2025-05-26 14:02:33",
+    "description": "Tests a Gaussian kernel for smoothing image pixels."
+  },
+  {
+    "id": "p8b261yu",
+    "title": "JavaScript Scheduling Test",
+    "slug": "javascript-scheduling-test-p8b261yu",
+    "date": "2018-10-03",
+    "created": "2018-10-03 08:08:39",
+    "description": "Compares deferred work with a synchronous processing loop."
+  },
+  {
+    "id": "kyhwf78c",
+    "title": "jQuery vs JavaScript Timing",
+    "slug": "jquery-vs-javascript-timing-kyhwf78c",
+    "date": "2018-10-03",
+    "created": "2018-10-03 08:08:50",
+    "description": "Compares equivalent scheduling flows in jQuery and JavaScript."
+  },
+  {
+    "id": "ubsz9t2m",
+    "title": "Gaussian Blue Kernel Exercise",
+    "slug": "gaussian-blue-kernel-exercise-ubsz9t2m",
+    "date": "2018-10-15",
+    "created": "2018-10-15 15:03:38",
+    "description": "A browser-native animation and graphics experiment."
+  },
+  {
+    "id": "cbeanL26",
+    "title": "Gaussian Kernel Computation",
+    "slug": "gaussian-kernel-computation-cbeanL26",
+    "date": "2018-09-21",
+    "created": "2018-09-21 14:02:37",
+    "description": "A browser-native animation and graphics experiment."
+  },
+  {
+    "id": "sr32tae6",
+    "title": "Image Manipulation Gaussian Blur",
+    "slug": "image-manipulation-gaussian-blur-sr32tae6",
+    "date": "2018-07-20",
+    "created": "2018-07-20 13:01:42",
+    "description": "A browser-native animation and graphics experiment."
+  },
+  {
+    "id": "ref8uyxo",
+    "title": "Image Manipulation - Threshold",
+    "slug": "image-manipulation-threshold-ref8uyxo",
+    "date": "2018-05-22",
+    "created": "2018-05-22 16:04:53",
+    "description": "A browser-native animation and graphics experiment."
+  },
+  {
+    "id": "btgdfjqk",
+    "title": "Sobel Edge Detection",
+    "slug": "sobel-edge-detection-btgdfjqk",
+    "date": "2018-05-22",
+    "created": "2018-05-22 15:03:42",
+    "description": "Visualizes horizontal and vertical image gradients with a Sobel filter."
+  },
+  {
+    "id": "dy4hn7zr",
+    "title": "Image Manipulation - Contrast",
+    "slug": "image-manipulation-contrast-dy4hn7zr",
+    "date": "2018-05-17",
+    "created": "2018-05-17 16:04:04",
+    "description": "A browser-native animation and graphics experiment."
+  },
+  {
+    "id": "upbnvnsb",
+    "title": "Image Manipulation - Brightness",
+    "slug": "image-manipulation-brightness-upbnvnsb",
+    "date": "2018-05-17",
+    "created": "2018-05-17 15:03:53",
+    "description": "A browser-native animation and graphics experiment."
+  },
+  {
+    "id": "f3r7jf1g",
+    "title": "Color Effects",
+    "slug": "color-effects-f3r7jf1g",
+    "date": "2018-05-11",
+    "created": "2018-05-11 07:07:46",
+    "description": "A browser-native animation and graphics experiment."
+  },
+  {
+    "id": "m30Lm31m",
+    "title": "Circular Image Pixelation",
+    "slug": "circular-image-pixelation-m30Lm31m",
+    "date": "2018-04-04",
+    "created": "2018-04-04 15:03:39",
+    "description": "Reconstructs a source image using circular color samples."
+  },
+  {
+    "id": "xgcnLka6",
+    "title": "PixCular",
+    "slug": "pixcular-xgcnLka6",
+    "date": "2018-05-10",
+    "created": "2018-05-10 14:02:34",
+    "description": "Rebuilds an image as a field of sampled, colored circles."
+  },
+  {
+    "id": "gqndmyok",
+    "title": "HTML5 Canvas Image Manipulation",
+    "slug": "html5-canvas-image-manipulation-gqndmyok",
+    "date": "2018-05-10",
+    "created": "2018-05-10 14:02:01",
+    "description": "A browser-native animation and graphics experiment."
+  },
+  {
+    "id": "oms89he2",
+    "title": "Spirograph Exer3",
+    "slug": "spirograph-exer3-oms89he2",
+    "date": "2016-09-08",
+    "created": "2016-09-08 11:11:30",
+    "description": "A browser-native animation and graphics experiment."
+  },
+  {
+    "id": "s30vfj2e",
+    "title": "Spirograph Exer2(Animate)",
+    "slug": "spirograph-exer2-animate-s30vfj2e",
+    "date": "2016-08-17",
+    "created": "2016-08-17 15:03:50",
+    "description": "A browser-native animation and graphics experiment."
+  },
+  {
+    "id": "u0cdfahu",
+    "title": "Spirograph Exer1",
+    "slug": "spirograph-exer1-u0cdfahu",
+    "date": "2016-09-08",
+    "created": "2016-09-08 09:09:19",
+    "description": "A browser-native animation and graphics experiment."
+  },
+  {
+    "id": "h5sprzvu",
+    "title": "Trigo - Arrays and Lines Exer2",
+    "slug": "trigo-arrays-and-lines-exer2-h5sprzvu",
+    "date": "2016-08-16",
+    "created": "2016-08-16 16:04:24",
+    "description": "A browser-native animation and graphics experiment."
+  },
+  {
+    "id": "0rt2jcrs",
+    "title": "Trigo - Arrays and Lines Exer1",
+    "slug": "trigo-arrays-and-lines-exer1-0rt2jcrs",
+    "date": "2016-08-16",
+    "created": "2016-08-16 15:03:44",
+    "description": "A browser-native animation and graphics experiment."
+  },
+  {
+    "id": "usen27ks",
+    "title": "Trigo - Circles 1",
+    "slug": "trigo-circles-1-usen27ks",
+    "date": "2016-08-16",
+    "created": "2016-08-16 08:08:16",
+    "description": "A browser-native animation and graphics experiment."
+  },
+  {
+    "id": "hrbhrkpx",
+    "title": "Fun with Trigo and Fibonacci",
+    "slug": "fun-with-trigo-and-fibonacci-hrbhrkpx",
+    "date": "2016-08-15",
+    "created": "2016-08-15 02:02:37",
+    "description": "A browser-native animation and graphics experiment."
+  }
+]

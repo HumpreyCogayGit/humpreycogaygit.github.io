@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JavaScript Scheduling Test | Animations and Graphics</title><meta name="description" content="Compares deferred work with a synchronous processing loop.">
+<meta name="jsfiddle-id" content="p8b261yu"><meta name="created" content="2018-10-03 08:08:39">
+<style>:root{font-family:Inter,system-ui,sans-serif;color:#0f172a;background:#f8fafc}*{box-sizing:border-box}body{margin:0;padding:72px 20px 30px}.archive-bar{position:fixed;z-index:9999;top:0;left:0;right:0;display:flex;min-height:52px;padding:10px 18px;align-items:center;justify-content:space-between;gap:16px;color:#e2e8f0;background:#0f172a;font-size:13px}.archive-bar a{color:#5eead4;text-decoration:none;font-weight:700}.archive-bar time{color:#94a3b8}canvas,img{max-width:100%;height:auto}button,a{font:inherit}#msg{margin:1rem 0;font-weight:700}body>button,body>a{display:inline-block;margin:.25rem;padding:.7rem 1rem}</style>
+  <script src="vendor/jquery-3.7.1.min.js"></script>
+</head><body>
+<header class="archive-bar"><a href="../../animations.html">← Animations and Graphics</a><span>JavaScript Scheduling Test · <time datetime="2018-10-03T08:08:39">2018-10-03</time></span></header>
+<div id="msg" role="status">Not Started</div><button type="button">jQuery-style test</button><a id="javascriptTest" href="#">JavaScript test</a>
+<script>
+(function(){
+    
+    function addSecs(d, s) {return new Date(d.valueOf()+s*1000);}
+
+    var start, end;
+    
+    document.getElementById('javascriptTest').onclick = function(){
+        doRun(function(){
+             do {start = new Date();} while (end-start > 0);
+             document.getElementById('msg').innerHTML = 'Finished JS';   
+        });
+        return false;
+    };
+    
+    function doRun(cont){
+        document.getElementById('msg').innerHTML = 'Processing JS...';
+        start = new Date();
+        end = addSecs(start,0.25);
+        setTimeout(cont, 1);
+    }
+        
+    $(function() {
+            $('button').click(function(){
+                (function(cont){
+                    $('div').text('Processing JQ...');  
+                    start = new Date();
+                    end = addSecs(start,0.25);
+                    setTimeout(cont, 1);
+                })(function(){
+                    do {start = new Date();} while (end-start > 0);
+                    $('div').text('Finished JQ');   
+                })
+            });
+    });
+
+})();</script>
+</body></html>
