@@ -1,7 +1,7 @@
 import { projects, projectMarkup } from "./projects.js?v=6";
 import { calculatorMarkup, initCalculator } from "./calculator.js";
 import { calendarMarkup, initCalendar } from "./calendar.js";
-import { weatherMarkup, initWeather } from "./weather.js";
+import { weatherMarkup, initWeather } from "./weather.js?v=3";
 import { aboutMarkup, commandLineMarkup, initCommandLine } from "./desktop-apps.js";
 import { WindowManager } from "./window-manager.js";
 
@@ -58,6 +58,7 @@ const introModule = import(`./intros.js?v=${INTRO_VERSION}`).catch((error) => {
 });
 const statusSteps = [[0, "Starting up"], [.25, "Loading projects"], [.55, "Preparing workspace"], [.85, "Almost there"], [1, "Ready"]];
 let introTimer;
+let introDeadline;
 let introFrame;
 let revealTimer;
 let stopIntroLines = () => {};
@@ -86,6 +87,8 @@ function startIntro() {
   if (introStarted) return;
   introStarted = true;
   startup.classList.add("is-running");
+  // Always release the desktop even if an animation frame, asset, or optional module stalls.
+  introDeadline = setTimeout(finishIntro, INTRO_MAX + 1000);
   if (reducedMotion) {
     revealName();
     setIntroProgress(1);
@@ -150,6 +153,7 @@ function hideStartup() {
 function finishIntro() {
   if (startup.classList.contains("is-leaving")) return;
   clearTimeout(introTimer);
+  clearTimeout(introDeadline);
   cancelAnimationFrame(introFrame);
   stopIntroLines();
   revealName(); // skipping mid-prelude still needs the name on screen for its flight
@@ -182,3 +186,8 @@ document.addEventListener("keydown", (event) => {
 });
 startIntro();
 skipIntro.focus();
+
+// Widgets are optional desktop enhancements and must never block the startup controller.
+import("./widgets.js?v=6")
+  .then(({ initDesktopWidgets }) => initDesktopWidgets())
+  .catch((error) => console.error("Desktop widgets failed to initialize.", error));

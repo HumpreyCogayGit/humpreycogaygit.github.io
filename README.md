@@ -33,4 +33,4 @@ The repository has no build step. Deploy the directory as-is to GitHub Pages, Ve
 
 ## Weather data
 
-The weather app uses the free Open-Meteo forecast and geocoding APIs. It does not require or expose an API key. Location is requested only after the visitor chooses **Use my location**. The last successful place and preferred temperature unit are saved in browser `localStorage`.
+The weather app and desktop widget use the free Open-Meteo forecast and geocoding APIs. They do not require or expose an API key. The widget requests browser location permission on its first visit so it can show local weather automatically; visitors can deny the request and search for a city in the Weather app instead. The last successful place and preferred temperature unit are saved in browser `localStorage`.
