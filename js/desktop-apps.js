@@ -12,6 +12,7 @@ export function aboutMarkup() {
         <p>Currently working as a Data Engineering Manager, leading a team responsible for delivering enterprise data platform management and data engineering services across cloud, database, and analytics technologies.</p>
         <p>On the side, I build tools, experiment with ideas, and explore things that spark my curiosity. My interests include AI engineering, LLM applications, cybersecurity, web development, creative coding, games, and understanding how things like animations, graphics, and interactive experiences work under the hood.</p>
         <p>Some projects solve practical problems, others are experiments or learning exercises. Sometimes the fun is simply understanding how something works and seeing what I can create with it.</p>
+        <p>Away from the keyboard, I enjoy photography, especially shooting insects. There’s something rewarding about slowing down, getting close, and capturing the tiny details most people walk right past.</p>
         <p>Explore the projects through the Start menu, or open Command Line for a quick map of what you’ll find here.</p>
         <footer>Humprey Cogay · MangHumps · Portfolio / 2026</footer>
       </div>

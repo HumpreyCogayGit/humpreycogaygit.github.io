@@ -2,7 +2,7 @@ import { projects, projectMarkup } from "./projects.js?v=6";
 import { calculatorMarkup, initCalculator } from "./calculator.js";
 import { calendarMarkup, initCalendar } from "./calendar.js";
 import { weatherMarkup, initWeather } from "./weather.js?v=3";
-import { aboutMarkup, commandLineMarkup, initCommandLine } from "./desktop-apps.js?v=2";
+import { aboutMarkup, commandLineMarkup, initCommandLine } from "./desktop-apps.js?v=3";
 import { WindowManager } from "./window-manager.js";
 
 const apps = Object.fromEntries(Object.entries(projects).map(([id, project]) => [id, { title: project.title, shortTitle: project.name, accent: project.accent, render: () => projectMarkup(project) }]));
