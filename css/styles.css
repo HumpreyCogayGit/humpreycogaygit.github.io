@@ -211,6 +211,18 @@ button.desktop-widget:focus-visible { outline: 3px solid rgba(8,127,106,.35); ou
 .window-layer { position: absolute; z-index: 10; inset: 0 0 var(--taskbar-height); pointer-events: none; }
 .app-window { position: absolute; display: flex; width: min(820px, calc(100vw - 40px)); height: min(610px, calc(100dvh - 104px)); min-width: 310px; min-height: 350px; flex-direction: column; overflow: hidden; border: 1px solid rgba(15,23,42,.14); border-radius: var(--radius); background: var(--panel); box-shadow: 0 30px 100px rgba(15,23,42,.2), inset 0 1px rgba(255,255,255,.85); backdrop-filter: blur(22px); pointer-events: auto; animation: window-in .2s ease-out both; }
 .app-window.is-minimized { display: none; }
+.window-resize-handles { position: absolute; z-index: 5; inset: 0; pointer-events: none; }
+.window-resize { position: absolute; pointer-events: auto; touch-action: none; }
+.window-resize-n, .window-resize-s { right: 12px; left: 12px; height: 6px; cursor: ns-resize; }
+.window-resize-e, .window-resize-w { top: 12px; bottom: 12px; width: 6px; cursor: ew-resize; }
+.window-resize-n { top: 0; } .window-resize-s { bottom: 0; } .window-resize-e { right: 0; } .window-resize-w { left: 0; }
+.window-resize-ne, .window-resize-se, .window-resize-sw, .window-resize-nw { width: 14px; height: 14px; }
+.window-resize-ne { top: 0; right: 0; cursor: nesw-resize; } .window-resize-sw { bottom: 0; left: 0; cursor: nesw-resize; }
+.window-resize-nw { top: 0; left: 0; cursor: nwse-resize; } .window-resize-se { right: 0; bottom: 0; cursor: nwse-resize; }
+.app-window.is-maximized .window-resize-handles { display: none; }
+.app-window.is-resizing { user-select: none; -webkit-user-select: none; }
+.app-window.is-resizing .window-content { pointer-events: none; }
+@media (max-width: 720px) { .window-resize-handles { display: none; } }
 .app-window.is-maximized { inset: 8px !important; width: calc(100% - 16px) !important; height: calc(100% - 16px) !important; border-radius: 12px; transform: none !important; }
 .app-window[data-app="calculator"] { width: min(390px, calc(100vw - 30px)); height: min(600px, calc(100dvh - 94px)); }
 .app-window[data-app="calendar"] { width: min(650px, calc(100vw - 30px)); height: min(625px, calc(100dvh - 94px)); }
