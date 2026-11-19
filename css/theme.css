@@ -1,0 +1,50 @@
+/* Light/dark toggle and switch animation, shared by every page (see js/theme.js). */
+
+.theme-toggle {
+  --toggle-ink: var(--ink);
+  position: relative;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--toggle-ink);
+  background: transparent;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease, transform .2s ease;
+}
+.theme-toggle:hover { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.theme-toggle:active { transform: scale(.9); }
+.theme-toggle svg { width: 19px; height: 19px; overflow: visible; }
+.theme-toggle-core { fill: currentColor; transform-origin: 12px 12px; transition: transform .5s cubic-bezier(.34,1.56,.64,1); }
+.theme-toggle-cutout { transition: transform .5s cubic-bezier(.65,0,.35,1); }
+.theme-toggle-rays { stroke: currentColor; stroke-width: 2; stroke-linecap: round; transform-origin: 12px 12px; transition: transform .5s cubic-bezier(.34,1.56,.64,1), opacity .3s ease; }
+
+/* Dark: the sun's rays retract and a shadow slides over the core, leaving a crescent moon. */
+:root[data-theme="dark"] .theme-toggle-core { transform: scale(1.7); }
+:root[data-theme="dark"] .theme-toggle-cutout { transform: translate(-12px, 7px); }
+:root[data-theme="dark"] .theme-toggle-rays { opacity: 0; transform: rotate(-90deg) scale(.4); }
+.theme-toggle.is-spinning svg { animation: theme-toggle-spin .6s cubic-bezier(.34,1.56,.64,1); }
+@keyframes theme-toggle-spin { from { transform: rotate(-150deg) scale(.6); } }
+
+/* View Transition reveal: js/theme.js animates the clip-path from the toggle's position. */
+:root.theme-switching::view-transition-old(root),
+:root.theme-switching::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+:root.theme-switching::view-transition-old(root) { z-index: 1; }
+:root.theme-switching::view-transition-new(root) { z-index: 2; }
+
+/* Fallback for browsers without View Transitions: a wave of the new background colour. */
+.theme-wave { position: fixed; z-index: 2147483647; inset: 0; pointer-events: none; clip-path: circle(0 at var(--theme-x, 50%) var(--theme-y, 50%)); animation: theme-wave-grow .55s cubic-bezier(.65,0,.35,1) forwards; }
+.theme-wave-dark { background: radial-gradient(circle at var(--theme-x, 50%) var(--theme-y, 50%), #12203a, #0b1120 60%); }
+.theme-wave-light { background: radial-gradient(circle at var(--theme-x, 50%) var(--theme-y, 50%), #ffffff, #eef2f6 60%); }
+.theme-wave.is-fading { clip-path: circle(var(--theme-r, 150vmax) at var(--theme-x, 50%) var(--theme-y, 50%)); animation: theme-wave-fade .4s ease forwards; }
+@keyframes theme-wave-grow { to { clip-path: circle(var(--theme-r, 150vmax) at var(--theme-x, 50%) var(--theme-y, 50%)); } }
+@keyframes theme-wave-fade { to { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle-core, .theme-toggle-cutout, .theme-toggle-rays { transition: none; }
+  .theme-toggle.is-spinning svg { animation: none; }
+}

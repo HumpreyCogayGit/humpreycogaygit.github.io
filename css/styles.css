@@ -432,10 +432,9 @@ body.desktop-ready .ambient { opacity: .55; transform: scale(1); }
   .weather-widget-condition { font-size: .59rem; }
   .weather-widget-range { font-size: .5rem; }
   .weather-widget-updated { font-size: .43rem; }
-  .desktop-icons { order: 2; width: 100%; min-width: 0; max-width: none; padding: 4px 16px 10px; flex: none; flex-direction: row; align-items: flex-start; gap: 10px; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: 16px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-  .desktop-icons::-webkit-scrollbar { display: none; }
+  .desktop-icons { order: 2; width: 100%; min-width: 0; max-width: none; padding: 4px 16px 10px; flex: none; flex-direction: column; align-items: stretch; gap: 12px; overflow: visible; }
   .shortcut-group-projects { order: -1; }
-  .shortcut-group { flex: 0 0 min(320px, 85vw); width: min(320px, 85vw); min-width: 0; padding: 8px; border-width: 1.5px; border-radius: 12px; scroll-snap-align: start; }
+  .shortcut-group { flex: none; width: 100%; min-width: 0; padding: 8px; border-width: 1.5px; border-radius: 12px; }
   .shortcut-group-heading { padding: 0 4px clamp(3px, .5dvh, 5px); }
   .shortcut-group-heading h2 { font-size: .62rem; }
   .shortcut-group-heading p { margin-top: 2px; font-size: .6rem; line-height: 1.2; }
@@ -535,3 +534,137 @@ body.desktop-ready .ambient { opacity: .55; transform: scale(1); }
   .startup *, .desktop-heading * { animation-delay: 0s !important; }
   .startup-orb { animation: none; }
 }
+/* Taskbar theme toggle */
+.taskbar .theme-toggle { width: 32px; height: 32px; border-color: transparent; }
+.taskbar .theme-toggle:hover { border-color: var(--line); }
+
+/* Dark theme — every surface that hard-codes a light colour gets a dark counterpart, and any text
+   that sat on those surfaces is lifted so nothing ends up dark-on-dark. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: #e6ebf3;
+  --muted: #9aa8bc;
+  --panel: rgba(17, 24, 39, 0.94);
+  --panel-solid: #111827;
+  --line: rgba(226, 232, 240, 0.13);
+  --accent: #34d3b0;
+  --on-accent: #03241d;
+}
+:root[data-theme="dark"] body { background: #0b1120; }
+:root[data-theme="dark"] noscript { color: #111; }
+
+/* Startup */
+:root[data-theme="dark"] .startup-backdrop { background: linear-gradient(135deg, #0b1120 0%, #0f172a 55%, #131c2e 100%); }
+:root[data-theme="dark"] .startup-grid { background-image: linear-gradient(rgba(226,232,240,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(226,232,240,.05) 1px, transparent 1px); }
+:root[data-theme="dark"] .startup-orb-one { background: rgba(52,211,176,.16); }
+:root[data-theme="dark"] .startup-orb-two { background: rgba(56,189,248,.14); }
+:root[data-theme="dark"] .startup-orb-three { background: rgba(139,108,230,.16); }
+:root[data-theme="dark"] .startup-lines { filter: brightness(1.7) saturate(1.1); }
+:root[data-theme="dark"] .startup-brand rect { fill: #111827; }
+:root[data-theme="dark"] .startup-skip { color: #cbd5e1; background: rgba(15,23,42,.7); }
+:root[data-theme="dark"] .startup-skip:hover { color: var(--ink); background: #1e293b; }
+:root[data-theme="dark"] .startup-status { color: #b4c0d0; }
+:root[data-theme="dark"] .startup-progress { background: rgba(226,232,240,.12); }
+
+/* Desktop */
+:root[data-theme="dark"] .desktop {
+  background:
+    linear-gradient(rgba(226,232,240,.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(226,232,240,.045) 1px, transparent 1px),
+    radial-gradient(circle at 72% 28%, rgba(56,189,248,.13) 0, transparent 32%),
+    linear-gradient(135deg, #0b1120 0%, #0f172a 52%, #141d30 100%);
+  background-size: 44px 44px, 44px 44px, auto, auto;
+}
+:root[data-theme="dark"] .ambient-one { border-color: rgba(52,211,176,.25); box-shadow: inset 0 0 80px rgba(52,211,176,.07); }
+:root[data-theme="dark"] .ambient-two { background: rgba(99,140,255,.12); }
+
+/* Widgets */
+:root[data-theme="dark"] .desktop-widget { border-color: rgba(226,232,240,.1); box-shadow: 0 16px 35px rgba(0,0,0,.4), inset 0 1px rgba(255,255,255,.06); }
+:root[data-theme="dark"] button.desktop-widget:hover { box-shadow: 0 20px 42px rgba(0,0,0,.5), inset 0 1px rgba(255,255,255,.06); }
+:root[data-theme="dark"] .calendar-widget { background: #1a2233; }
+:root[data-theme="dark"] .calendar-widget-header { background: linear-gradient(145deg, #e8414c, #b8172f); }
+:root[data-theme="dark"] .calendar-widget-body { background: linear-gradient(160deg, #1c2537, #182030); }
+:root[data-theme="dark"] .calendar-widget-day { color: #ff8796; }
+:root[data-theme="dark"] .calendar-widget-date { color: var(--ink); }
+:root[data-theme="dark"] .weather-widget { background: radial-gradient(circle at 85% 12%, rgba(255,246,164,.3), transparent 20%), linear-gradient(150deg, #155f99, #2a86b8); text-shadow: 0 1px 2px rgba(0,0,0,.35); }
+
+/* Shortcuts */
+:root[data-theme="dark"] .shortcut-group { border-color: rgba(226,232,240,.08); background: rgba(30,41,59,.38); box-shadow: 0 8px 24px rgba(0,0,0,.18), inset 0 1px rgba(255,255,255,.04); }
+:root[data-theme="dark"] .shortcut-group-projects { border-color: rgba(52,211,176,.16); background: rgba(20,60,55,.28); }
+:root[data-theme="dark"] .desktop-icon { text-shadow: 0 1px 3px rgba(0,0,0,.7); }
+:root[data-theme="dark"] .icon-tile { box-shadow: 0 8px 20px rgba(0,0,0,.4), inset 0 0 0 1px rgba(255,255,255,.1); }
+:root[data-theme="dark"] .desktop-icon:focus-visible .icon-tile { box-shadow: 0 13px 28px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.14); }
+@media (hover: hover) and (pointer: fine) {
+  :root[data-theme="dark"] .desktop-icon:hover .icon-tile { box-shadow: 0 13px 28px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.14); }
+}
+
+/* Windows, taskbar and Start menu */
+:root[data-theme="dark"] .app-window { border-color: rgba(226,232,240,.14); box-shadow: 0 30px 100px rgba(0,0,0,.55), inset 0 1px rgba(255,255,255,.06); }
+:root[data-theme="dark"] .window-titlebar { background: rgba(30,41,59,.92); }
+:root[data-theme="dark"] .window-controls button { color: var(--muted); }
+:root[data-theme="dark"] .window-controls button:hover { background: rgba(226,232,240,.08); color: var(--ink); }
+:root[data-theme="dark"] .window-controls button[data-window-action="close"]:hover { color: #fff; background: #d63a4e; }
+:root[data-theme="dark"] .taskbar { border-top-color: rgba(226,232,240,.1); background: rgba(13,19,33,.84); box-shadow: 0 -12px 35px rgba(0,0,0,.3); }
+:root[data-theme="dark"] .start-button:hover, :root[data-theme="dark"] .start-button[aria-expanded="true"] { background: rgba(52,211,176,.14); }
+:root[data-theme="dark"] .humprey-mark-frame { stroke: rgba(255,255,255,.18); stroke-width: .6; }
+:root[data-theme="dark"] .task-button { background: rgba(226,232,240,.06); }
+:root[data-theme="dark"] .task-button:hover, :root[data-theme="dark"] .task-button.is-active { background: rgba(226,232,240,.14); box-shadow: 0 4px 14px rgba(0,0,0,.3); }
+:root[data-theme="dark"] .task-button::before { box-shadow: 0 0 0 1.5px rgba(226,232,240,.45); }
+:root[data-theme="dark"] .clock:hover { background: rgba(226,232,240,.08); }
+:root[data-theme="dark"] .start-menu { border-color: rgba(226,232,240,.12); background: rgba(17,24,39,.92); box-shadow: 0 30px 80px rgba(0,0,0,.55), inset 0 1px rgba(255,255,255,.06); }
+:root[data-theme="dark"] .start-project:hover, :root[data-theme="dark"] .start-project:focus-visible { background: rgba(226,232,240,.08); box-shadow: 0 7px 20px rgba(0,0,0,.25); }
+:root[data-theme="dark"] .start-menu-footer { background: rgba(30,41,59,.6); }
+:root[data-theme="dark"] .start-menu-footer button:hover { background: rgba(226,232,240,.08); }
+
+/* about.txt (the command prompt is already dark in both themes) */
+:root[data-theme="dark"] .about-file { color: #dbe2ec; background: #111827; }
+:root[data-theme="dark"] .about-file > header { border-color: #243045; color: var(--muted); background: #0f172a; }
+:root[data-theme="dark"] .about-copy h3 { color: var(--ink); }
+:root[data-theme="dark"] .about-copy > p:not(.about-kicker) { color: #b8c4d4; }
+:root[data-theme="dark"] .about-copy footer { border-color: #243045; color: #7f8ea3; }
+:root[data-theme="dark"] .app-window[data-app="command-line"] .window-mark { box-shadow: 0 0 0 1px #555; }
+
+/* Project windows */
+:root[data-theme="dark"] .project { background: linear-gradient(145deg, #111827 0%, #0f172a 100%); }
+:root[data-theme="dark"] .project-heading::before { background: color-mix(in srgb, var(--project-accent) 70%, #fff); }
+:root[data-theme="dark"] .project-heading p { color: #b4c0d0; }
+:root[data-theme="dark"] .tag { color: #c2ccda; background: rgba(226,232,240,.06); }
+:root[data-theme="dark"] .project-screenshot { border-color: rgba(226,232,240,.14); background: #1a2233; box-shadow: 0 20px 50px rgba(0,0,0,.45); }
+:root[data-theme="dark"] .project-screenshot:hover { box-shadow: 0 24px 58px rgba(0,0,0,.55); }
+:root[data-theme="dark"] .project-browser-bar { border-color: rgba(226,232,240,.1); background: #1c2537; }
+:root[data-theme="dark"] .project-browser-controls i { border-color: rgba(226,232,240,.15); background: #475569; }
+:root[data-theme="dark"] .project-browser-address { color: var(--muted); }
+:root[data-theme="dark"] .project-image-wrap { background: #1a2233; }
+:root[data-theme="dark"] .button { background: rgba(226,232,240,.06); }
+:root[data-theme="dark"] .button:hover { background: rgba(226,232,240,.14); }
+:root[data-theme="dark"] .button-primary { color: #fff; background: var(--project-accent); box-shadow: inset 0 0 0 1px rgba(255,255,255,.14); }
+:root[data-theme="dark"] .button-primary:hover { background: color-mix(in srgb, var(--project-accent) 82%, white); }
+
+/* Calculator */
+:root[data-theme="dark"] .calculator { background: linear-gradient(#111827, #0d1424); }
+:root[data-theme="dark"] .calc-key { border-color: rgba(226,232,240,.1); background: rgba(226,232,240,.06); box-shadow: 0 3px 10px rgba(0,0,0,.2); }
+:root[data-theme="dark"] .calc-key:hover { border-color: rgba(226,232,240,.2); background: rgba(226,232,240,.12); }
+:root[data-theme="dark"] .calc-key.utility { color: #a9c1e0; background: rgba(93,134,180,.18); }
+:root[data-theme="dark"] .calc-key.operator { background: rgba(52,211,176,.14); }
+:root[data-theme="dark"] .calc-key.equals { color: var(--on-accent); background: var(--accent); }
+:root[data-theme="dark"] .calc-key.equals:hover { background: color-mix(in srgb, var(--accent) 85%, white); }
+
+/* Calendar */
+:root[data-theme="dark"] .calendar-app { background: linear-gradient(145deg, #111827, #0d1424); }
+:root[data-theme="dark"] .calendar-nav button { background: rgba(226,232,240,.06); }
+:root[data-theme="dark"] .calendar-nav button:hover { background: rgba(226,232,240,.14); }
+:root[data-theme="dark"] .calendar-weekdays span { color: var(--muted); }
+:root[data-theme="dark"] .calendar-day { background: rgba(226,232,240,.05); }
+:root[data-theme="dark"] .calendar-day:hover { background: rgba(226,232,240,.12); }
+:root[data-theme="dark"] .calendar-day.other-month { color: #6b7a90; background: transparent; }
+:root[data-theme="dark"] .calendar-day.today { color: var(--on-accent); background: var(--accent); }
+:root[data-theme="dark"] .calendar-day.selected:not(.today) { background: rgba(52,211,176,.12); }
+
+/* Weather */
+:root[data-theme="dark"] .weather-app { background: radial-gradient(circle at 80% 0, rgba(56,189,248,.16), transparent 38%), linear-gradient(#111827, #0c1a2e); }
+:root[data-theme="dark"] .weather-search input { background: rgba(226,232,240,.06); }
+:root[data-theme="dark"] .weather-search input::placeholder { color: #8796ab; }
+:root[data-theme="dark"] .weather-search button, :root[data-theme="dark"] .weather-actions button { background: rgba(226,232,240,.06); }
+:root[data-theme="dark"] .weather-search button:hover, :root[data-theme="dark"] .weather-actions button:hover { background: rgba(226,232,240,.14); }
+:root[data-theme="dark"] .weather-detail { background: rgba(226,232,240,.05); }
+:root[data-theme="dark"] .weather-detail span, :root[data-theme="dark"] .weather-status { color: var(--muted); }
