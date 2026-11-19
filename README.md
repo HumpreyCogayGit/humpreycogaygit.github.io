@@ -6,7 +6,7 @@ A dependency-free desktop-style portfolio built with semantic HTML, CSS, and van
 
 - Draggable, minimizable, maximizable application windows
 - Automatic intro with randomly selected line preludes (a Lissajous particle mesh, eased tracer lines, or orbiting circles) that settle into the desktop heading
-- Project introductions for AI Engineering, Precis, Speculo, Scapesaur, and Numero
+- Project introductions for AI Engineering, Precis, Speculo, Scapesaur, Numero, and Text Classification
 - Centered Windows 11-inspired Start menu with pinned projects
 - Desktop `about.txt` and interactive command-line applications
 - Working keyboard-enabled calculator (without `eval`)

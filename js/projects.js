@@ -53,6 +53,17 @@ export const projects = {
     tags: ["Data analysis", "15 chart types", "Private"],
     url: "https://humpreycogay.github.io/numero/",
     action: "Open Numero"
+  },
+  classification: {
+    title: "Text Classification — Benchmark",
+    className: "project-classification",
+    accent: "#b4520c",
+    name: "Text Classification",
+    subtitle: "A benchmark that tests 44 text classifiers on the same news and banking datasets.",
+    screenshot: new URL("../images/projects/classification.png", import.meta.url).href,
+    tags: ["44 classifiers", "AG News + Banking77", "Reproducible"],
+    url: "https://humpreycogay.github.io/Classification/",
+    action: "View the benchmark"
   }
 };
 

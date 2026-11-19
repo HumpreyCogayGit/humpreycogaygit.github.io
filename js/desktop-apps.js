@@ -54,7 +54,8 @@ export function initCommandLine(root) {
     ["precis", "Precis", "Daily tech brief"],
     ["speculo", "Speculo", "Private text workbench"],
     ["scapesaur", "Scapesaur", "Dinosaur runner"],
-    ["numero", "Numero", "Instant analytics"]
+    ["numero", "Numero", "Instant analytics"],
+    ["classification", "Text Classification", "Classifier benchmark"]
   ];
 
   function commandBlock(value) {
