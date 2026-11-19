@@ -7,7 +7,7 @@
   const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-  const THEME_COLORS = { light: "#ffffff", dark: "#0b1120" };
+  const THEME_COLORS = { light: "#ffffff", dark: "#141414" };
 
   const readStored = () => { try { return localStorage.getItem(STORAGE_KEY); } catch { return null; } };
   const store = (value) => { try { localStorage.setItem(STORAGE_KEY, value); } catch { /* private mode */ } };

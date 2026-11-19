@@ -139,34 +139,34 @@ footer a:hover { color: var(--accent); }
 /* Dark theme */
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #0b1120;
-  --panel: rgba(17, 24, 39, 0.94);
+  --bg: #141414;
+  --panel: rgba(30, 30, 30, 0.95);
   --line: rgba(226, 232, 240, 0.13);
-  --ink: #e6ebf3;
-  --muted: #9aa8bc;
-  --accent: #34d3b0;
-  --on-accent: #03241d;
+  --ink: #ededed;
+  --muted: #9a9a9a;
+  --accent: #ff7a1a;
+  --on-accent: #1f0e00;
 }
-:root[data-theme="dark"] body { background: linear-gradient(rgba(226,232,240,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(226,232,240,.03) 1px, transparent 1px), radial-gradient(circle at 72% 18%, rgba(56,189,248,.12) 0, transparent 28%), linear-gradient(135deg, #0b1120 0%, #0f172a 52%, #141d30 100%); background-size: 44px 44px, 44px 44px, auto, auto; background-attachment: fixed; }
-:root[data-theme="dark"] .page-glow-one { background: rgba(52,211,176,.08); }
-:root[data-theme="dark"] .page-glow-two { background: rgba(56,189,248,.08); }
-:root[data-theme="dark"] .brand-mark { border-color: rgba(52,211,176,.35); background: rgba(52,211,176,.1); }
-:root[data-theme="dark"] .back-link, :root[data-theme="dark"] .header-actions .theme-toggle { background: rgba(15,23,42,.7); }
-:root[data-theme="dark"] .back-link:hover { border-color: rgba(52,211,176,.45); }
+:root[data-theme="dark"] body { background: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px), radial-gradient(circle at 72% 18%, rgba(255,140,60,.12) 0, transparent 28%), linear-gradient(135deg, #141414 0%, #181818 52%, #1d1d1d 100%); background-size: 44px 44px, 44px 44px, auto, auto; background-attachment: fixed; }
+:root[data-theme="dark"] .page-glow-one { background: rgba(255,122,26,.08); }
+:root[data-theme="dark"] .page-glow-two { background: rgba(255,140,60,.08); }
+:root[data-theme="dark"] .brand-mark { border-color: rgba(255,122,26,.35); background: rgba(255,122,26,.1); }
+:root[data-theme="dark"] .back-link, :root[data-theme="dark"] .header-actions .theme-toggle { background: rgba(28,28,28,.7); }
+:root[data-theme="dark"] .back-link:hover { border-color: rgba(255,122,26,.45); }
 :root[data-theme="dark"] .animation-card { box-shadow: 0 18px 46px rgba(0,0,0,.35); }
-:root[data-theme="dark"] .animation-card::before { background: linear-gradient(145deg, rgba(52,211,176,.06), transparent 40%); }
-:root[data-theme="dark"] .study:hover .animation-card { border-color: rgba(52,211,176,.4); box-shadow: 0 26px 60px rgba(0,0,0,.5); }
-:root[data-theme="dark"] .card-number { color: #7f8ea3; }
-:root[data-theme="dark"] .animation-preview { background: #1a2233; }
-:root[data-theme="dark"] .info-btn { border-color: rgba(52,211,176,.4); background: #111827; box-shadow: 0 4px 14px rgba(0,0,0,.4); }
+:root[data-theme="dark"] .animation-card::before { background: linear-gradient(145deg, rgba(255,122,26,.06), transparent 40%); }
+:root[data-theme="dark"] .study:hover .animation-card { border-color: rgba(255,122,26,.4); box-shadow: 0 26px 60px rgba(0,0,0,.5); }
+:root[data-theme="dark"] .card-number { color: #858585; }
+:root[data-theme="dark"] .animation-preview { background: #232323; }
+:root[data-theme="dark"] .info-btn { border-color: rgba(255,122,26,.4); background: #1c1c1c; box-shadow: 0 4px 14px rgba(0,0,0,.4); }
 :root[data-theme="dark"] .info-icon { color: var(--on-accent); }
 :root[data-theme="dark"] .info-btn:hover { color: var(--on-accent); }
-:root[data-theme="dark"] .info-btn:hover .info-icon { color: var(--accent); background: #0b1120; }
-:root[data-theme="dark"] .study-info { background: #111827; box-shadow: 0 30px 80px rgba(0,0,0,.6); }
-:root[data-theme="dark"] .study-info::backdrop { background: rgba(2,6,15,.6); }
-:root[data-theme="dark"] .info-close { background: rgba(30,41,59,.92); }
-:root[data-theme="dark"] .info-math li::before { color: #7f8ea3; }
-:root[data-theme="dark"] .info-math pre { color: #a7f3d0; background: rgba(52,211,176,.1); }
-:root[data-theme="dark"] .curve { background: #0f172a; }
-:root[data-theme="dark"] .curve-axis { stroke: rgba(226,232,240,.22); }
-:root[data-theme="dark"] .curve-ball { fill: #a78bfa; }
+:root[data-theme="dark"] .info-btn:hover .info-icon { color: var(--accent); background: #141414; }
+:root[data-theme="dark"] .study-info { background: #1c1c1c; box-shadow: 0 30px 80px rgba(0,0,0,.6); }
+:root[data-theme="dark"] .study-info::backdrop { background: rgba(0,0,0,.6); }
+:root[data-theme="dark"] .info-close { background: rgba(42,42,42,.92); }
+:root[data-theme="dark"] .info-math li::before { color: #858585; }
+:root[data-theme="dark"] .info-math pre { color: #ffc69a; background: rgba(255,122,26,.1); }
+:root[data-theme="dark"] .curve { background: #181818; }
+:root[data-theme="dark"] .curve-axis { stroke: rgba(255,255,255,.22); }
+:root[data-theme="dark"] .curve-ball { fill: #ffb454; }
