@@ -7,14 +7,14 @@ export function aboutMarkup() {
       </header>
       <div class="about-copy">
         <p class="about-kicker">HELLO, I’M HUMPREY COGAY.</p>
-        <h3>AI engineering, useful tools, thoughtful information, and playful experiments.</h3>
-        <p><strong>Data Engineering Manager. Technology Explorer. Independent Builder.</strong></p>
-        <p>Currently working as a Data Engineering Manager, leading a team responsible for delivering enterprise data platform management and data engineering services across cloud, database, and analytics technologies.</p>
-        <p>On the side, I build tools, experiment with ideas, and explore things that spark my curiosity. My interests include AI engineering, LLM applications, cybersecurity, web development, creative coding, games, and understanding how things like animations, graphics, and interactive experiences work under the hood.</p>
-        <p>Some projects solve practical problems, others are experiments or learning exercises. Sometimes the fun is simply understanding how something works and seeing what I can create with it.</p>
-        <p>Away from the keyboard, I enjoy photography, especially shooting insects. There’s something rewarding about slowing down, getting close, and capturing the tiny details most people walk right past.</p>
-        <p>Explore the projects through the Start menu, or open Command Line for a quick map of what you’ll find here.</p>
-        <p>Want to get in touch? Contact me through my <a href="https://www.linkedin.com/in/manghumps" target="_blank" rel="noopener noreferrer">LinkedIn page</a>, also available from the LinkedIn icon on the desktop.</p>
+        <h3>From data engineering to AI, and the things I’m curious about in between.</h3>
+        <p><strong>Data Engineering Manager · AI Engineering · Independent Builder</strong></p>
+        <p>I’m a Data Engineering Manager leading a team that delivers enterprise data platform management and data engineering services across cloud, database, and analytics technologies.</p>
+        <p>Outside my day-to-day role, I design and build my own tools and applications. My focus areas include AI engineering and LLM applications, alongside cybersecurity, web development, and creative coding. I enjoy understanding how systems work under the hood, from data pipelines to graphics and interactive experiences.</p>
+        <p>The projects here range from practical tools that solve real problems to experiments and learning exercises. Together they show how I learn: by building, testing ideas, and shipping working results.</p>
+        <p>Away from the keyboard, I practise macro photography, especially insects. Slowing down to capture the details most people walk past is a habit I bring to my work too.</p>
+        <p>Browse my projects from the Start menu, or open the Command Prompt for a quick overview.</p>
+        <p>To get in touch, connect with me on <a href="https://www.linkedin.com/in/manghumps" target="_blank" rel="noopener noreferrer">LinkedIn</a>, or use the LinkedIn icon on the desktop.</p>
         <footer>Humprey Cogay · MangHumps · Portfolio / 2026</footer>
       </div>
     </article>`;

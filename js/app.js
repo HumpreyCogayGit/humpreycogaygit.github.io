@@ -2,7 +2,7 @@ import { projects, projectMarkup } from "./projects.js?v=8";
 import { calculatorMarkup, initCalculator } from "./calculator.js";
 import { calendarMarkup, initCalendar } from "./calendar.js";
 import { weatherMarkup, initWeather } from "./weather.js?v=3";
-import { aboutMarkup, commandLineMarkup, initCommandLine } from "./desktop-apps.js?v=6";
+import { aboutMarkup, commandLineMarkup, initCommandLine } from "./desktop-apps.js?v=8";
 import { WindowManager } from "./window-manager.js";
 import { initDesktopDrag } from "./desktop-drag.js?v=1";
 
