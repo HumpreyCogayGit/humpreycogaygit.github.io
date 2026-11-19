@@ -2,7 +2,7 @@ export function aboutMarkup() {
   return `
     <article class="about-file">
       <header>
-        <span>about.txt</span>
+        <span>whoami.txt</span>
         <span>Plain Text — UTF-8</span>
       </header>
       <div class="about-copy">
@@ -14,6 +14,7 @@ export function aboutMarkup() {
         <p>Some projects solve practical problems, others are experiments or learning exercises. Sometimes the fun is simply understanding how something works and seeing what I can create with it.</p>
         <p>Away from the keyboard, I enjoy photography, especially shooting insects. There’s something rewarding about slowing down, getting close, and capturing the tiny details most people walk right past.</p>
         <p>Explore the projects through the Start menu, or open Command Line for a quick map of what you’ll find here.</p>
+        <p>Want to get in touch? Contact me through my <a href="https://www.linkedin.com/in/manghumps" target="_blank" rel="noopener noreferrer">LinkedIn page</a>, also available from the LinkedIn icon on the desktop.</p>
         <footer>Humprey Cogay · MangHumps · Portfolio / 2026</footer>
       </div>
     </article>`;
@@ -45,7 +46,7 @@ export function initCommandLine(root) {
   const commands = {
     help: "Displays this list of available commands.",
     projects: "Lists featured projects. Select one to open it.",
-    about: "Opens about.txt in Notepad.",
+    about: "Opens whoami.txt in Notepad.",
     contact: "Displays contact details.",
     clear: "Clears the Command Prompt screen."
   };
@@ -55,7 +56,7 @@ export function initCommandLine(root) {
     ["speculo", "Speculo", "Private text workbench"],
     ["scapesaur", "Scapesaur", "Dinosaur runner"],
     ["numero", "Numero", "Instant analytics"],
-    ["classification", "Text Classification", "Classifier benchmark"]
+    ["classification", "Text Classification", "Benchmark and guide"]
   ];
 
   function commandBlock(value) {
@@ -123,7 +124,7 @@ export function initCommandLine(root) {
       block.append(response);
     } else if (value === "about") {
       const response = document.createElement("p");
-      response.textContent = "Opening about.txt...";
+      response.textContent = "Opening whoami.txt...";
       block.append(response);
       root.closest(".app-window").dispatchEvent(new CustomEvent("terminal-open-about", { bubbles: true }));
     } else {

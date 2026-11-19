@@ -1,16 +1,17 @@
-import { projects, projectMarkup } from "./projects.js?v=7";
+import { projects, projectMarkup } from "./projects.js?v=8";
 import { calculatorMarkup, initCalculator } from "./calculator.js";
 import { calendarMarkup, initCalendar } from "./calendar.js";
 import { weatherMarkup, initWeather } from "./weather.js?v=3";
-import { aboutMarkup, commandLineMarkup, initCommandLine } from "./desktop-apps.js?v=4";
+import { aboutMarkup, commandLineMarkup, initCommandLine } from "./desktop-apps.js?v=6";
 import { WindowManager } from "./window-manager.js";
+import { initDesktopDrag } from "./desktop-drag.js?v=1";
 
 const apps = Object.fromEntries(Object.entries(projects).map(([id, project]) => [id, { title: project.title, shortTitle: project.name, accent: project.accent, render: () => projectMarkup(project) }]));
 Object.assign(apps, {
   calculator: { title: "Calculator", accent: "#70f0c4", width: 390, render: calculatorMarkup, init: initCalculator },
   calendar: { title: "Calendar", accent: "#f06b7b", width: 650, render: calendarMarkup, init: initCalendar },
   weather: { title: "Weather", accent: "#6cccf2", width: 510, render: weatherMarkup, init: initWeather },
-  about: { title: "about.txt — Notepad", shortTitle: "about.txt", accent: "#2a78d6", width: 680, render: aboutMarkup },
+  about: { title: "whoami.txt — Notepad", shortTitle: "whoami.txt", accent: "#2a78d6", width: 680, render: aboutMarkup },
   "command-line": { title: "Command Prompt", shortTitle: "Command Prompt", accent: "#0c0c0c", width: 760, render: commandLineMarkup, init: initCommandLine }
 });
 
@@ -18,6 +19,13 @@ const manager = new WindowManager({ layer: document.querySelector("#window-layer
 document.addEventListener("click", (event) => { const trigger = event.target.closest("[data-open]"); if (trigger) manager.open(trigger.dataset.open); });
 document.addEventListener("terminal-open-about", () => manager.open("about"));
 document.querySelectorAll(".desktop-icon").forEach((icon) => icon.addEventListener("dblclick", (event) => event.preventDefault()));
+
+// Desktop-style dragging: the shortcut groups and whoami.txt can be moved around and remember their spot.
+initDesktopDrag([
+  { el: document.querySelector(".shortcut-group-projects"), key: "projects" },
+  { el: document.querySelector('.shortcut-group[aria-labelledby="web-shortcuts-title"]'), key: "web" },
+  { el: document.querySelector(".about-shortcut"), key: "about" }
+].filter(({ el }) => el));
 
 const startButton = document.querySelector("#start-button");
 const startMenu = document.querySelector("#start-menu");

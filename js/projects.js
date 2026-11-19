@@ -55,15 +55,15 @@ export const projects = {
     action: "Open Numero"
   },
   classification: {
-    title: "Text Classification — Benchmark",
+    title: "Text Classification — Benchmark and Guide",
     className: "project-classification",
     accent: "#b4520c",
-    name: "Text Classification",
-    subtitle: "A benchmark that tests 44 text classifiers on the same news and banking datasets.",
+    name: "Text Classification Benchmark and Guide",
+    subtitle: "44 text classifiers compared on news and banking data, with guides to run, train and fine-tune them.",
     screenshot: new URL("../images/projects/classification.png", import.meta.url).href,
-    tags: ["44 classifiers", "AG News + Banking77", "Reproducible"],
+    tags: ["44 classifiers", "Benchmark + guide", "Reproducible"],
     url: "https://humpreycogay.github.io/Classification/",
-    action: "View the benchmark"
+    action: "Explore the benchmark"
   }
 };
 

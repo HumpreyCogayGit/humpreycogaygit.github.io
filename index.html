@@ -21,7 +21,7 @@
     <title>Humprey Cogay — AI Engineer &amp; Builder</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%23f1f5f9'/%3E%3Cpath d='M17 17v30m0-15h21m0-15v30' fill='none' stroke='%23087f6a' stroke-width='7'/%3E%3C/svg%3E">
     <script>(() => { let t; try { t = localStorage.getItem("theme"); } catch {} if (t !== "dark" && t !== "light") t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; document.documentElement.dataset.theme = t; document.documentElement.style.colorScheme = t; })();</script>
-    <link rel="stylesheet" href="css/styles.css?v=33">
+    <link rel="stylesheet" href="css/styles.css?v=35">
     <link rel="stylesheet" href="css/theme.css?v=2">
     <script src="js/theme.js?v=2" defer></script>
   </head>
@@ -60,7 +60,11 @@
       <header class="desktop-heading">
         <p class="eyebrow">PORTFOLIO / 2026</p>
         <h1>Humprey <br>Cogay<span>.</span></h1>
-        <p class="desktop-intro">AI engineering, useful tools, thoughtful information, and playful experiments.</p>
+        <p class="desktop-intro">A collection of things I build, explore, and experiment with across AI, technology, and software.</p>
+        <button class="desktop-icon about-shortcut" type="button" data-open="about">
+          <span class="icon-tile icon-text-file" aria-hidden="true"><span>TXT</span></span>
+          <span>whoami.txt</span>
+        </button>
       </header>
 
       <section class="desktop-widgets" aria-label="Desktop widgets">
@@ -88,19 +92,57 @@
       </section>
 
       <nav class="desktop-icons" aria-label="Desktop shortcuts">
-        <section class="shortcut-group shortcut-group-general" aria-labelledby="general-shortcuts-title">
+        <section class="shortcut-group shortcut-group-projects" aria-labelledby="project-shortcuts-title">
           <header class="shortcut-group-heading">
-            <h2 id="general-shortcuts-title">General</h2>
+            <h2 id="project-shortcuts-title">My Projects</h2>
+            <p>Selected work I’ve designed and built.</p>
           </header>
           <div class="shortcut-group-grid">
-            <button class="desktop-icon" type="button" data-open="about">
-              <span class="icon-tile icon-text-file" aria-hidden="true"><span>TXT</span></span>
-              <span>about.txt</span>
+            <button class="desktop-icon" type="button" data-open="ai-engineering">
+              <span class="icon-tile icon-ai" aria-hidden="true"><span>AI</span></span>
+              <span>AI Engineering</span>
             </button>
-            <button class="desktop-icon" type="button" data-open="command-line">
-              <span class="icon-tile icon-command-line" aria-hidden="true"><span>&gt;_</span></span>
-              <span>Command Prompt</span>
+            <button class="desktop-icon" type="button" data-open="classification">
+              <span class="icon-tile icon-classification" aria-hidden="true">
+                <svg viewBox="0 0 32 32" role="img"><rect x="6" y="8" width="11" height="4" rx="2"/><rect x="6" y="14" width="15" height="4" rx="2" opacity=".75"/><rect x="6" y="20" width="8" height="4" rx="2" opacity=".55"/><path d="M21 21.5l2.5 2.5 4.5-5"/></svg>
+              </span>
+              <span>Text Classification</span>
             </button>
+            <button class="desktop-icon" type="button" data-open="precis">
+              <span class="icon-tile icon-precis" aria-hidden="true"><span>P</span></span>
+              <span>Precis</span>
+            </button>
+            <button class="desktop-icon" type="button" data-open="speculo">
+              <span class="icon-tile icon-speculo" aria-hidden="true"><span>S</span></span>
+              <span>Speculo</span>
+            </button>
+            <button class="desktop-icon" type="button" data-open="scapesaur">
+              <span class="icon-tile icon-scapesaur" aria-hidden="true"><img src="images/scapesaur-icon.png" alt=""></span>
+              <span>Scapesaur</span>
+            </button>
+            <button class="desktop-icon" type="button" data-open="numero">
+              <span class="icon-tile icon-numero" aria-hidden="true">
+                <svg viewBox="0 0 32 32" role="img"><rect x="8" y="16" width="4" height="9" rx="1.5"/><rect x="14" y="11" width="4" height="14" rx="1.5"/><rect x="20" y="7" width="4" height="18" rx="1.5" opacity=".75"/></svg>
+              </span>
+              <span>Numero</span>
+            </button>
+            <a class="desktop-icon desktop-icon-link" href="animations.html" aria-label="Open Animations and Graphics gallery">
+              <span class="icon-tile icon-animations" aria-hidden="true">
+                <svg viewBox="0 0 32 32" role="img">
+                  <path d="M4 19c4.2-10.7 7.8 10.7 12 0s7.8 10.7 12 0"/>
+                  <circle cx="4" cy="19" r="2"/><circle cx="16" cy="19" r="2"/><circle cx="28" cy="19" r="2"/>
+                </svg>
+              </span>
+              <span>Animations &amp; Graphics</span>
+            </a>
+          </div>
+        </section>
+
+        <section class="shortcut-group" aria-labelledby="web-shortcuts-title">
+          <header class="shortcut-group-heading">
+            <h2 id="web-shortcuts-title">Across the Web</h2>
+          </header>
+          <div class="shortcut-group-grid">
             <a class="desktop-icon desktop-icon-link" href="https://www.linkedin.com/in/manghumps" target="_blank" rel="noopener noreferrer" aria-label="Open Humprey Cogay's LinkedIn profile">
               <span class="icon-tile icon-linkedin" aria-hidden="true">
                 <svg viewBox="0 0 24 24" role="img"><path d="M5.34 7.67H1.78V19h3.56V7.67ZM3.56 2A2.06 2.06 0 1 0 3.56 6.12 2.06 2.06 0 0 0 3.56 2ZM22.22 12.5c0-3.42-1.83-5.01-4.27-5.01a4.16 4.16 0 0 0-3.75 2.06V7.67h-3.56V19h3.56v-5.61c0-1.48.28-2.91 2.11-2.91 1.8 0 1.83 1.69 1.83 3.01V19h3.56l.02-6.5Z"/></svg>
@@ -128,72 +170,6 @@
           </div>
         </section>
 
-        <section class="shortcut-group shortcut-group-projects" aria-labelledby="project-shortcuts-title">
-          <header class="shortcut-group-heading">
-            <h2 id="project-shortcuts-title">My Projects</h2>
-            <p>Selected work I’ve designed and built.</p>
-          </header>
-          <div class="shortcut-group-grid">
-            <button class="desktop-icon" type="button" data-open="ai-engineering">
-              <span class="icon-tile icon-ai" aria-hidden="true"><span>AI</span></span>
-              <span>AI Engineering</span>
-            </button>
-            <button class="desktop-icon" type="button" data-open="precis">
-              <span class="icon-tile icon-precis" aria-hidden="true"><span>P</span></span>
-              <span>Precis</span>
-            </button>
-            <button class="desktop-icon" type="button" data-open="speculo">
-              <span class="icon-tile icon-speculo" aria-hidden="true"><span>S</span></span>
-              <span>Speculo</span>
-            </button>
-            <button class="desktop-icon" type="button" data-open="scapesaur">
-              <span class="icon-tile icon-scapesaur" aria-hidden="true"><img src="images/scapesaur-icon.png" alt=""></span>
-              <span>Scapesaur</span>
-            </button>
-            <button class="desktop-icon" type="button" data-open="numero">
-              <span class="icon-tile icon-numero" aria-hidden="true">
-                <svg viewBox="0 0 32 32" role="img"><rect x="8" y="16" width="4" height="9" rx="1.5"/><rect x="14" y="11" width="4" height="14" rx="1.5"/><rect x="20" y="7" width="4" height="18" rx="1.5" opacity=".75"/></svg>
-              </span>
-              <span>Numero</span>
-            </button>
-            <button class="desktop-icon" type="button" data-open="classification">
-              <span class="icon-tile icon-classification" aria-hidden="true">
-                <svg viewBox="0 0 32 32" role="img"><rect x="6" y="8" width="11" height="4" rx="2"/><rect x="6" y="14" width="15" height="4" rx="2" opacity=".75"/><rect x="6" y="20" width="8" height="4" rx="2" opacity=".55"/><path d="M21 21.5l2.5 2.5 4.5-5"/></svg>
-              </span>
-              <span>Text Classification</span>
-            </button>
-            <a class="desktop-icon desktop-icon-link" href="animations.html" aria-label="Open Animations and Graphics gallery">
-              <span class="icon-tile icon-animations" aria-hidden="true">
-                <svg viewBox="0 0 32 32" role="img">
-                  <path d="M4 19c4.2-10.7 7.8 10.7 12 0s7.8 10.7 12 0"/>
-                  <circle cx="4" cy="19" r="2"/><circle cx="16" cy="19" r="2"/><circle cx="28" cy="19" r="2"/>
-                </svg>
-              </span>
-              <span>Animations &amp; Graphics</span>
-            </a>
-          </div>
-        </section>
-
-        <section class="shortcut-group" aria-labelledby="tool-shortcuts-title">
-          <header class="shortcut-group-heading">
-            <h2 id="tool-shortcuts-title">Tools</h2>
-            <p>Open the full apps.</p>
-          </header>
-          <div class="shortcut-group-grid">
-            <button class="desktop-icon" type="button" data-open="calculator">
-              <span class="icon-tile icon-calculator" aria-hidden="true"><span>+−</span></span>
-              <span>Calculator</span>
-            </button>
-            <button class="desktop-icon" type="button" data-open="calendar">
-              <span class="icon-tile icon-calendar" aria-hidden="true"><b id="calendar-icon-month">NOV</b><span id="calendar-icon-day">15</span></span>
-              <span>Calendar</span>
-            </button>
-            <button class="desktop-icon" type="button" data-open="weather">
-              <span class="icon-tile icon-weather" aria-hidden="true"><span>☀</span></span>
-              <span>Weather</span>
-            </button>
-          </div>
-        </section>
       </nav>
 
       <section class="window-layer" id="window-layer" aria-label="Open applications"></section>
@@ -202,18 +178,31 @@
         <header class="start-menu-header">
           <div>
             <p>Portfolio / 2026</p>
-            <h2>My Projects</h2>
+            <h2>Pinned</h2>
           </div>
-          <span>7 pinned</span>
+          <span>10 pinned</span>
         </header>
-        <div class="start-projects">
-          <button class="start-project" type="button" data-open="ai-engineering"><span class="icon-tile icon-ai" aria-hidden="true">AI</span><span><strong>AI Engineering</strong><small>Hands-on LLM course</small></span></button>
-          <button class="start-project" type="button" data-open="precis"><span class="icon-tile icon-precis" aria-hidden="true">P</span><span><strong>Precis</strong><small>Daily tech brief</small></span></button>
-          <button class="start-project" type="button" data-open="speculo"><span class="icon-tile icon-speculo" aria-hidden="true">S</span><span><strong>Speculo</strong><small>Private text workbench</small></span></button>
-          <button class="start-project" type="button" data-open="scapesaur"><span class="icon-tile icon-scapesaur" aria-hidden="true"><img src="images/scapesaur-icon.png" alt=""></span><span><strong>Scapesaur</strong><small>Dinosaur runner</small></span></button>
-          <button class="start-project" type="button" data-open="numero"><span class="icon-tile icon-numero" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="8" y="16" width="4" height="9" rx="1.5"/><rect x="14" y="11" width="4" height="14" rx="1.5"/><rect x="20" y="7" width="4" height="18" rx="1.5" opacity=".75"/></svg></span><span><strong>Numero</strong><small>Instant analytics</small></span></button>
-          <button class="start-project" type="button" data-open="classification"><span class="icon-tile icon-classification" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="6" y="8" width="11" height="4" rx="2"/><rect x="6" y="14" width="15" height="4" rx="2" opacity=".75"/><rect x="6" y="20" width="8" height="4" rx="2" opacity=".55"/><path d="M21 21.5l2.5 2.5 4.5-5"/></svg></span><span><strong>Text Classification</strong><small>Classifier benchmark</small></span></button>
-          <a class="start-project" href="animations.html"><span class="icon-tile icon-animations" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M4 19c4.2-10.7 7.8 10.7 12 0s7.8 10.7 12 0"/><circle cx="4" cy="19" r="2"/><circle cx="16" cy="19" r="2"/><circle cx="28" cy="19" r="2"/></svg></span><span><strong>Animations &amp; Graphics</strong><small>Interactive studies</small></span></a>
+        <div class="start-menu-sections">
+          <section class="start-menu-section" aria-labelledby="start-projects-title">
+            <h3 id="start-projects-title">Projects</h3>
+            <div class="start-projects">
+              <button class="start-project" type="button" data-open="ai-engineering"><span class="icon-tile icon-ai" aria-hidden="true">AI</span><span><strong>AI Engineering</strong><small>Hands-on LLM course</small></span></button>
+              <button class="start-project" type="button" data-open="classification"><span class="icon-tile icon-classification" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="6" y="8" width="11" height="4" rx="2"/><rect x="6" y="14" width="15" height="4" rx="2" opacity=".75"/><rect x="6" y="20" width="8" height="4" rx="2" opacity=".55"/><path d="M21 21.5l2.5 2.5 4.5-5"/></svg></span><span><strong>Text Classification</strong><small>Classifier benchmark</small></span></button>
+              <button class="start-project" type="button" data-open="precis"><span class="icon-tile icon-precis" aria-hidden="true">P</span><span><strong>Precis</strong><small>Daily tech brief</small></span></button>
+              <button class="start-project" type="button" data-open="speculo"><span class="icon-tile icon-speculo" aria-hidden="true">S</span><span><strong>Speculo</strong><small>Private text workbench</small></span></button>
+              <button class="start-project" type="button" data-open="scapesaur"><span class="icon-tile icon-scapesaur" aria-hidden="true"><img src="images/scapesaur-icon.png" alt=""></span><span><strong>Scapesaur</strong><small>Dinosaur runner</small></span></button>
+              <button class="start-project" type="button" data-open="numero"><span class="icon-tile icon-numero" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="8" y="16" width="4" height="9" rx="1.5"/><rect x="14" y="11" width="4" height="14" rx="1.5"/><rect x="20" y="7" width="4" height="18" rx="1.5" opacity=".75"/></svg></span><span><strong>Numero</strong><small>Instant analytics</small></span></button>
+              <a class="start-project" href="animations.html"><span class="icon-tile icon-animations" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M4 19c4.2-10.7 7.8 10.7 12 0s7.8 10.7 12 0"/><circle cx="4" cy="19" r="2"/><circle cx="16" cy="19" r="2"/><circle cx="28" cy="19" r="2"/></svg></span><span><strong>Animations &amp; Graphics</strong><small>Interactive studies</small></span></a>
+            </div>
+          </section>
+          <section class="start-menu-section" aria-labelledby="start-tools-title">
+            <h3 id="start-tools-title">Tools</h3>
+            <div class="start-projects">
+              <button class="start-project" type="button" data-open="calculator"><span class="icon-tile icon-calculator" aria-hidden="true"><span>+−</span></span><span><strong>Calculator</strong><small>Quick calculations</small></span></button>
+              <button class="start-project" type="button" data-open="calendar"><span class="icon-tile icon-calendar" aria-hidden="true"><b id="calendar-icon-month">NOV</b><span id="calendar-icon-day">15</span></span><span><strong>Calendar</strong><small>Browse dates</small></span></button>
+              <button class="start-project" type="button" data-open="weather"><span class="icon-tile icon-weather" aria-hidden="true"><span>☀</span></span><span><strong>Weather</strong><small>Local forecast</small></span></button>
+            </div>
+          </section>
         </div>
         <footer class="start-menu-footer">
           <span class="start-avatar" aria-hidden="true">HC</span>
@@ -266,6 +255,6 @@
       </section>
     </template>
 
-    <script type="module" src="js/app.js?v=33"></script>
+    <script type="module" src="js/app.js?v=35"></script>
   </body>
 </html>

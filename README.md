@@ -8,7 +8,7 @@ A dependency-free desktop-style portfolio built with semantic HTML, CSS, and van
 - Automatic intro with randomly selected line preludes (a Lissajous particle mesh, eased tracer lines, or orbiting circles) that settle into the desktop heading
 - Project introductions for AI Engineering, Precis, Speculo, Scapesaur, Numero, and Text Classification
 - Centered Windows 11-inspired Start menu with pinned projects
-- Desktop `about.txt` and interactive command-line applications
+- Desktop `whoami.txt` and interactive command-line applications
 - Working keyboard-enabled calculator (without `eval`)
 - Navigable monthly calendar
 - Live Open-Meteo weather with city search, geolocation, and unit switching
