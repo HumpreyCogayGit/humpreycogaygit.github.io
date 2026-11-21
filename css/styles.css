@@ -119,18 +119,19 @@ body:not(.intro-active) .desktop { transform: scale(1); filter: none; }
 .desktop > * { z-index: 1; }
 
 .ambient { position: absolute; border-radius: 999px; filter: blur(2px); opacity: .55; pointer-events: none; }
-.ambient-one { width: 340px; height: 340px; right: 7%; top: 8%; border: 1px solid rgba(8,127,106,.22); box-shadow: inset 0 0 80px rgba(8,127,106,.06); }
-.ambient-two { width: 170px; height: 170px; left: 34%; bottom: 12%; background: rgba(79,118,255,.07); filter: blur(30px); }
+.ambient-one { width: 340px; height: 340px; left: 7%; top: 8%; border: 1px solid rgba(8,127,106,.22); box-shadow: inset 0 0 80px rgba(8,127,106,.06); }
+.ambient-two { width: 170px; height: 170px; right: 34%; bottom: 12%; background: rgba(79,118,255,.07); filter: blur(30px); }
 
-.desktop-heading { position: absolute; left: clamp(28px, 5vw, 80px); bottom: calc(var(--taskbar-height) + clamp(24px, 6vh, 72px)); max-width: 620px; pointer-events: none; }
+.desktop-heading { position: absolute; right: clamp(28px, 5vw, 80px); bottom: calc(var(--taskbar-height) + clamp(24px, 6vh, 72px)); max-width: 620px; pointer-events: none; }
 .eyebrow { margin: 0 0 16px; color: var(--accent); font: 500 .75rem/1 "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; letter-spacing: .18em; }
 .desktop-heading h1 { margin: 0; font-size: clamp(3.8rem, 8.2vw, 8.5rem); line-height: .82; letter-spacing: -.075em; }
 .desktop-heading h1 span { color: var(--accent); }
 .desktop-intro { max-width: 500px; margin: 28px 0 0; color: var(--muted); font-size: clamp(.9rem, 1.3vw, 1.12rem); line-height: 1.65; }
-.about-shortcut { width: 86px; margin-top: 16px; pointer-events: auto; }
+/* whoami.txt sits beside the shortcut groups on desktop (left column + gap) */
+.desktop > .about-shortcut { position: absolute; z-index: 2; top: 24px; left: calc(clamp(20px, 3.5vw, 56px) + min(350px, calc(100vw - 40px)) + 14px); width: 86px; }
 
 /* Desktop widgets */
-.desktop-widgets { position: absolute; z-index: 2; top: 20px; left: clamp(28px, 5vw, 80px); display: grid; grid-template-columns: repeat(2, 150px); gap: 12px; }
+.desktop-widgets { position: absolute; z-index: 2; top: 20px; right: clamp(28px, 5vw, 80px); display: grid; grid-template-columns: repeat(2, 150px); gap: 12px; }
 .desktop-widget { width: 150px; height: 150px; min-width: 0; overflow: hidden; border: 1px solid rgba(15,23,42,.1); border-radius: 25px; box-shadow: 0 16px 35px rgba(15,23,42,.12), inset 0 1px rgba(255,255,255,.5); }
 button.desktop-widget { padding: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; transition: transform .2s ease, box-shadow .2s ease; }
 button.desktop-widget:hover { box-shadow: 0 20px 42px rgba(15,23,42,.17), inset 0 1px rgba(255,255,255,.5); transform: translateY(-2px); }
@@ -151,7 +152,7 @@ button.desktop-widget:focus-visible { outline: 3px solid rgba(8,127,106,.35); ou
 .weather-widget-range { font: 500 .56rem/1.2 "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; opacity: .88; }
 .weather-widget-updated { font: 500 .48rem/1.2 "DM Mono", ui-monospace, Menlo, Monaco, Consolas, monospace; opacity: .72; }
 
-.desktop-icons { position: absolute; z-index: 2; top: 18px; right: clamp(20px, 3.5vw, 56px); display: flex; width: min(350px, calc(100vw - 40px)); padding: 2px; flex-direction: column; gap: clamp(6px, 1.1dvh, 10px); overflow: visible; }
+.desktop-icons { position: absolute; z-index: 2; top: 18px; left: clamp(20px, 3.5vw, 56px); display: flex; width: min(350px, calc(100vw - 40px)); padding: 2px; flex-direction: column; gap: clamp(6px, 1.1dvh, 10px); overflow: visible; }
 .shortcut-group { min-width: 0; padding: clamp(7px, 1.2dvh, 11px); border: 1.5px solid rgba(15,23,42,.08); border-radius: 15px; background: rgba(255,255,255,.3); box-shadow: 0 8px 24px rgba(15,23,42,.03), inset 0 1px rgba(255,255,255,.3); }
 .shortcut-group-projects { border-color: rgba(8,127,106,.12); background: rgba(242,252,248,.3); }
 .shortcut-group-heading { padding: 0 4px clamp(4px, .8dvh, 8px); }
@@ -324,8 +325,8 @@ button.desktop-widget:focus-visible { outline: 3px solid rgba(8,127,106,.35); ou
 
 /* Desktop assembly follows the geometry of the departing intro. */
 .intro-active .desktop-heading, .intro-active .desktop-icon, .intro-active .desktop-widgets, .intro-active .taskbar { opacity: 0; }
-.intro-active .desktop-heading { transform: translate(-45px, 28px); filter: blur(8px); }
-.intro-active .desktop-icon { transform: translate(-42vw, 35vh) scale(.2) rotate(-18deg); filter: blur(5px); }
+.intro-active .desktop-heading { transform: translate(45px, 28px); filter: blur(8px); }
+.intro-active .desktop-icon { transform: translate(42vw, 35vh) scale(.2) rotate(18deg); filter: blur(5px); }
 .intro-active .taskbar { transform: translateY(100%); }
 .intro-active .ambient { opacity: 0; transform: scale(.3); }
 body.desktop-entering .desktop::before { animation: desktop-grid-resolve 1s cubic-bezier(.15,.75,.2,1) both; }
@@ -340,8 +341,8 @@ body.desktop-entering .ambient { animation: desktop-ambient-in 1.15s .25s ease-o
 body.desktop-ready .desktop-heading, body.desktop-ready .desktop-icon, body.desktop-ready .desktop-widgets, body.desktop-ready .taskbar { opacity: 1; transform: none; filter: none; }
 body.desktop-ready .ambient { opacity: .55; transform: scale(1); }
 @keyframes desktop-grid-resolve { 0% { opacity: 0; transform: scale(.08); } 42% { opacity: .8; } 100% { opacity: 0; transform: scale(3); } }
-@keyframes desktop-heading-in { from { opacity: 0; transform: translate(-45px,28px); filter: blur(8px); } to { opacity: 1; transform: none; filter: none; } }
-@keyframes desktop-icon-in { 0% { opacity: 0; transform: translate(-42vw,35vh) scale(.2) rotate(-18deg); filter: blur(5px); } 72% { opacity: 1; transform: translate(3px,-3px) scale(1.05) rotate(1deg); filter: none; } 100% { opacity: 1; transform: none; filter: none; } }
+@keyframes desktop-heading-in { from { opacity: 0; transform: translate(45px,28px); filter: blur(8px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes desktop-icon-in { 0% { opacity: 0; transform: translate(42vw,35vh) scale(.2) rotate(18deg); filter: blur(5px); } 72% { opacity: 1; transform: translate(-3px,-3px) scale(1.05) rotate(-1deg); filter: none; } 100% { opacity: 1; transform: none; filter: none; } }
 @keyframes desktop-tile-energize { 0% { box-shadow: 0 0 0 rgba(112,240,196,0); } 45% { box-shadow: 0 0 0 1px rgba(112,240,196,.65), 0 0 34px rgba(108,204,242,.5); } }
 @keyframes desktop-taskbar-in { from { opacity: 0; transform: translateY(100%); } to { opacity: 1; transform: none; } }
 @keyframes desktop-control-in { from { opacity: 0; transform: scale(.5); } to { opacity: 1; transform: scale(1); } }
@@ -430,7 +431,7 @@ body.desktop-ready .ambient { opacity: .55; transform: scale(1); }
 .weather-status { min-height: 20px; margin: 10px 0 0; color: #64748b; font-size: .72rem; text-align: center; }
 
 @media (min-width: 721px) and (max-width: 1100px) {
-  .desktop-widgets { left: 24px; grid-template-columns: repeat(2, 132px); gap: 10px; }
+  .desktop-widgets { right: 24px; grid-template-columns: repeat(2, 132px); gap: 10px; }
   .desktop-widget { width: 132px; height: 132px; border-radius: 22px; }
   .calendar-widget { grid-template-rows: 32px minmax(0, 1fr); }
   .calendar-widget-body { padding: 8px 13px 11px; }
@@ -445,26 +446,13 @@ body.desktop-ready .ambient { opacity: .55; transform: scale(1); }
   html, body { height: auto; min-height: 100%; overflow-x: hidden; overflow-y: auto; }
   .desktop { position: relative; display: flex; width: 100%; height: auto; min-height: 100dvh; padding: 14px 0 calc(var(--taskbar-height) + 24px + env(safe-area-inset-bottom)); flex-direction: column; gap: 20px; overflow: visible; }
   .desktop-widgets, .desktop-icons, .desktop-heading { position: static; inset: auto; }
-  .desktop-heading { order: 3; width: auto; margin: auto 24px 0; }
+  .desktop-heading { order: 1; width: auto; margin: 8px 24px 0; }
   .desktop-heading h1 { font-size: clamp(2.4rem, 12vw, 3.6rem); }
   .desktop-intro { max-width: 90%; margin-top: 20px; font-size: .85rem; }
-  .about-shortcut { width: 76px; margin-top: 12px; }
-  .desktop-widgets { order: 1; margin: 0 16px; grid-template-columns: repeat(2, min(132px, calc((100vw - 42px) / 2))); gap: 10px; }
-  .desktop-widget { width: min(132px, calc((100vw - 42px) / 2)); height: min(132px, calc((100vw - 42px) / 2)); border-radius: 22px; }
-  .calendar-widget { grid-template-rows: 32px minmax(0, 1fr); }
-  .calendar-widget-today { font-size: .44rem; }
-  .calendar-widget-body { padding: 8px 12px 11px; }
-  .calendar-widget-day { font-size: .62rem; }
-  .calendar-widget-date { margin-top: 6px; font-size: 3rem; }
-  .weather-widget { padding: 13px !important; }
-  .weather-widget-location { font-size: .62rem; }
-  .weather-widget-primary { margin-top: 7px; }
-  .weather-widget-icon { font-size: 1.45rem; }
-  .weather-widget-temp { font-size: 2.65rem; }
-  .weather-widget-condition { font-size: .59rem; }
-  .weather-widget-range { font-size: .5rem; }
-  .weather-widget-updated { font-size: .43rem; }
-  .desktop-icons { order: 2; width: 100%; min-width: 0; max-width: none; padding: 4px 16px 10px; flex: none; flex-direction: column; align-items: stretch; gap: 12px; overflow: visible; }
+  .desktop > .about-shortcut { position: static; order: 2; width: 76px; margin: -8px 24px 0; }
+  /* Hide calendar & weather widgets on mobile so projects and links get the focus */
+  .desktop-widgets { display: none; }
+  .desktop-icons { order: 3; width: 100%; min-width: 0; max-width: none; padding: 4px 16px 10px; flex: none; flex-direction: column; align-items: stretch; gap: 12px; overflow: visible; }
   .shortcut-group-projects { order: -1; }
   .shortcut-group { flex: none; width: 100%; min-width: 0; padding: 8px; border-width: 1.5px; border-radius: 12px; }
   .shortcut-group-heading { padding: 0 4px clamp(3px, .5dvh, 5px); }
@@ -540,7 +528,6 @@ body.desktop-ready .ambient { opacity: .55; transform: scale(1); }
 
 @media (max-width: 720px) and (max-height: 520px) {
   .desktop { gap: 12px; padding-top: 8px; }
-  .desktop-widgets { margin-inline: 12px; }
   .desktop-heading { margin-inline: 20px; }
 }
 

@@ -1,7 +1,7 @@
 // Desktop-style dragging for the shortcut groups and the whoami.txt icon.
 // Items keep their natural layout position and are offset with the CSS `translate`
 // property, so they don't fight the intro animations that use `transform`.
-const STORAGE_KEY = "desktop-layout-v1";
+const STORAGE_KEY = "desktop-layout-v2";
 const DRAG_THRESHOLD = 5;
 const MOBILE_QUERY = matchMedia("(max-width: 720px)");
 

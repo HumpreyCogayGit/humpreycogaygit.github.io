@@ -4,7 +4,7 @@ import { calendarMarkup, initCalendar } from "./calendar.js";
 import { weatherMarkup, initWeather } from "./weather.js?v=3";
 import { aboutMarkup, commandLineMarkup, initCommandLine } from "./desktop-apps.js?v=8";
 import { WindowManager } from "./window-manager.js?v=2";
-import { initDesktopDrag } from "./desktop-drag.js?v=1";
+import { initDesktopDrag } from "./desktop-drag.js?v=3";
 
 const apps = Object.fromEntries(Object.entries(projects).map(([id, project]) => [id, { title: project.title, shortTitle: project.name, accent: project.accent, render: () => projectMarkup(project) }]));
 Object.assign(apps, {
@@ -24,7 +24,7 @@ document.querySelectorAll(".desktop-icon").forEach((icon) => icon.addEventListen
 initDesktopDrag([
   { el: document.querySelector(".shortcut-group-projects"), key: "projects" },
   { el: document.querySelector('.shortcut-group[aria-labelledby="web-shortcuts-title"]'), key: "web" },
-  { el: document.querySelector(".about-shortcut"), key: "about" }
+  { el: document.querySelector(".about-shortcut"), key: "whoami" }
 ].filter(({ el }) => el));
 
 const startButton = document.querySelector("#start-button");
